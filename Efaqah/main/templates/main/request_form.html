@@ -1,0 +1,441 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #77a0fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .logo-icon img {
+            width: 15rem;
+            height: 80px;
+            margin-top: 2rem;
+        }
+
+        .logo-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .logo-subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .login-form {
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+            margin-top: 0.5rem;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .forgot-password a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-credentials {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .demo-credentials h4 {
+            color: #0369a1;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .credential-section {
+            margin-bottom: 1rem;
+        }
+
+        .credential-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .credential-section p {
+            color: #0284c7;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .credential-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin: 0.25rem 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .credential-row:hover {
+            background: #e0f2fe;
+            transform: translateX(2px);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.25rem;
+        }
+
+        .input-group .form-input {
+            padding-left: 3.5rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .password-toggle:hover {
+            color: #4f46e5;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .logo-title {
+                font-size: 1.75rem;
+            }
+            
+            .demo-credentials {
+                font-size: 0.8rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: loading 2s infinite;
+        }
+
+        @keyframes loading {
+            to { left: 100%; }
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <img src="{% static 'images/Logo2.jpg' %}" alt="Logo">
+            </div>
+            <p class="welcome-text">Please fill this form</p>
+        </div>
+
+        <div id="alert-container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{message.tags}} mt-2">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <form class="login-form" method="POST" action="{% url 'main:request_form' %}" id="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="firstname" class="form-label">First name</label>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="firstname" 
+                        class="form-input" 
+                        name="firstname"
+                        placeholder="Enter your first name"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastname" class="form-label">Last name</label>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="lastname" 
+                        class="form-input" 
+                        name="lastname"
+                        placeholder="Enter your last name"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="form-label">Phone Number</label>
+                <div class="input-group">
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        class="form-input" 
+                        name="phone"
+                        placeholder="Enter your phone"
+                        required
+                    >
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="medical_affiliation" class="form-label">Medical Affliation (Hospital / Position)</label>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="medical_affiliation" 
+                        class="form-input" 
+                        name="medical_affiliation"
+                        placeholder="Enter (Hospital / Position)"
+                        required
+                    >
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="country" class="form-label">Country</label>
+                <div class="input-group">
+                    {{ form.country}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="form-label">Description</label>
+                <div class="input-group">
+                    <textarea  
+                        id="description" 
+                        class="form-input" 
+                        name="description"
+                        placeholder="How may we help you ?"
+                        rows="3"
+                    ></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button" id="login-btn">
+                Submit
+            </button>
+        </form>
+        <a href="{% url 'main:login' %}"><button type="submit" class="login-button" id="login-btn">
+                Back
+        </button></a>
+    </div>
+</body>
+</html>
