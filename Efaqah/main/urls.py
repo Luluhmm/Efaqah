@@ -4,6 +4,8 @@ from django.urls import path
 app_name = "main"
 
 urlpatterns = [
-    path('', views.landing_view, name="landing_view"),
-    path('login/',views.login_view, name="login_view"),
+    path('', views.landing_page, name="landing_page"),
+    path('login/', views.user_login, name="login"),
+    path('request_form/', views.request_form, name="request_form"),
+    path('stripe/webhook/', views.stripe_webhook, name='stripe-webhook'),
 ]
