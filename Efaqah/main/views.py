@@ -12,6 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 import stripe
 from django.urls import reverse_lazy
 from django.urls import reverse
+from django.contrib.auth.hashers import make_password
+import secrets
+import time
 
 
 
@@ -115,14 +118,15 @@ def request_form(request):
 def create_user_and_send_credentials(registration):
     """A helper function to create the user and send the email."""
     email = registration.email
+
     
-    # 1. Generate a unique username
+    #Generate a unique username
     username = f"{registration.firstname.lower()}_{uuid.uuid4().hex[:6]}"
     
-    # 2. Generate a random password
-    password = User.objects.make_random_password()
+    #Generate a random password
+    password = secrets.token_urlsafe(10)
 
-    # 3. Create the new user
+    #Create the new user
     user = User.objects.create_user(
         username=username,
         email=email,
@@ -131,28 +135,33 @@ def create_user_and_send_credentials(registration):
         last_name=registration.lastname
     )
 
-    # 4. Assign the user to the 'demo' group
+    registration.user = user
+    registration.save()
+
+    #Assign the user to the 'demo' group
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
 
-    # 5. Send the welcome email with credentials
+    #Send the welcome email with credentials
     subject = "Your New Account Details"
     message = f"""
-    Hello {user.first_name},
-
-    Thank you for your payment. Your account has been created.
-    You can now log in using these credentials:
-
-    Username: {username}
-    Password: {password}
-
-    Please log in at: https://*.ngrok-free.app/login/
-
-    Regards,
-    The Team
+    <html>
+        <body>
+            <p>Hello {user.first_name},</p>
+            <p>Thank you for your payment. Your account has been created.</p>
+            <p>You can now log in using these credentials:</p>
+            <p><strong>Username:</strong> {username}<br>
+               <strong>Password:</strong> {password}</p>
+            <p>Please log in at: <a href="http://127.0.0.1:8000/login/">Login</a></p>
+            <p>Regards,<br>Efaqah</p>
+        </body>
+    </html>
     """
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+    email_msg = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+    email_msg.content_subtype = "html"
+    email_msg.send()
 
+"""
 @csrf_exempt # Stripe does not send a CSRF token
 def stripe_webhook(request):
     payload = request.body
@@ -181,20 +190,22 @@ def stripe_webhook(request):
                 if registration.status != 'paid':
                     registration.status = 'paid'
                     registration.save()
-                    # This is the magic moment!
-                    create_user_and_send_credentials(registration)
+                    try:
+                        create_user_and_send_credentials(registration)
+                    except Exception as e:
+                        print("Error in create_user_and_send_credentials:", e)
             except Registration.DoesNotExist:
                 print(f"Registration with ID {registration_id} not found.")
 
     return HttpResponse(status=200) # Let Stripe know we received it
-
+"""
 
 def send_payment_link_email(request, registration):
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
-    success_url = request.build_absolute_uri(reverse('main:login')) + '?status=success'
-    cancel_url = request.build_absolute_uri(reverse('main:login')) + '?status=cancelled'
+    success_url = request.build_absolute_uri(reverse('main:payment_success') + f"?registration_id={registration.id}")
+    cancel_url = request.build_absolute_uri(reverse('main:payment_cancelled'))
 
     try:
         session = stripe.checkout.Session.create(
@@ -213,9 +224,12 @@ def send_payment_link_email(request, registration):
                     success_url = success_url,
                     cancel_url = cancel_url,
                     metadata = {
-                        'registration_id': registration.id
+                        'registration_id': str(registration.id)
                     } # This is going to pass the registration id so we know who paid
         )
+
+        registration.stripe_session_id = session.id
+        registration.save()
 
         registration.payment_link = session.url
 
@@ -245,8 +259,31 @@ def send_payment_link_email(request, registration):
 
 
 
+
 def subscribe_view(request):
     return render(request,"main/subscribe_page.html")
 
 def subscribe_form(request):
     return render(request, "main/subscribe_form.html")
+
+def payment_success(request):
+    registration_id = request.GET.get("registration_id")
+    if registration_id:
+        try:
+            registration = Registration.objects.get(id=registration_id)
+            if registration.status != "paid":
+                registration.status = "paid"
+                registration.save()
+                create_user_and_send_credentials(registration)
+        except Registration.DoesNotExist:
+            messages.error(request, "Registration not found.")
+    return render(request, "main/payment_success.html")
+
+
+
+def payment_cancelled(request):
+    return render(request, "main/cancelled.html")
+
+
+def payment_pending(request):
+    return render(request, "main/payment_pending.html")

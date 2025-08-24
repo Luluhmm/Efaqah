@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed - HealthCare Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bg-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-element:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-delay: 0s; }
+        .bg-element:nth-child(2) { width: 80px; height: 80px; left: 80%; animation-delay: 2s; }
+        .bg-element:nth-child(3) { width: 40px; height: 40px; left: 60%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { transform: translateY(50vh) scale(1); opacity: 0.6; }
+            100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+        }
+
+        /* Main card */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 60px 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Error icon animation */
+        .error-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .error-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: shake 0.8s ease-in-out;
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        .error-x {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .error-x::before,
+        .error-x::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 4px;
+            background: white;
+            left: 5px;
+            top: 23px;
+            border-radius: 2px;
+            animation: drawX 0.5s ease-in-out 0.5s forwards;
+            opacity: 0;
+        }
+
+        .error-x::before {
+            transform: rotate(45deg);
+        }
+
+        .error-x::after {
+            transform: rotate(-45deg);
+        }
+
+        @keyframes drawX {
+            0% {
+                width: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 40px;
+                opacity: 1;
+            }
+        }
+
+        /* Pulse effect */
+        .pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid rgba(231, 76, 60, 0.3);
+            animation: pulse 2s linear infinite;
+        }
+
+        .pulse:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .pulse:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* Typography */
+        .title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.7s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Error details */
+        .error-details {
+            background: linear-gradient(135deg, #fdf2f2, #fce4e4);
+            border: 2px solid #fadbd8;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .error-code {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        .error-message {
+            color: #c0392b;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .help-text {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2c3e50;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.4);
+        }
+
+
+        .help-section {
+            background: linear-gradient(135deg, #ebf3fd, #d6eaff);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            animation: fadeInUp 1s ease-out 1.4s both;
+        }
+
+        .help-title {
+            color: #2980b9;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .help-list {
+            text-align: left;
+            color: #34495e;
+            line-height: 1.8;
+        }
+
+        .help-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .help-list li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+
+
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="error-icon">
+                <div class="error-container">
+                    <div class="error-x"></div>
+                </div>
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+            </div>
+
+            <h1 class="title">Payment Failed</h1>
+            <p class="subtitle">We encountered an issue processing your payment. Don't worry, no charges have been made to your account.</p>
+
+
+            <div class="error-details">
+                <div class="error-message">Your payment was declined by your bank or card issuer.</div>
+                <div class="help-text">This usually happens due to insufficient funds, expired card, or security restrictions. Please try a different payment method or contact your bank.</div>
+            </div>
+            <a href="{% url 'main:login' %}" class="btn btn-secondary">
+                    Back to Login
+            </a>
+            
+        </div>
+    </div>
+
+   
+    
+</body>
+</html>
