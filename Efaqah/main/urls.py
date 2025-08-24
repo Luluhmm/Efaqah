@@ -7,5 +7,7 @@ urlpatterns = [
     path('', views.landing_page, name="landing_page"),
     path('login/', views.user_login, name="login"),
     path('request_form/', views.request_form, name="request_form"),
-    path('stripe/webhook/', views.stripe_webhook, name='stripe-webhook'),
+    path('payment/pending/', views.payment_pending, name="payment_pending"),
+    path('payment/success/', views.payment_success, name="payment_success"),
+    path('payment/cancelled/', views.payment_cancelled, name="payment_cancelled"),
 ]

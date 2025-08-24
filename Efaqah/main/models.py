@@ -21,8 +21,16 @@ class Registration(models.Model):
     description = models.TextField(blank=True, null=True)
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    stripe_session_id = models.CharField(max_length=255, blank=True, null=True)
     payment_link = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.firstname} {self.lastname} - {self.status}"
