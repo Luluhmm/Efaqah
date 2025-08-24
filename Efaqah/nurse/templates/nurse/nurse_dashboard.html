@@ -1,0 +1,528 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Portal - Nurse Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .lucide {
+            width: 1em;
+            height: 1em;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 rounded-lg">
+    <img src="{% static 'images/logo_2.PNG' %}" alt="Logo" class="h-10 w-auto">
+</div>
+                
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
+                        <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <span id="current-date"></span>
+                    </div>
+                    <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 gap-2">
+                        <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800">3</span>
+                    </button>
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-700 font-medium">RN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Total Patients</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="total-patients">0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">New Today</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="new-today">0</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <line x1="19" y1="8" x2="19" y2="14"/>
+                            <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Active Cases</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="active-cases">0</p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-orange-600 lucide" viewBox="0 0 24 24">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+            <div class="border-b border-gray-100">
+                <nav class="flex">
+                    <button
+                        id="add-tab-btn"
+                        class="py-4 px-6 text-sm font-medium border-b-2 border-blue-500 text-blue-600 bg-blue-50 transition-colors"
+                        onclick="setActiveTab('add')"
+                    >
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <line x1="19" y1="8" x2="19" y2="14"/>
+                                <line x1="22" y1="11" x2="16" y2="11"/>
+                            </svg>
+                            Add New Patient
+                        </div>
+                    </button>
+                    <button
+                        id="list-tab-btn"
+                        class="py-4 px-6 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
+                        onclick="setActiveTab('list')"
+                    >
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            Patient List (<span id="patient-count">0</span>)
+                        </div>
+                    </button>
+                </nav>
+            </div>
+
+      
+         <!-- Search Bar -->
+<div id="search-container" class="p-6 border-b border-gray-100">
+    <div class="relative max-w-md">
+        <input
+            id="search-input"
+            type="text"
+            placeholder="Search patients by name, ID, or phone..."
+            class="flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm pl-3"
+            oninput="filterPatients()"
+        >
+    </div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="space-y-8">
+    {% if patient_to_update %}
+    {% url 'nurse:nurse_dashboard' as dashboard_url %}
+{% endif %}
+
+<!-- Add Patient Form -->
+<div id="add-content" class="bg-white rounded-lg border border-gray-200 shadow-sm w-full max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col space-y-1.5 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+        <h3 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600 lucide" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            {% if patient_to_update %}
+                Update Patient Information
+            {% else %}
+                Patient Registration
+            {% endif %}
+        </h3>
+        <p class="text-sm text-muted-foreground">
+            {% if patient_to_update %}
+                Edit the existing patient details
+            {% else %}
+                Add a new patient to the system
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Flash Messages -->
+    <div class="p-6">
+        {% if messages %}
+            <div class="space-y-2">
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-300{% elif message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-gray-100 text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Form -->
+    <div class="p-6">
+        <form id="patient-form" class="space-y-4" method="POST" 
+            action="{% if patient_to_update %}{% url 'nurse:update_patient_view' patient_to_update.id %}{% else %}{% url 'nurse:add_patient_view' %}{% endif %}">
+            {% csrf_token %}
+
+            <!-- Personal Information -->
+            <div class="space-y-4">
+                <h3 class="font-medium text-gray-900 border-b pb-2">Personal Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    <!-- Patient ID -->
+                    <div class="space-y-2">
+                        <label for="patient_id" class="text-sm font-medium">Patient ID *</label>
+                        <input type="text" id="patient_id" name="patient_id" 
+                               value="{% if patient_to_update %}{{ patient_to_update.patient_id }}{% endif %}" 
+                               placeholder="Enter patient ID" required
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+
+                    <!-- First Name -->
+                    <div class="space-y-2">
+                        <label for="first_name" class="text-sm font-medium">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" 
+                               value="{% if patient_to_update %}{{ patient_to_update.first_name }}{% endif %}" 
+                               placeholder="Enter first name" required
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="space-y-2">
+                        <label for="last_name" class="text-sm font-medium">Last Name *</label>
+                        <input type="text" id="last_name" name="last_name" 
+                               value="{% if patient_to_update %}{{ patient_to_update.last_name }}{% endif %}" 
+                               placeholder="Enter last name" required
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+
+                    <!-- Age -->
+                    <div class="space-y-2">
+                        <label for="age" class="text-sm font-medium">Age *</label>
+                        <input type="number" id="age" name="age" 
+                               value="{% if patient_to_update %}{{ patient_to_update.age }}{% endif %}" 
+                               placeholder="Enter age" required
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="space-y-2">
+                        <label for="gender" class="text-sm font-medium">Gender *</label>
+                        <select id="gender" name="gender" required class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                            <option value="">Select gender</option>
+                            {% for value, label in GENDER_CHOICES %}
+                                <option value="{{ value }}" {% if patient_to_update and patient_to_update.gender == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Residence -->
+                    <div class="space-y-2">
+                        <label for="residence_type" class="text-sm font-medium">Residence Type</label>
+                        <select id="residence_type" name="residence_type" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                            <option value="">-- Select Residence Type --</option>
+                            {% for value, label in RESIDENCE_CHOICES %}
+                                <option value="{{ value }}" {% if patient_to_update and patient_to_update.residence_type == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="space-y-4">
+                <h3 class="font-medium text-gray-900 border-b pb-2">Contact Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    <!-- Phone Number -->
+                    <div class="space-y-2">
+                        <label for="phone_number" class="text-sm font-medium leading-none">Phone Number</label>
+                        <input type="text" id="phone_number" name="phone_number" 
+                               value="{% if patient_to_update %}{{ patient_to_update.phone_number }}{% endif %}" 
+                               placeholder="Enter phone number" 
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+
+                    <!-- Emergency Phone -->
+                    <div class="space-y-2">
+                        <label for="emergency_phone" class="text-sm font-medium leading-none">Emergency Contact Phone</label>
+                        <input type="text" id="emergency_phone" name="emergency_phone" 
+                               value="{% if patient_to_update %}{{ patient_to_update.emergency_phone }}{% endif %}" 
+                               placeholder="Enter emergency phone" 
+                               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit + Close -->
+            <div class="flex justify-end gap-2 mt-4">
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="px-4 py-2 {% if patient_to_update %}bg-green-600 hover:bg-green-700{% else %}bg-blue-600 hover:bg-blue-700{% endif %} text-white rounded-md">
+                    {% if patient_to_update %}Update Patient{% else %}Save Patient{% endif %}
+                </button>
+
+                <!-- Close Button -->
+                {% if patient_to_update %}
+                    <button type="button" 
+                            onclick="window.location.href='{{ dashboard_url }}'"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+                        Close
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+</div>
+
+<div id="list-content">
+    <div class="w-full max-w-4xl mx-auto space-y-4">
+        
+   <!-- Patient List -->
+<div id="patient-list-container" class="space-y-4 mt-4">
+    {% for patient in patients %}
+    <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-md p-6 flex justify-between items-start hover:shadow-lg transition duration-200">
+        <div class="flex flex-col gap-2">
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">
+                ID: {{ patient.patient_id }}
+            </span>
+            <h2 class="text-xl font-bold text-gray-800">{{ patient.first_name }} {{ patient.last_name }}</h2>
+            <p class="text-sm text-gray-600">Age: {{ patient.age }} | Gender: {{ patient.gender }}</p>
+            <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <button class="view-btn px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm text-center"
+                data-id="{{ patient.id }}"
+                data-first_name="{{ patient.first_name }}"
+                data-last_name="{{ patient.last_name }}"
+                data-patient_id="{{ patient.patient_id }}"
+                data-age="{{ patient.age }}"
+                data-gender="{{ patient.gender }}"
+                data-phone="{{ patient.phone_number }}"
+                data-emergency="{{ patient.emergency_phone }}"
+                data-symptoms="{{ patient.symptoms|default:'' }}"
+                data-history="{{ patient.medical_history|default:'' }}">
+                View
+            </button>
+            <a href="{% url 'nurse:update_patient_view' patient.id %}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm text-center">Update</a>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-500">No patients available.</p>
+    {% endfor %}
+</div>
+<!-- Patient Details Card -->
+<div id="patient-details" class="hidden w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-lg rounded-lg p-6 mt-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800" id="details-name">Patient Name</h3>
+        <button onclick="closeDetails()" class="px-3 py-1 text-sm text-red-600 hover:text-red-800 bg-red-50 rounded">Close</button>
+    </div>
+
+    <!-- Personal Info Section -->
+    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+        <h4 class="font-medium text-blue-700 mb-2">Personal Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <p><span class="font-semibold">Patient ID:</span> <span id="details-id"></span></p>
+            <p><span class="font-semibold">First Name:</span> <span id="details-first-name"></span></p>
+            <p><span class="font-semibold">Last Name:</span> <span id="details-last-name"></span></p>
+            <p><span class="font-semibold">Age:</span> <span id="details-age"></span></p>
+            <p><span class="font-semibold">Gender:</span> <span id="details-gender"></span></p>
+            <p><span class="font-semibold">Residence Type:</span> <span id="details-residence"></span></p>
+        </div>
+    </div>
+
+    <!-- Contact Info Section -->
+    <div class="bg-green-50 p-4 rounded-lg mb-4">
+        <h4 class="font-medium text-green-700 mb-2">Contact Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <p><span class="font-semibold">Phone Number:</span> <span id="details-phone"></span></p>
+            <p><span class="font-semibold">Emergency Phone:</span> <span id="details-emergency"></span></p>
+        </div>
+    </div>
+
+    <!-- Medical Info Section -->
+    <div class="bg-yellow-50 p-4 rounded-lg">
+        <h4 class="font-medium text-yellow-700 mb-2">Medical Information</h4>
+        <div class="space-y-2 text-gray-700">
+            <p><span class="font-semibold">Symptoms:</span> <span id="details-symptoms"></span></p>
+            <p><span class="font-semibold">Medical History:</span> <span id="details-history"></span></p>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+    </main>
+  <script>
+// إدارة التبويبات
+function setActiveTab(tab) {
+    const addTabBtn = document.getElementById('add-tab-btn');
+    const listTabBtn = document.getElementById('list-tab-btn');
+    const addContent = document.getElementById('add-content');
+    const listContent = document.getElementById('list-content');
+    const searchContainer = document.getElementById('search-container');
+
+    if (!addTabBtn || !listTabBtn || !addContent || !listContent) return;
+
+    if (tab === 'add') {
+        addTabBtn.className = 'py-4 px-6 text-sm font-medium border-b-2 border-blue-500 text-blue-600 bg-blue-50 transition-colors';
+        listTabBtn.className = 'py-4 px-6 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors';
+        addContent.classList.remove('hidden');
+        listContent.classList.add('hidden');
+        if (searchContainer) searchContainer.classList.add('hidden');
+    } else {
+        addTabBtn.className = 'py-4 px-6 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors';
+        listTabBtn.className = 'py-4 px-6 text-sm font-medium border-b-2 border-blue-500 text-blue-600 bg-blue-50 transition-colors';
+        addContent.classList.add('hidden');
+        listContent.classList.remove('hidden');
+        if (searchContainer) searchContainer.classList.remove('hidden');
+    }
+}
+
+ // Filter patients based on search input
+    function filterPatients() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const cards = document.querySelectorAll('#patient-list-container .patient-card');
+        let anyVisible = false;
+
+        cards.forEach(card => {
+            // نجمع كل النصوص التي نريد البحث فيها
+            const name = card.querySelector('h2')?.innerText.toLowerCase() || '';
+            const phone = card.querySelector('p:nth-of-type(2)')?.innerText.toLowerCase() || '';
+            const patientID = card.querySelector('span')?.innerText.toLowerCase() || '';
+
+            // نتحقق إذا أي من الحقول تحتوي على البحث
+            if (name.includes(query) || phone.includes(query) || patientID.includes(query)) {
+                card.style.display = 'flex'; // إظهار الكارد
+                anyVisible = true;
+            } else {
+                card.style.display = 'none'; // إخفاء الكارد
+            }
+        });
+
+        // عرض رسالة "لا يوجد نتائج" إذا لم توجد أي كارد مرئية
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState) {
+            emptyState.style.display = anyVisible ? 'none' : 'block';
+        }
+    }
+
+    // ربط البحث بحدث الكتابة
+    document.getElementById('search-input').addEventListener('input', filterPatients);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // افتراضياً يكون على تبويب الإضافة
+    setActiveTab('add');
+
+    // تحديث عداد المرضى
+    const totalPatients = parseInt("{{ patient_count }}");
+    const patientCountElem = document.getElementById('patient-count');
+    const totalPatientsElem = document.getElementById('total-patients');
+    const listPatientCountElem = document.getElementById('list-patient-count');
+
+    if (patientCountElem) patientCountElem.innerText = totalPatients;
+    if (totalPatientsElem) totalPatientsElem.innerText = totalPatients;
+    if (listPatientCountElem) listPatientCountElem.innerText = totalPatients;
+});
+
+function closeDetails() {
+    document.getElementById('patient-details').classList.add('hidden');
+    document.getElementById('patient-list-container').classList.remove('hidden');
+}
+
+document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById('patient-list-container').classList.add('hidden');
+
+        const details = document.getElementById('patient-details');
+        details.classList.remove('hidden');
+
+        // تعبئة البيانات
+        document.getElementById('details-name').innerText = `${this.dataset.first_name} ${this.dataset.last_name}`;
+        document.getElementById('details-id').innerText = this.dataset.patient_id;
+        document.getElementById('details-first-name').innerText = this.dataset.first_name;
+        document.getElementById('details-last-name').innerText = this.dataset.last_name;
+        document.getElementById('details-age').innerText = this.dataset.age;
+        document.getElementById('details-gender').innerText = this.dataset.gender;
+        document.getElementById('details-residence').innerText = this.dataset.residence || 'N/A';
+        document.getElementById('details-phone').innerText = this.dataset.phone || 'N/A';
+        document.getElementById('details-emergency').innerText = this.dataset.emergency || 'N/A';
+        document.getElementById('details-symptoms').innerText = this.dataset.symptoms || 'N/A';
+        document.getElementById('details-history').innerText = this.dataset.history || 'N/A';
+
+        // تمرير المستخدم لكارد التفاصيل
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+
+</script>
+
+
+</body>
+</html>
+
