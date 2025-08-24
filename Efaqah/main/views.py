@@ -258,6 +258,14 @@ def send_payment_link_email(request, registration):
         return False
 
 
+
+
+def subscribe_view(request):
+    return render(request,"main/subscribe_page.html")
+
+def subscribe_form(request):
+    return render(request, "main/subscribe_form.html")
+
 def payment_success(request):
     registration_id = request.GET.get("registration_id")
     if registration_id:
