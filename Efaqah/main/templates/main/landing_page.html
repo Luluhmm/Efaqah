@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthCare Portal - Professional Medical Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,24 +15,12 @@
                         sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
                     },
                     animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bounce-slow': 'bounce 3s infinite',
                         'fade-in': 'fadeIn 1s ease-out',
-                        'slide-up': 'slideUp 0.8s ease-out',
                         'glow': 'glow 2s ease-in-out infinite alternate',
                     },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
                         fadeIn: {
                             '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0px)' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(50px)' },
                             '100%': { opacity: '1', transform: 'translateY(0px)' },
                         },
                         glow: {
@@ -44,145 +33,95 @@
         }
     </script>
     <style>
-        .lucide {
-            width: 1em;
-            height: 1em;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
 
-        .bg-gradient-animated {
-            background: linear-gradient(-45deg, #d4d8ea, #688afa, #9cb5e6, #4a65dd, #7ea6eb, #7ea5ed);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
+    .lucide { 
+        width: 1em; 
+        height: 1em; 
+        stroke: currentColor; 
+        stroke-width: 2; 
+        fill: none; 
+        stroke-linecap: round; 
+        stroke-linejoin: round; 
+    }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    .bg-gradient-animated { 
+        background: linear-gradient(-45deg, #d4d8ea, #c2d3ff, #dbe4f5, #acc4e4, #e1e9f6, #c9d9f7); 
+        background-size: 400% 400%; 
+        animation: gradientShift 15s ease infinite; 
+    }
 
-        .glass-effect {
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    @keyframes gradientShift { 
+        0% { background-position: 0% 50%; } 
+        50% { background-position: 100% 50%; } 
+        100% { background-position: 0% 50%; } 
+    }
 
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
+    .glass-effect { 
+        backdrop-filter: blur(20px); 
+        background: rgba(255,255,255,0.1); 
+        border: 1px solid rgba(255,255,255,0.2); 
+    }
 
-        .floating-shapes::before,
-        .floating-shapes::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: float 6s ease-in-out infinite;
-        }
+    .button-glow:hover { 
+        animation: glow 0.5s ease-in-out; 
+    }
 
-        .floating-shapes::before {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            top: 80px;
-            left: 80px;
-            animation-delay: 0s;
-        }
+    .text-shadow { 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
 
-        .floating-shapes::after {
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(45deg, #06b6d4, #3b82f6);
-            bottom: 120px;
-            right: 100px;
-            animation-delay: 3s;
-        }
+    .particles { 
+        position: absolute; 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        z-index: 1; 
+    }
 
-        .button-glow:hover {
-            animation: glow 0.5s ease-in-out;
-        }
+    @keyframes particleFloat { 
+        0% { transform: translateY(600px) rotate(0deg); opacity:0; } 
+        10% { opacity:1; } 
+        90% { opacity:1; } 
+        100% { transform: translateY(-200px) rotate(360deg); opacity:0; } 
+    }
+</style>
 
-        .text-shadow {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Particle animation */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        
-
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(600px) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-200px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-    </style>
 </head>
 <body class="min-h-screen bg-gradient-animated overflow-hidden">
-    <!-- Floating Background Shapes -->
     <div class="floating-shapes"></div>
-    
-    <!-- Particle System -->
     <div class="particles" id="particles"></div>
 
-    <!-- Main Content -->
-    <div class="relative min-h-screen flex items-center justify-center p-4 z-10">
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4 z-10">
         <div class="text-center max-w-4xl mx-auto">
-            <!-- Logo and Title Section -->
+
             <div class="animate-fade-in mb-8">
                 <div class="flex justify-center mb-6">
-                    <div class="relative">
-                        <div class="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-DodgerBlue-600 p-6 rounded-full shadow-2xl animate-float">
-                                <img src="{% static 'images/Logo2_removed.png' %}" alt="Logo" class="w-40 h-20">
-                        </div>
-                    </div>
+                    <a href="{% url 'main:landing_page' %}">
+                    <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-20 w-auto">
+                    </a>
                 </div>
-                
-                <h1 class="text-6xl md:text-7xl font-bold text-white mb-4 text-shadow animate-slide-up">
-                    Efaqa
-                </h1>
-                
-                <div class="w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-400 mx-auto mb-6 rounded-full animate-slide-up"></div>
             </div>
 
-            <!-- Description Section -->
-            <div class="animate-fade-in animation-delay-200 mb-12">
-                <p class="text-xl md:text-2xl text-white/90 mb-6 leading-relaxed text-shadow max-w-3xl mx-auto">
-                    Brain Stroke Detection: Early diagnosis of Brain Stroke using Artificial Intelligence
-                </p>
+        
+          <div class="animate-fade-in animation-delay-200 mb-12 text-center">
+    <p class="text-lg md:text-xl text-blue-900 leading-relaxed tracking-wide drop-shadow-lg px-4 text-center whitespace-nowrap" style="font-family: 'Poppins', sans-serif;">
+        Detect Brain Strokes Early with AI
+    </p>
+</div>
+
+
             </div>
 
             <!-- Features Grid -->
-            <div class="animate-fade-in animation-delay-400 mb-12">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
-                    <div class="glass-effect rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-300">
-                        <div class="bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="animate-fade-in animation-delay-400 mb-12 w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                    <!-- Patient Management -->
+                    <div class="glass-effect rounded-2xl p-6 text-white flex flex-col items-center transform hover:scale-105 transition-all duration-300">
+                        <div class="bg-blue-700/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                                 <circle cx="9" cy="7" r="4"/>
@@ -190,50 +129,77 @@
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                             </svg>
                         </div>
-                        <h3 class="font-semibold mb-2">Patient Management</h3>
-                        <p class="text-white/80 text-sm">Comprehensive patient registration and data management</p>
+                      <h3 class="font-bold mb-2 text-center text-blue-900">Patient Management</h3>
+                        <p class="text-sm text-blue-900 text-center">Comprehensive patient registration and data management</p>
                     </div>
-                    
-                    <div class="glass-effect rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-300">
-                        <div class="bg-purple-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+
+                    <!-- MRI Management -->
+                    <div class="glass-effect rounded-2xl p-6 text-white flex flex-col items-center transform hover:scale-105 transition-all duration-300">
+                        <div class="bg-blue-700/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                 <circle cx="9" cy="9" r="2"/>
                                 <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                             </svg>
                         </div>
-                        <h3 class="font-semibold mb-2">MRI Management</h3>
-                        <p class="text-white/80 text-sm">Advanced medical imaging upload and review system</p>
+                        <h3 class="font-semibold mb-2 text-blue-900">MRI Management</h3>
+                        <p class=" text-sm text-blue-900 text-center">Advanced medical imaging upload and review system</p>
                     </div>
-                    
-                    <div class="glass-effect rounded-2xl p-6 text-white transform hover:scale-105 transition-all duration-300">
-                        <div class="bg-indigo-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+
+                    <!-- Data Export -->
+                    <div class="glass-effect rounded-2xl p-6 text-white flex flex-col items-center transform hover:scale-105 transition-all duration-300">
+                        <div class="bg-blue-700/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
                                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
                                 <polyline points="14,2 14,8 20,8"/>
                             </svg>
                         </div>
-                        <h3 class="font-semibold mb-2">Data Export</h3>
-                        <p class="text-white/80 text-sm">Allow the Doctors to export Data of their patient</p>
+                        <h3 class="font-semibold mb-2 text-blue-900">Data Export</h3>
+                        <p class="text-sm text-blue-900 text-center">Allow the Doctors to export Data of their patient</p>
+                    </div>
+
+                    <!-- Subscription Service -->
+                    <div class="glass-effect rounded-2xl p-6 text-white flex flex-col items-center transform hover:scale-105 transition-all duration-300">
+                        <div class="bg-blue-700/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 lucide" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c1.38 0 2.5-1.12 2.5-2.5S13.38 3 12 3 9.5 4.12 9.5 5.5 10.62 8 12 8zM6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                            </svg>
+                        </div>
+                         <h3 class="font-semibold mb-2 text-blue-900">Subscription Service</h3>
+<p class="text-sm mb-4 text-blue-900 text-center">Hospital subscription management with access to premium services.</p>
+
+<a href="{% url 'main:subscribe_view' %}" 
+   class="group relative inline-flex items-center justify-center px-6 py-2 text-sm font-medium text-white 
+          bg-blue-900/90 rounded-full shadow-lg hover:shadow-blue-500/25 
+          transform hover:scale-105 transition-all duration-300 button-glow overflow-hidden">
+    <span class="z-10">View Plans</span>
+    <div class="absolute inset-0 rounded-full bg-white opacity-0 group-hover:animate-ping"></div>
+</a>
+
                     </div>
                 </div>
             </div>
 
-            <!-- Call to Action -->
-            <div class="animate-fade-in animation-delay-600">
-                <a 
-                    href="{% url 'main:login' %}"
-                    class="group relative inline-flex items-center justify-center px-12 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-2xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 button-glow overflow-hidden"
-                >
-                    <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span class="z-10">Login</span>
-                    <div class="absolute inset-0 rounded-full bg-white opacity-0 group-hover:animate-ping"></div>
-                </a>
-                
+            <!-- Call to Action Buttons أسفل الشبكة -->
+        <div class="animate-fade-in animation-delay-600 flex flex-wrap justify-center gap-4 mt-4">
+    <a href="{% url 'main:login' %}" 
+       class="w-48 py-3 text-lg text-white bg-blue-900/90 rounded-full shadow-2xl 
+              hover:bg-blue-800 transform hover:scale-105 transition-all duration-300 text-center">
+        Login
+    </a>
+
+    <a href="{% url 'main:request_form' %}" 
+       class="w-48 py-3 text-lg text-white bg-blue-900/90 rounded-full shadow-2xl 
+              hover:bg-blue-800 transform hover:scale-105 transition-all duration-300 text-center">
+        Request Demo
+    </a>
+</div>
+
             </div>
+
         </div>
     </div>
-
+</body>
 
     <script>
         // Create floating particles

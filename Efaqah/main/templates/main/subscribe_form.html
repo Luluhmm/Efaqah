@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-gradient-animated { 
+            background: linear-gradient(-45deg, #d4d8ea, #c2d3ff, #dbe4f5, #acc4e4, #e1e9f6, #c9d9f7); 
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite; 
+        }
+
+        @keyframes gradientShift { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .glass-effect { 
+            backdrop-filter: blur(20px); 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.2); 
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            background: rgba(255,255,255,0.2);
+            color: #1e293b;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #4338ca;
+        }
+
+        .text-center h2 {
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-animated flex items-center justify-center">
+
+    <div class="glass-effect rounded-3xl p-10 max-w-lg w-full animate-fade-in">
+        <div class="text-center mb-6">
+            <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="mx-auto h-20 w-auto mb-4 cursor-pointer">
+            <h2 class="text-2xl font-bold mb-2">Subscription Form</h2>
+            <p class="text-blue-800 text-sm">Please fill in the details below</p>
+        </div>
+
+        <form method="POST" action="{% url 'main:subscribe_form' %}" class="space-y-4">
+            {% csrf_token %}
+            <input type="text" name="hospital_name" placeholder="Hospital Name" required class="form-input">
+            <input type="text" name="country" placeholder="Country" required class="form-input">
+            <input type="text" name="city" placeholder="City" class="form-input">
+            <input type="text" name="address" placeholder="Address" class="form-input">
+            <input type="tel" name="phone" placeholder="Contact Phone" class="form-input">
+            <input type="text" name="manager_username" placeholder="Manager Username" required class="form-input">
+            <input type="text" name="first_name" placeholder="First Name" required class="form-input">
+            <input type="text" name="last_name" placeholder="Last Name" required class="form-input">
+            <input type="email" name="manager_email" placeholder="Manager Email" required class="form-input">
+            <input type="password" name="password" placeholder="Password" required class="form-input">
+            
+            <button type="submit" class="submit-button mt-4">Submit</button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'main:login' %}" class="text-blue-900 hover:underline">Back to Login</a>
+        </div>
+    </div>
+
+</body>
+</html>
