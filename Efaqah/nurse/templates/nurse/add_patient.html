@@ -3,8 +3,16 @@
 
 {% block content %}
 <div class="bg-white rounded-lg border shadow-sm w-full max-w-4xl mx-auto p-6">
-    <h2 class="text-2xl font-semibold mb-4">Patient Registration</h2>
+     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+        <h2 class="text-2xl text-blue-800">Patient Registration</h2>
 
+            <!-- Back Button -->
+            <a href="{% url 'nurse:nurse_dashboard' %}"
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                ← Back
+            </a>
+        </div>
+    
     <!-- Flash Messages -->
     {% if messages %}
         <div class="space-y-2 mb-4">
@@ -67,14 +75,11 @@
                     </select>
                 </div>
 
-                 <div class="space-y-2">
-                    <label for="gender" class="text-sm font-medium">Doctor name *</label>
-                    <select id="gender" name="gender" required class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-                        <option value="">Select Doctor</option>
-                        {% for doctor in doctors %}
-                            <option value="{{ doctor.user.get_full_name }}">{{ doctor.user.get_full_name }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="space-y-2">
+                    <label for="doctor_name" class="text-sm font-medium">Doctor Name</label>
+                    <input type="text" id="doctor_name" name="doctor_name" 
+                           value="{{ request.user.get_full_name|default:request.user.username }}" readonly
+                           class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm bg-gray-100">
                 </div>
             </div>
         </div>
@@ -99,7 +104,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end mt-4">
-            <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md">
+            <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200{ rounded-md">
                 Save Patient
             </button>
         </div>
