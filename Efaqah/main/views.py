@@ -21,6 +21,7 @@ import time
 
 
 # Create your views here.
+#------------------------------------------------------------------------------------------------------
 
 def user_login(request):
     payment_status = request.GET.get('payment')
@@ -98,10 +99,12 @@ def user_login(request):
     
     return render(request, "main/login.html")
 
-
+#------------------------------------------------------------------------------------------------------
 
 def landing_page(request):
     return render(request, "main/landing_page.html")
+
+#------------------------------------------------------------------------------------------------------
 
 def request_form(request):
     if request.method == "POST":
@@ -163,6 +166,7 @@ def request_form(request):
 
     return render(request, "main/request_form.html", {"form":form})
 
+#------------------------------------------------------------------------------------------------------
 
 def create_user_and_send_credentials(registration):
     """A helper function to create the user and send the email."""
@@ -249,6 +253,8 @@ def stripe_webhook(request):
     return HttpResponse(status=200) # Let Stripe know we received it
 """
 
+#------------------------------------------------------------------------------------------------------
+
 def send_payment_link_email(request, registration):
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -306,11 +312,12 @@ def send_payment_link_email(request, registration):
         print(f"Error creating Stripe session: {e}")
         return False
 
-
-
+#------------------------------------------------------------------------------------------------------
 
 def subscribe_view(request):
     return render(request,"main/subscribe_page.html")
+
+#------------------------------------------------------------------------------------------------------
 
 def subscribe_form(request):
     plan = request.GET.get("plan")
@@ -361,6 +368,8 @@ def subscribe_form(request):
     return render(request, 'main/subscribe_form.html', {"plan": plan})
     
 
+#------------------------------------------------------------------------------------------------------
+
 def payment_success(request):
     registration_id = request.GET.get("registration_id")
     if registration_id:
@@ -375,14 +384,15 @@ def payment_success(request):
     return render(request, "main/payment_success.html")
 
 
+#------------------------------------------------------------------------------------------------------
 
 def payment_cancelled(request):
     return render(request, "main/cancelled.html")
 
+#------------------------------------------------------------------------------------------------------
 
 def payment_pending(request):
     return render(request, "main/payment_pending.html")
-
     
 def create_checkout_session(request, plan, hospital_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -423,3 +433,8 @@ def create_checkout_session(request, plan, hospital_id):
 
     return redirect(session.url, code=303)
 
+#------------------------------------------------------------------------------------------------------
+
+def logout_view(request):
+    logout(request)
+    return render(request, "main/landing_page.html")

@@ -1,0 +1,104 @@
+{% extends 'doctor/base.html' %}
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Total Patients -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">My Patients</p>
+        <p class="text-2xl font-semibold">{{ patient_num }}</p>
+    </div>
+
+    <!-- Critical Patients -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">Critical Patients</p>
+        <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
+    </div>
+
+    <!-- Patients This Month -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">New Patients This Month</p>
+        <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
+    </div>
+
+    <!-- High Stroke Risk Patients -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">High Stroke Risk</p>
+        <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
+    </div>
+</div>
+
+<!-- Patient List -->
+<div class="bg-white rounded-lg border shadow-sm p-6">
+    <div class="flex justify-between mb-4">
+        <h2 class="text-xl font-semibold">Patient List ({{ patient_num }})</h2>
+        <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." 
+               class="border rounded px-3 py-2">
+    </div>
+
+    <div id="patient-overview-list" class="space-y-4">
+        {% for patient in page_obj %}
+        <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between" 
+             data-name="{{ patient.first_name }} {{ patient.last_name }}"
+             data-id="{{ patient.patient_id }}"
+             data-phone="{{ patient.phone_number }}">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span class="bg-blue-100 text-blue-700 font-medium rounded-full w-12 h-12 flex items-center justify-center">
+                        {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                    </span>
+                </div>
+                <div>
+                    <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg ">{{ patient.first_name }} {{ patient.last_name }}</a>
+                    <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
+                    <p class="text-sm text-gray-600">Age: {{ patient.age }}</p>
+                    <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
+                </div>
+            </div>
+            <a href="{% url 'doctor:patient_detail_view' patient.id %}" 
+               class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                <svg class="w-4 h-4 mr-1 lucide" viewBox="0 0 24 24">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                View
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty state -->
+    <p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterPatients() {
+    const query = document.getElementById('patient-search').value.toLowerCase();
+    const cards = document.querySelectorAll('#patient-overview-list .patient-card');
+    let anyVisible = false;
+
+    cards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        const id = card.dataset.id.toLowerCase();
+        const phone = card.dataset.phone.toLowerCase();
+
+        if (name.includes(query) || id.includes(query) || phone.includes(query)) {
+            card.style.display = 'flex';
+            anyVisible = true;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) {
+        emptyState.style.display = anyVisible ? 'none' : 'block';
+    }
+}
+
+// Bind the search input
+document.getElementById('patient-search').addEventListener('input', filterPatients);
+</script>
+{% endblock %}

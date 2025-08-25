@@ -22,4 +22,5 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=Gender.choices)
     age = models.IntegerField()
     residence_type = models.CharField(max_length=10, choices=ResidenceType.choices, null=True, blank=True)
+    doctor_name = models.CharField(max_length=255, null=True, blank=True, default=None)
     created_at = models.DateField(auto_now_add=True)
