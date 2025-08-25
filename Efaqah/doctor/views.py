@@ -13,7 +13,7 @@ from django.utils.timezone import now
 
 def doctor_dashboard(request:HttpRequest):
     # All patients for this doctor
-    all_patient = Patient.objects.filter(doctor_name=request.user)
+    all_patient = Patient.objects.filter(doctor_name=request.user.get_full_name())
     patient_num = all_patient.count()
 
     # Critical patients: more than 2 stroke records
