@@ -3,7 +3,6 @@ from main.models import Hospital
 
 
 class Patient(models.Model):
-
     class Gender(models.TextChoices):
         MALE = 'M', 'Male'
         FEMALE = 'F', 'Female'
@@ -11,7 +10,6 @@ class Patient(models.Model):
     class ResidenceType(models.TextChoices):
         URBAN = 'urban', 'Urban'
         RURAL = 'rural', 'Rural'
-
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="patients")
     patient_id = models.IntegerField(unique=True)
     first_name = models.CharField(max_length=100)

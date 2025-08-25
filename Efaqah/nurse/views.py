@@ -26,18 +26,25 @@ def nurse_dashboard(request: HttpRequest):
 #------------------------------------------------------------------------------------------------------
 @login_required
 def add_patient_view(request: HttpRequest):
-     if request.method == "POST":
+    nurse_profile = staffProfile.objects.get(user=request.user)
+    doctors = staffProfile.objects.filter(
+        hospital=nurse_profile.hospital,
+        role="doctor",
+        is_active=True
+    )
+
+    if request.method == "POST":
         patient_id = request.POST.get("patient_id")
         phone_number = request.POST.get("phone_number")
 
-        # Check if patient already exists
         if Patient.objects.filter(patient_id=patient_id).exists() or \
            (phone_number and Patient.objects.filter(phone_number=phone_number).exists()):
             messages.error(request, "This patient already exists in the system.")
-            return redirect('nurse:add_patient')  # Stay on the add patient page
+            return redirect('nurse:add_patient') 
 
         # Create new patient
         new_patient = Patient(
+            hospital=nurse_profile.hospital,  
             patient_id=patient_id,
             first_name=request.POST.get("first_name"),
             last_name=request.POST.get("last_name"),
@@ -50,16 +57,14 @@ def add_patient_view(request: HttpRequest):
         )
         new_patient.save()
         messages.success(request, "Patient added successfully!")
-        return redirect('nurse:nurse_dashboard')  # Redirect to dashboard after success
-     nurse_profile = staffProfile.objects.get(user=request.user)   
-     doctors = staffProfile.objects.filter(
-     hospital=nurse_profile.hospital,
-     role="doctor",
-     is_active=True) 
-    # GET: render the add patient page
-     return render(request, "nurse/add_patient.html",{"GENDER_CHOICES": Patient.Gender.choices,
-        "RESIDENCE_CHOICES": Patient.ResidenceType.choices,"doctors":doctors})
+        return redirect('nurse:nurse_dashboard')  
 
+    # GET request: render the add patient page
+    return render(request, "nurse/add_patient.html", {
+        "GENDER_CHOICES": Patient.Gender.choices,
+        "RESIDENCE_CHOICES": Patient.ResidenceType.choices,
+        "doctors": doctors
+    })
 #------------------------------------------------------------------------------------------------------
 
 def view_patient(request: HttpRequest,patient_id:int):
