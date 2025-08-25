@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.models import User, Group
-from django.contrib.auth import login , authenticate
+from django.contrib.auth import login , authenticate,logout
 from django.contrib import messages
 from .forms import RegistrationForm
 from .models import Registration
@@ -19,6 +19,7 @@ import time
 
 
 # Create your views here.
+#------------------------------------------------------------------------------------------------------
 
 def user_login(request):
     if request.GET.get('status') == 'success':
@@ -49,10 +50,12 @@ def user_login(request):
     
     return render(request, "main/login.html")
 
-
+#------------------------------------------------------------------------------------------------------
 
 def landing_page(request):
     return render(request, "main/landing_page.html")
+
+#------------------------------------------------------------------------------------------------------
 
 def request_form(request):
     if request.method == "POST":
@@ -114,6 +117,7 @@ def request_form(request):
 
     return render(request, "main/request_form.html", {"form":form})
 
+#------------------------------------------------------------------------------------------------------
 
 def create_user_and_send_credentials(registration):
     """A helper function to create the user and send the email."""
@@ -200,6 +204,8 @@ def stripe_webhook(request):
     return HttpResponse(status=200) # Let Stripe know we received it
 """
 
+#------------------------------------------------------------------------------------------------------
+
 def send_payment_link_email(request, registration):
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -257,14 +263,17 @@ def send_payment_link_email(request, registration):
         print(f"Error creating Stripe session: {e}")
         return False
 
-
-
+#------------------------------------------------------------------------------------------------------
 
 def subscribe_view(request):
     return render(request,"main/subscribe_page.html")
 
+#------------------------------------------------------------------------------------------------------
+
 def subscribe_form(request):
     return render(request, "main/subscribe_form.html")
+
+#------------------------------------------------------------------------------------------------------
 
 def payment_success(request):
     registration_id = request.GET.get("registration_id")
@@ -280,10 +289,18 @@ def payment_success(request):
     return render(request, "main/payment_success.html")
 
 
+#------------------------------------------------------------------------------------------------------
 
 def payment_cancelled(request):
     return render(request, "main/cancelled.html")
 
+#------------------------------------------------------------------------------------------------------
 
 def payment_pending(request):
     return render(request, "main/payment_pending.html")
+
+#------------------------------------------------------------------------------------------------------
+
+def logout_view(request):
+    logout(request)
+    return render(request, "main/landing_page.html")
