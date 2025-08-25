@@ -8,6 +8,7 @@ from datetime import date
 def nurse_dashboard(request: HttpRequest):
     patients = Patient.objects.all()
     num_patient = Patient.objects.all().count()
+    patien_under_doctor = Patient.objects.exclude(doctor_name=None).count()
     today = date.today()
     patients_today_count = Patient.objects.filter(created_at=today).count()
     return render(request, "nurse/nurse_dashboard.html", {
@@ -17,7 +18,8 @@ def nurse_dashboard(request: HttpRequest):
         'RESIDENCE_CHOICES': Patient.ResidenceType.choices,
         "today": timezone.now(),
         "patients_today_count":patients_today_count,
-        "num_patient":num_patient
+        "num_patient":num_patient,
+        "patien_under_doctor":patien_under_doctor
     })
 #------------------------------------------------------------------------------------------------------
 def add_patient_view(request: HttpRequest):

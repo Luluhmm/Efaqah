@@ -3,13 +3,13 @@
 <div class="bg-white rounded-lg border shadow-sm p-6">
  <div class="flex items-center justify-between mb-4">
         <!-- Patient Name -->
-        <h2 class="text-2xl font-semibold">{{ patient.first_name }} {{ patient.last_name }} History</h2>
+        <h2 class="text-2xl text-gray-800">{{ patient.first_name }} {{ patient.last_name }} History</h2>
 
         <!-- Action Buttons -->
         <nav class="flex flex-wrap gap-2">
             <!-- Details Button -->
             <a href="{% url 'doctor:patient_detail_view' patient.id %}"
-               class="inline-flex items-center justify-center h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
                 <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
@@ -19,7 +19,7 @@
 
             <!-- History Button -->
             <a href="{% url 'doctor:history_view' patient.id %}"
-               class="inline-flex items-center justify-center h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200
                 {% if request.resolver_match.url_name == 'history_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">
                 <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -30,7 +30,7 @@
 
             <!-- CT Scans Button -->
             <a href="{% url 'doctor:add_ct_view' patient.id %}"
-               class="inline-flex items-center justify-center h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
                 <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                     <circle cx="9" cy="9" r="2"/>
@@ -41,7 +41,7 @@
 
             <!-- Back Button -->
             <a href="{% url 'doctor:doctor_dashboard' %}"
-               class="inline-flex items-center justify-center h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
                 ← Back
             </a>
         </nav>
@@ -50,7 +50,7 @@
   <div>
     <!-- Header with Export Button -->
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-gray-700">Medical History</h3>
+        <h3 class="text-xl mt-3 font-semibold text-gray-700">Medical History</h3>
         {% if records %}
         <a href="{% url 'doctor:export_view' patient.id %}" 
            class="px-4 py-2 bg-yellow-400 text-white hover:bg-yellow-500 rounded-md text-sm font-medium">

@@ -29,7 +29,7 @@
                 <p class="text-sm text-gray-600">New Today</p>
                 <p class="text-2xl font-semibold text-gray-900" id="new-today">{{ patients_today_count }}</p>
             </div>
-            <div class="bg-green-100 p-3 rounded-lg">
+            <div class="bg-green-100 p-3 rounded-lg ">
                 <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
@@ -39,19 +39,36 @@
             </div>
         </div>
     </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Patients Under Doctor</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-patients">{{ patien_under_doctor }}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Patient List -->
 <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
     <div class="flex justify-between mb-4 items-center">
-        <h2 class="text-xl font-semibold">Patient List ({{ num_patient }})</h2>
+      <h2 class="text-xl font-semibold text-blue-800 p-3"> Patient List ({{ num_patient }})</h2>
         <div class="flex gap-2">
             <!-- Search -->
-            <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." 
-                   class="border rounded px-3 py-2">
+           <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." 
+       class="border rounded-lg px-3 py-2 w-80">
             <!-- Add New Patient Button -->
             <a href="{% url 'nurse:add_patient_view' %}" 
-               class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded hover:bg-blue-700 transition">
+               class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded-lg hover:scale-105 transition-all duration-300 button-glow overflow-hidden transition">
                Add New Patient
             </a>
         </div>
@@ -67,38 +84,39 @@
         <!-- Patient Info -->
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <span class="bg-blue-100 text-blue-700 font-medium rounded-full w-12 h-12 flex items-center justify-center">
+                <span class="bg-blue-100 text-blue-700 p-2 font-medium rounded-full w-12 h-12 flex items-center justify-center">
                     {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
                 </span>
             </div>
             <div>
                 <a href="{% url 'nurse:view_patient' patient.id %}" class="font-semibold text-lg ">{{ patient.first_name }} {{ patient.last_name }}</a>
-                <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
-                <p class="text-sm text-gray-600">Age: {{ patient.age }}</p>
-                <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
+                <p class="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded w-max">ID : {{ patient.patient_id }}</p>
+                <p class="text-sm text-gray-600">Phone : {{ patient.phone_number }}</p>
             </div>
         </div>
 
         <!-- Buttons (Vertical) -->
-        <div class="flex flex-col gap-2">
-            <a href="{% url 'nurse:view_patient' patient.id %}" 
-               class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                View
-            </a>
+      <div class="flex flex-col gap-2">
+    <!-- View Button -->
+    <a href="{% url 'nurse:view_patient' patient.id %}" 
+       class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-green-100 
+              hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
+        <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+    </a>
 
-            <a href="{% url 'nurse:update_patient_view' patient.id %}" 
-               class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-yellow-100 hover:bg-yellow-200 h-9 px-3 text-yellow-700">
-                Update
-            </a>
+    <!-- Edit Button -->
+    <a href="{% url 'nurse:update_patient_view' patient.id %}" 
+       class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-yellow-100 
+              hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700 overflow-hidden">
+        <span class="material-symbols-outlined">edit_square</span>
+    </a>
 
-            <form action="{% url 'nurse:delete_patient_view' patient.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?');">
-                {% csrf_token %}
-                <button type="submit" 
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-red-100 hover:bg-red-200 h-9 px-3 text-red-700">
-                    Delete
-                </button>
-            </form>
-        </div>
+  
+
+</div>
     </div>
     {% endfor %}
 </div>
