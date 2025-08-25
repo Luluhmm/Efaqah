@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.http import HttpRequest,HttpResponse
 from .models import Patient
 from datetime import date
+from main.models import staffProfile
+from django.contrib.auth.decorators import login_required
 
 def nurse_dashboard(request: HttpRequest):
     patients = Patient.objects.all()
@@ -11,15 +13,16 @@ def nurse_dashboard(request: HttpRequest):
     today = date.today()
     patients_today_count = Patient.objects.filter(created_at=today).count()
     return render(request, "nurse/nurse_dashboard.html", {
-        'patients': patients,
-        'patient_count': patients.count(),
-        'GENDER_CHOICES': Patient.Gender.choices,
-        'RESIDENCE_CHOICES': Patient.ResidenceType.choices,
+        "patients": patients,
+        "patient_count": patients.count(),
+        "GENDER_CHOICES": Patient.Gender.choices,
+        "RESIDENCE_CHOICES": Patient.ResidenceType.choices,
         "today": timezone.now(),
         "patients_today_count":patients_today_count,
         "num_patient":num_patient
     })
 #------------------------------------------------------------------------------------------------------
+@login_required
 def add_patient_view(request: HttpRequest):
      if request.method == "POST":
         patient_id = request.POST.get("patient_id")
@@ -46,9 +49,14 @@ def add_patient_view(request: HttpRequest):
         new_patient.save()
         messages.success(request, "Patient added successfully!")
         return redirect('nurse:nurse_dashboard')  # Redirect to dashboard after success
-
+     nurse_profile = staffProfile.objects.get(user=request.user)   
+     doctors = staffProfile.objects.filter(
+     hospital=nurse_profile.hospital,
+     role="doctor",
+     is_active=True) 
     # GET: render the add patient page
-     return render(request, "nurse/add_patient.html")
+     return render(request, "nurse/add_patient.html",{"GENDER_CHOICES": Patient.Gender.choices,
+        "RESIDENCE_CHOICES": Patient.ResidenceType.choices,"doctors":doctors})
 
 #------------------------------------------------------------------------------------------------------
 

@@ -1,4 +1,6 @@
 from django.db import models
+from main.models import Hospital
+
 
 class Patient(models.Model):
 
@@ -10,6 +12,7 @@ class Patient(models.Model):
         URBAN = 'urban', 'Urban'
         RURAL = 'rural', 'Rural'
 
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="patients")
     patient_id = models.IntegerField(unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)

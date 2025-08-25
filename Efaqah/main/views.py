@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
-from django.contrib.auth import login , authenticate,logout
+from django.contrib.auth import login , authenticate, logout
 from django.contrib import messages
 from .forms import RegistrationForm
-from .models import Registration
+from .models import Registration, Hospital, staffProfile
 from django.conf import settings
 from django.core.mail import send_mail , EmailMessage
 import uuid
@@ -18,14 +18,60 @@ import time
 
 
 
+
+
 # Create your views here.
 #------------------------------------------------------------------------------------------------------
 
 def user_login(request):
-    if request.GET.get('status') == 'success':
-        messages.success(request, "Payment successful! Your account has been created. Please check your email for your login credentials.")
-    elif request.GET.get('status') == 'cancelled':
-        messages.warning(request, "Your payment was cancelled. You can try again from the payment link in your email.")
+    payment_status = request.GET.get('payment')
+    hospital_id = request.GET.get('hospital_id')
+
+    if payment_status == 'success' and hospital_id:
+        hospital = get_object_or_404(Hospital, id=hospital_id)
+        
+
+        if not hasattr(hospital, 'manager') or hospital.manager is None:
+
+            manager_username = request.session.get('manager_username')
+            manager_password = request.session.get('manager_password')
+            manager_email = request.session.get('manager_email')
+            first_name = request.session.get('first_name')
+            last_name = request.session.get('last_name')
+
+
+            user = User.objects.create_user(
+                username=manager_username,
+                password=manager_password,
+                email=manager_email,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+
+            staffProfile.objects.create(
+                user=user,
+                hospital=hospital,
+                role='manager'
+            )
+
+
+            manager_group, created = Group.objects.get_or_create(name='Manager')
+            user.groups.add(manager_group)
+
+            hospital.manager = user
+            hospital.subscription_status = 'paid'
+            hospital.save()
+
+
+            del request.session['manager_username']
+            del request.session['manager_password']
+            del request.session['manager_email']
+            del request.session['first_name']
+            del request.session['last_name']
+            del request.session['hospital_id']
+
+            messages.success(request, f"Your hospital subscription is complete! Your account is created. You can now log in.")
 
     if request.method == "POST":
         username = request.POST["username"]
@@ -41,6 +87,9 @@ def user_login(request):
             
             elif user.groups.filter(name="Nurse").exists():
                 return redirect("nurse:nurse_dashboard")
+            
+            elif user.groups.filter(name="Manager").exists():
+                return redirect("manager:manager_dashboard")
             
             else:
                 messages.error(request, "Invalid username or password", "alert-danger")
@@ -270,7 +319,53 @@ def subscribe_view(request):
 #------------------------------------------------------------------------------------------------------
 
 def subscribe_form(request):
-    return render(request, "main/subscribe_form.html")
+    plan = request.GET.get("plan")
+    if request.method == "POST":
+        hospital_name = request.POST.get('hospital_name')
+        country = request.POST.get('country')
+        city = request.POST.get('city')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        plan = request.POST.get('plan')
+        manager_user = request.POST.get('manager_username')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        manager_email = request.POST.get('manager_email')
+        password = request.POST.get('password')
+
+
+        request.session['manager_username'] = manager_user
+        request.session['manager_password'] = password
+        request.session['manager_email'] = manager_email
+        request.session['first_name'] = first_name
+        request.session['last_name'] = last_name
+
+        plan_map = {
+            "499": "basic",
+            "999": "pro",
+            "1999": "enterprise",
+        }
+
+        hospital_plan = plan_map.get(plan, "basic")
+
+        hospital = Hospital.objects.create(
+            name=hospital_name,
+            country=country,
+            city=city,
+            address=address,
+            contact_email=manager_email,
+            contact_phone=phone,
+            plan=hospital_plan,
+            subscription_status='pending'
+        )
+        
+
+        request.session['hospital_id'] = hospital.id
+
+        return redirect("main:create_checkout_session", plan=plan, hospital_id=hospital.id)
+    
+    return render(request, 'main/subscribe_form.html', {"plan": plan})
+    
 
 #------------------------------------------------------------------------------------------------------
 
@@ -297,6 +392,45 @@ def payment_cancelled(request):
 
 def payment_pending(request):
     return render(request, "main/payment_pending.html")
+    
+def create_checkout_session(request, plan, hospital_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
+    hospital_id = request.session.get('hospital_id')
+    if not hospital_id:
+        messages.error(request, "Hospital registration data not found.")
+        return redirect("main:subscribe_form")
+
+    hospital = get_object_or_404(Hospital, id=hospital_id)
+
+    price_map = {
+        "499": 49900,
+        "999": 99900,
+        "1999": 199900,
+    }
+
+    if plan not in price_map:
+        return JsonResponse({"error":"Invalid plan"}, status=400)
+    
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': f"{plan} Plan Subscription",
+                },
+                'unit_amount': price_map[plan],
+            },
+            "quantity": 1,
+        }],
+        mode='payment',
+
+        success_url=request.build_absolute_uri(reverse('main:login') + f"?payment=success&hospital_id={hospital.id}"),
+        cancel_url=request.build_absolute_uri(reverse('main:payment_cancelled')),
+    )
+
+    return redirect(session.url, code=303)
 
 #------------------------------------------------------------------------------------------------------
 

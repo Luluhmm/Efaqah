@@ -1,0 +1,87 @@
+{% extends 'doctor/base.html' %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block content %}
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">Total Doctors</p>
+        <p class="text-2xl font-semibold"></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">Total Nurse</p>
+        <p class="text-2xl font-semibold"></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <p class="text-sm text-gray-600">Total Patients</p>
+        <p class="text-2xl font-semibold"></p>
+    </div>
+        <section class="bg-white shadow rounded-2xl mb-8">
+            <div class="flex justify-between items-center px-6 py-4 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">Doctors</h2>
+                <a href="{% url 'manager:add_doctor'%}" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">+ Add Doctor</a>
+            </div>
+            <div class="p-6">
+                {% if doctors %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Email</th>
+                                    <th class="px-4 py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for doctor in doctors %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{doctor.user.username}}</td>
+                                        <td class="px-4 py-2">{{doctor.user.email}}</td>
+                                        <td class="px-4 py-2 space-x-2">
+                                            <a href="{% url 'manager:update_doctor' doctor.id %}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">Edit</a>
+                                            <a href="{% url 'manager:remove_doctor' doctor.id %}" class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition">Remove</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                <p class="text-gray-500">No doctors added yet.</p>
+                {% endif %}
+            </div>
+        </section>
+        <section class="bg-white shadow rounded-2xl">
+            <div class="flex justify-between items-center px-6 py-4 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">Nurses</h2>
+                <a href="{% url 'manager:add_nurse' %}" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">+ Add Nurse</a>
+            </div>
+            <div class="p-6">
+                {% if nurses %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Email</th>
+                                    <th class="px-4 py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for nurse in nurses %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{nurse.user.username}}</td>
+                                        <td class="px-4 py-2">{{nurse.user.email}}</td>
+                                        <td class="px-4 py-2 space-x-2">
+                                            <a href="{% url 'manager:update_nurse' nurse.id %}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">Edit</a>
+                                            <a href="{% url 'manager:remove_nurse' nurse.id %}" class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition">Remove</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">No nurses added yet.</p>
+                {% endif %}
+            </div>
+        </section>
+
+{%endblock%}
