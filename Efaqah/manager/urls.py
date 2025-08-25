@@ -1,0 +1,14 @@
+from . import views
+from django.urls import path
+
+app_name = "manager"
+
+urlpatterns = [
+    path('', views.manager_dashboard, name='manager_dashboard'),
+    path('doctor/add/', views.add_doctor, name='add_doctor'),
+    path('nurse/add/', views.add_nurse, name='add_nurse'),
+    path('doctor/<int:doctor_id>/update/', views.update_doctor, name='update_doctor'),
+    path('nurse/<int:nurse_id>/update/', views.update_nurse, name='update_nurse'),
+    path('doctor/<int:doctor_id>/delete', views.remove_doctor, name="remove_doctor"),
+    path('nurse/<int:nurse_id>/delete', views.remove_nurse, name="remove_nurse"),
+]
