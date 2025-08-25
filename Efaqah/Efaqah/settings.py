@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'main',
     'doctor',
     'nurse',
+    'manager',
     'django_countries',
 ]
 
