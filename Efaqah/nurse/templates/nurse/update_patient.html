@@ -4,11 +4,11 @@
 {% block content %}
 <div class="bg-white rounded-lg border shadow-sm w-full max-w-4xl mx-auto p-6">
      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-        <h2 class="text-2xl font-bold text-gray-800">{{ patient.first_name }} {{ patient.last_name }} Update</h2>
+        <h2 class="text-2xl text-blue-800">{{ patient.first_name }} {{ patient.last_name }} Update</h2>
 
             <!-- Back Button -->
             <a href="{% url 'nurse:nurse_dashboard' %}"
-               class="inline-flex items-center justify-center h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
                 ← Back
             </a>
     </div>
@@ -120,7 +120,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end mt-4">
-            <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md">
+            <button type="submit" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded-lg hover:scale-105 transition-all duration-300 button-glow overflow-hidden transition">
                 Update Patient
             </button>
         </div>
