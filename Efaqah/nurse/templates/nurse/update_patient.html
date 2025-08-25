@@ -87,12 +87,19 @@
                 </div>
 
                 <!-- Doctor Name -->
-                <div class="space-y-2">
-                    <label for="doctor_name" class="text-sm font-medium">Doctor Name</label>
-                    <input type="text" id="doctor_name" name="doctor_name" 
-                           value="{{ patient_to_update.doctor_name }}" readonly
-                           class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm bg-gray-100">
-                </div>
+            <!-- Doctor Name -->
+            <div class="space-y-2">
+                <label for="doctor" class="text-sm font-medium">Doctor Name</label>
+                <select id="doctor" name="doctor" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    <option value="">Select Doctor</option>
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}"
+                            {% if patient_to_update and patient_to_update.doctor_id == doctor.id %}selected{% endif %}>
+                            {{ doctor.user.get_full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
             </div>
         </div>
 

@@ -1,21 +1,77 @@
 {% extends 'doctor/base.html' %}
 {% block title %}Manager Dashboard{% endblock %}
 {% block content %}
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">Total Doctors</p>
-        <p class="text-2xl font-semibold"></p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Total Patients -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Doctors</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-doctors">{{num_doctor}}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+        </div>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">Total Nurse</p>
-        <p class="text-2xl font-semibold"></p>
+
+    <!-- New Today -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Nurse </p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-nurse">{{num_nurse}}</p>
+            </div>
+             <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+        </div>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">Total Patients</p>
-        <p class="text-2xl font-semibold"></p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Patient </p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-nurse">{{num_patient}}</p>
+            </div>
+             <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+        </div>
     </div>
-     <section class="bg-white shadow rounded-2xl mb-8">
-            <div class="flex justify-between items-center px-6 py-4 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">Doctors</h2>
+
+     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <p class="text-sm text-gray-600">Total Patients per Doctor</p>
+                <!-- Chart Container -->
+        </div>
+    </div>
+        <canvas id="doctorPatientChart" width="400" height="200"></canvas>
+            <!-- JSON script for safe data -->
+        {{ labels|json_script:"labels-data" }}
+        {{ data|json_script:"data-data" }}
+</div>
+</div>
+
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+<div class="flex justify-between items-center px-6 py-4 border-b">
+                <a href="{% url 'manager:all_doctor' %}" class="font-semibold text-lg ">Doctors</a>
                 <a href="{% url 'manager:add_doctor'%}" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">+ Add Doctor</a>
             </div>
             <div class="p-6">
@@ -34,9 +90,16 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 py-2">{{doctor.user.username}}</td>
                                         <td class="px-4 py-2">{{doctor.user.email}}</td>
-                                        <td class="px-4 py-2 space-x-2">
-                                            <a href="{% url 'manager:update_doctor' doctor.id %}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">Edit</a>
-                                            <a href="{% url 'manager:remove_doctor' doctor.id %}" class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition">Remove</a>
+                                        <td class="px-4 py-2">
+                                            <div class="flex gap-2">
+                                            <a href="{% url 'manager:update_doctor' doctor.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-yellow-100 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700 overflow-hidden">
+                                            <span class="material-symbols-outlined">edit_square</span></a></a>
+                                            <a href="{% url 'manager:remove_doctor' doctor.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-red-200 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700 overflow-hidden"><span class="material-symbols-outlined">
+                                                delete
+                                                </span></a>
+                                                </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -47,10 +110,10 @@
                 <p class="text-gray-500">No doctors added yet.</p>
                 {% endif %}
             </div>
-        </section>
-        <section class="bg-white shadow rounded-2xl">
-            <div class="flex justify-between items-center px-6 py-4 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">Nurses</h2>
+            </div>
+            <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+             <div class="flex justify-between items-center px-6 py-4 border-b">
+                <a href="{% url 'manager:all_nurse' %}" class="font-semibold text-lg ">Nurses</a>
                 <a href="{% url 'manager:add_nurse' %}" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">+ Add Nurse</a>
             </div>
             <div class="p-6">
@@ -69,9 +132,16 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 py-2">{{nurse.user.username}}</td>
                                         <td class="px-4 py-2">{{nurse.user.email}}</td>
-                                        <td class="px-4 py-2 space-x-2">
-                                            <a href="{% url 'manager:update_nurse' nurse.id %}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">Edit</a>
-                                            <a href="{% url 'manager:remove_nurse' nurse.id %}" class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition">Remove</a>
+                                        <td class="px-4 py-2">
+                                            <div class="flex gap-2">
+                                            <a href="{% url 'manager:update_nurse' nurse.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-yellow-100 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700 overflow-hidden">
+                                            <span class="material-symbols-outlined">edit_square</span></a>
+                                            <a href="{% url 'manager:remove_nurse' nurse.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-red-200 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700 overflow-hidden"><span class="material-symbols-outlined">
+                                                delete
+                                                </span></a>
+                                                </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -82,6 +152,94 @@
                     <p class="text-gray-500">No nurses added yet.</p>
                 {% endif %}
             </div>
-        </section>
+            </div>
+            <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+<div class="flex justify-between items-center px-6 py-4 border-b">
+                <a href="{% url 'manager:all_patient' %}" class="font-semibold text-lg ">Patients</a>
+                <a href="{% url 'manager:add_patient_view'%}" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">+ Add Patient</a>
+            </div>
+            <div class="p-6">
+                {% if patients %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Id</th>
+                                    <th class="px-4 py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for patient in patients %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{patient.first_name}} {{patient.last_name}}</td>
+                                        <td class="px-4 py-2">{{ patient.patient_id }}</td>
+                                        <td class="px-4 py-2">
+                                            <div class="flex gap-2">
+                                            <a href="{% url 'manager:update_patient_view' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-yellow-100 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700 overflow-hidden">
+                                            <span class="material-symbols-outlined">edit_square</span></a></a>
+                                            <a href="{% url 'nurse:delete_patient_view' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-red-100 bg-red-200 
+                                                hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700 overflow-hidden"><span class="material-symbols-outlined">
+                                                delete
+                                                </span></a>
+                                                </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                <p class="text-gray-500">No doctors added yet.</p>
+                {% endif %}
+            </div>
 
+</div>
+  
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const canvas = document.getElementById('doctorPatientChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const data = JSON.parse(document.getElementById('data-data').textContent);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Patients',
+                data: data,
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} patients`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+        }
+    });
+});
+</script>
 {%endblock%}
