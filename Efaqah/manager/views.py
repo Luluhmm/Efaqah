@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest,HttpResponse
 from main.models import staffProfile
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .forms import DoctorForm , NurseForm
 from django.contrib import messages
 
@@ -29,6 +29,8 @@ def add_doctor(request):
                 hospital=request.user.staffprofile.hospital,
                 role="doctor"
             )
+            doctor_group, created = Group.objects.get_or_create(name="Doctor")
+            user.groups.add(doctor_group)
             return redirect("manager:manager_dashboard")
     
     else:
@@ -51,6 +53,8 @@ def add_nurse(request):
                 hospital=request.user.staffprofile.hospital,
                 role="nurse"
             )
+            nurse_group, created = Group.objects.get_or_create(name="Nurse")
+            user.groups.add(nurse_group)
             return redirect("manager:manager_dashboard")
     
     else:
