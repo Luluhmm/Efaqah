@@ -2,38 +2,78 @@
 {% block title %}Doctor Dashboard{% endblock %}
 
 {% block content %}
+
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">My Patients</p>
-        <p class="text-2xl font-semibold">{{ patient_num }}</p>
+
+    <!-- My Patients -->
+    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <p class="text-sm text-gray-600">My Patients</p>
+            <p class="text-2xl font-semibold">{{ patient_num }}</p>
+        </div>
+        <div class="bg-blue-100 p-3 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
     </div>
 
     <!-- Critical Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">Critical Patients</p>
-        <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
+    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <p class="text-sm text-gray-600">Critical Patients</p>
+            <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
+        </div>
+        <div class="bg-red-100 p-3 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-600 lucide" viewBox="0 0 24 24">
+                <path d="M12 9v4"/>
+                <path d="M12 17h.01"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+        </div>
     </div>
 
     <!-- Patients This Month -->
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">New Patients This Month</p>
-        <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
+    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <p class="text-sm text-gray-600">New Patients This Month</p>
+            <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
+        </div>
+        <div class="bg-green-100 p-3 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
+                <path d="M12 4v16"/>
+                <path d="M4 12h16"/>
+            </svg>
+        </div>
     </div>
 
     <!-- High Stroke Risk Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <p class="text-sm text-gray-600">High Stroke Risk</p>
-        <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
+    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <p class="text-sm text-gray-600">High Stroke Risk</p>
+            <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
+        </div>
+        <div class="bg-yellow-100 p-3 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600 lucide" viewBox="0 0 24 24">
+                <path d="M12 8v4"/>
+                <path d="M12 16h.01"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+        </div>
     </div>
+
 </div>
+
 
 <!-- Patient List -->
 <div class="bg-white rounded-lg border shadow-sm p-6">
     <div class="flex justify-between mb-4">
-        <h2 class="text-xl font-semibold">Patient List ({{ patient_num }})</h2>
+        <h2 class="text-xl font-semibold text-blue-800 p-3">Patient List ({{ patient_num }})</h2>
         <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." 
-               class="border rounded px-3 py-2">
+               class="border rounded-lg px-3 py-2 w-80">
     </div>
 
     <div id="patient-overview-list" class="space-y-4">
@@ -51,16 +91,16 @@
                 <div>
                     <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg ">{{ patient.first_name }} {{ patient.last_name }}</a>
                     <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
-                    <p class="text-sm text-gray-600">Age: {{ patient.age }}</p>
                     <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
                 </div>
             </div>
             <a href="{% url 'doctor:patient_detail_view' patient.id %}" 
-               class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                <svg class="w-4 h-4 mr-1 lucide" viewBox="0 0 24 24">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
+               class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-green-100 
+              hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
+        <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
                 View
             </a>
         </div>

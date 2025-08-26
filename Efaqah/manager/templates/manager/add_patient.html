@@ -7,7 +7,7 @@
         <h2 class="text-2xl text-blue-800">Patient Registration</h2>
 
             <!-- Back Button -->
-            <a href="{% url 'nurse:nurse_dashboard' %}"
+            <a href="{% url 'manager:manager_dashboard' %}"
                class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
                 ← Back
             </a>
@@ -24,7 +24,7 @@
         </div>
     {% endif %}
 
-    <form id="patient-form" class="space-y-6" method="POST" action="{% url 'nurse:add_patient_view' %}">
+    <form id="patient-form" class="space-y-6" method="POST" action="{% url 'manager:add_patient_view' %}">
         {% csrf_token %}
 
         <!-- Personal Information -->
@@ -107,7 +107,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end mt-4">
-            <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200{ rounded-md">
+            <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md">
                 Save Patient
             </button>
         </div>

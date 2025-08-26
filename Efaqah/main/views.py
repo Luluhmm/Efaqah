@@ -317,7 +317,6 @@ def send_payment_link_email(request, registration):
     except Exception as e:
         print(f"Error creating Stripe session: {e}")
         return False
-
 #------------------------------------------------------------------------------------------------------
 
 def subscribe_view(request):
