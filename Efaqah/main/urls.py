@@ -14,6 +14,7 @@ urlpatterns = [
     path('payment/pending/', views.payment_pending, name="payment_pending"),
     path('payment/success/', views.payment_success, name="payment_success"),
     path('payment/cancelled/', views.payment_cancelled, name="payment_cancelled"),
-    path('logout/',views.logout_view,name="logout_view")
+    path('logout/',views.logout_view,name="logout_view"),
+    path('get-cities/<int:country_id>/', views.get_cities, name='get_cities'),
 
 ]
