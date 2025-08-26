@@ -16,8 +16,11 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from django.utils import timezone
+from cities_light.models import Country, City
 import time
 from django.db.models import Count
+
 
 
 
@@ -63,8 +66,7 @@ def user_login(request):
             user.groups.add(manager_group)
 
             hospital.manager = user
-            hospital.subscription_status = 'paid'
-            hospital.save()
+            hospital.activate_subscription(plan_year=1)
 
 
             del request.session['manager_username']
@@ -115,6 +117,12 @@ def request_form(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            if Registration.objects.filter(email=email).exists():
+                messages.error(request, "This email has already been used for a demo request.")
+                return redirect("main:request_form")
+
             registration = form.save() #saving the user info
 
             subject = "New Registration Form Submission"
@@ -325,10 +333,11 @@ def subscribe_view(request):
 
 def subscribe_form(request):
     plan = request.GET.get("plan")
+    countries = Country.objects.all().order_by('name')
     if request.method == "POST":
         hospital_name = request.POST.get('hospital_name')
         country = request.POST.get('country')
-        city = request.POST.get('city')
+        city_id = request.POST.get('city')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
         plan = request.POST.get('plan')
@@ -338,6 +347,31 @@ def subscribe_form(request):
         manager_email = request.POST.get('manager_email')
         password = request.POST.get('password')
 
+
+        city_instance = None
+        if city_id:
+            try:
+                city_instance = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request,"Selected city does not exist.")
+                return redirect("main:subscribe_form")
+
+        active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
+
+        if active_hospital:
+            messages.error(request, "This hospital already has an active subscription.")
+            return redirect("main:subscribe_form")
+
+
+        active_email = Hospital.objects.filter(
+            contact_email__iexact=manager_email,
+            subscription_status="paid",
+            subscription_end_date__gt=timezone.now()
+        ).first()
+
+        if active_email:
+            messages.error(request, "This email is already associated with an active subscription.")
+            return redirect("main:subscribe_form")
 
         request.session['manager_username'] = manager_user
         request.session['manager_password'] = password
@@ -356,7 +390,7 @@ def subscribe_form(request):
         hospital = Hospital.objects.create(
             name=hospital_name,
             country=country,
-            city=city,
+            city=city_instance,
             address=address,
             contact_email=manager_email,
             contact_phone=phone,
@@ -369,7 +403,7 @@ def subscribe_form(request):
 
         return redirect("main:create_checkout_session", plan=plan, hospital_id=hospital.id)
     
-    return render(request, 'main/subscribe_form.html', {"plan": plan})
+    return render(request, 'main/subscribe_form.html', {"plan": plan, "countries":countries})
     
 
 #------------------------------------------------------------------------------------------------------
@@ -483,3 +517,11 @@ def update_status(request,demo_id:int):
 def logout_view(request):
     logout(request)
     return render(request, "main/landing_page.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+def get_cities(request, country_id):
+    cities = City.objects.filter(country_id=country_id).order_by('name')
+    city_list = [{'id': c.id, 'name': c.name} for c in cities]
+    return JsonResponse({'cities': city_list})
