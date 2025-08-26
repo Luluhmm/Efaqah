@@ -6,6 +6,7 @@ from .models import Patient
 from datetime import date
 from main.models import staffProfile
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 def nurse_dashboard(request: HttpRequest):
     patients = Patient.objects.all()
@@ -13,8 +14,12 @@ def nurse_dashboard(request: HttpRequest):
     patien_under_doctor = Patient.objects.exclude(doctor=None).count()
     today = date.today()
     patients_today_count = Patient.objects.filter(created_at=today).count()
+    # Pagination
+    paginator = Paginator(patients, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "nurse/nurse_dashboard.html", {
-        "patients": patients,
+        "page_obj": page_obj,
         "patient_count": patients.count(),
         "GENDER_CHOICES": Patient.Gender.choices,
         "RESIDENCE_CHOICES": Patient.ResidenceType.choices,
