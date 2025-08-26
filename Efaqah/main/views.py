@@ -331,7 +331,7 @@ def subscribe_form(request):
     if request.method == "POST":
         hospital_name = request.POST.get('hospital_name')
         country = request.POST.get('country')
-        city = request.POST.get('city')
+        city_id = request.POST.get('city')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
         plan = request.POST.get('plan')
@@ -341,6 +341,14 @@ def subscribe_form(request):
         manager_email = request.POST.get('manager_email')
         password = request.POST.get('password')
 
+
+        city_instance = None
+        if city_id:
+            try:
+                city_instance = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request,"Selected city does not exist.")
+                return redirect("main:subscribe_form")
 
         active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
 
@@ -376,7 +384,7 @@ def subscribe_form(request):
         hospital = Hospital.objects.create(
             name=hospital_name,
             country=country,
-            city=city,
+            city=city_instance,
             address=address,
             contact_email=manager_email,
             contact_phone=phone,
