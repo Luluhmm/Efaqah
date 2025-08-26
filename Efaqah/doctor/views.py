@@ -37,7 +37,7 @@ def doctor_dashboard(request:HttpRequest):
     high_risk_patient_num = len(high_risk_patient_ids)
 
     # Pagination
-    paginator = Paginator(all_patient, 10)
+    paginator = Paginator(all_patient, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

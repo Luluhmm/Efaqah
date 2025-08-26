@@ -5,7 +5,6 @@ app_name = "main"
 
 urlpatterns = [
     path('', views.landing_page, name="landing_page"),
-
     path('login/', views.user_login, name="login"),
     path('subscribe/', views.subscribe_view, name="subscribe_view"),
     path('request_form/', views.request_form, name="request_form"),
@@ -14,7 +13,9 @@ urlpatterns = [
     path('payment/pending/', views.payment_pending, name="payment_pending"),
     path('payment/success/', views.payment_success, name="payment_success"),
     path('payment/cancelled/', views.payment_cancelled, name="payment_cancelled"),
-    path('logout/',views.logout_view,name="logout_view"),
     path('get-cities/<int:country_id>/', views.get_cities, name='get_cities'),
-
+    path('admin_view/',views.admin_view,name="admin_view"),
+    path('request_demo/',views.request_demo,name="request_demo"),
+    path('update/request_demo/<int:demo_id>/',views.update_status,name="update_status"),
+    path('logout/',views.logout_view,name="logout_view")
 ]
