@@ -23,9 +23,6 @@ from django.db.models import Count
 
 
 
-
-
-
 # Create your views here.
 #------------------------------------------------------------------------------------------------------
 
@@ -525,3 +522,53 @@ def get_cities(request, country_id):
     cities = City.objects.filter(country_id=country_id).order_by('name')
     city_list = [{'id': c.id, 'name': c.name} for c in cities]
     return JsonResponse({'cities': city_list})
+
+
+#------------------------------------------------------------------------------------------------------
+
+def about_view(request):
+    return render(request, "main/about.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message_content = request.POST.get("message")
+
+        if name and email and subject and message_content:
+            try:
+                subject=f"Contact Form: {subject}",
+                message = f"""
+                            Hello Efaqah Team,
+
+                            You have received a new message from the Contact Form:
+
+                            Name: {name}
+                            Email: {email}
+                            Subject: {subject}
+
+                            Message:
+                            {message_content}
+                            """
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,       
+                    [settings.DEFAULT_FROM_EMAIL], 
+                    fail_silently=False,
+                )
+                messages.success(request, "Your message has been sent successfully!")
+            except Exception as e:
+                messages.error(request, "Failed to send message. Please try again later.")
+
+            return redirect('main:contact_view')
+
+        else:
+            messages.error(request, "Please fill all fields.")
+
+    return render(request, "main/contact.html")

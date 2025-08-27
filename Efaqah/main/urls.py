@@ -17,5 +17,7 @@ urlpatterns = [
     path('admin_view/',views.admin_view,name="admin_view"),
     path('request_demo/',views.request_demo,name="request_demo"),
     path('update/request_demo/<int:demo_id>/',views.update_status,name="update_status"),
+    path('about/',views.about_view,name="about_view"),
+    path('contact/',views.contact_view,name="contact_view"),
     path('logout/',views.logout_view,name="logout_view")
 ]
