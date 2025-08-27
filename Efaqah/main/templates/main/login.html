@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthCare Portal - Login</title>
+    <title>Efaqah - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -74,7 +74,6 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-animated flex items-center justify-center">
-
     <div class="glass-effect rounded-3xl p-10 max-w-md w-full animate-fade-in">
        <div class="text-center mb-6">
     <a href="{% url 'main:landing_page' %}">
@@ -84,7 +83,23 @@
             <p class="text-blue-800 text-sm">Please sign in to continue</p>
         </div>
 
-        <form method="POST" action="{% url 'main:login' %}" class="space-y-4">
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <script>
+                            alert("{{ message|escapejs }}");
+                        </script>
+                    {% else %}
+                        <div class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'main:login' %}"  class="space-y-4">
             {% csrf_token %}
             <div>
                 <label class="block text-sm font-medium text-blue-900 mb-1">Username</label>
@@ -102,8 +117,7 @@
     
     </div>
 
-</body>
-</html>
+
 
     <script>
 
