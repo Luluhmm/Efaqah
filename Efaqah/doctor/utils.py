@@ -28,7 +28,6 @@ def predict_risk(payload: dict):
         raise RuntimeError("Model not loaded.")
     df = pd.DataFrame([payload])
 
-    # validate columns + NaNs
     missing_cols = [c for c in EXPECTED_COLS if c not in df.columns]
     if missing_cols:
         raise ValueError(f"Missing required fields: {missing_cols}")
