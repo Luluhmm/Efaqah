@@ -84,12 +84,28 @@
             <h2 class="text-2xl font-bold mb-2">Subscription Form</h2>
             <p class="text-blue-800 text-sm">Please fill in the details below</p>
         </div>
-
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div
+                        class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form method="POST" action="{% url 'main:subscribe_form' %}" class="space-y-4">
             {% csrf_token %}
             <input type="text" name="hospital_name" placeholder="Hospital Name" required class="form-input">
-            <input type="text" name="country" placeholder="Country" required class="form-input">
-            <input type="text" name="city" placeholder="City" class="form-input">
+            <select id="country" name="country" required class="form-input">
+                <option value="">Select a country</option>
+                {% for country in countries %}
+                    <option value="{{country.id}}">{{country.name}}</option>
+                {% endfor %}
+            </select>
+            <select id="city" name="city" class="form-input">
+                <option value="">Select a city</option>
+            </select>
             <input type="text" name="address" placeholder="Address" class="form-input">
             <input type="tel" name="phone" placeholder="Contact Phone" class="form-input">
             <input type="text" name="manager_username" placeholder="Manager Username" required class="form-input">
@@ -97,8 +113,10 @@
             <input type="text" name="last_name" placeholder="Last Name" required class="form-input">
             <input type="email" name="manager_email" placeholder="Manager Email" required class="form-input">
             <input type="password" name="password" placeholder="Password" required class="form-input">
+
+            <input type="hidden" name="plan" value="{{plan}}">
             
-            <button type="submit" class="submit-button mt-4">Submit</button>
+            <button type="submit" class="submit-button mt-4">Continue to Payment</button>
         </form>
 
         <div class="mt-4 text-center">
@@ -106,5 +124,25 @@
         </div>
     </div>
 
+
+    <script>
+        document.getElementById('country').addEventListener('change', function() {
+            const countryId = this.value;
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option value="">Loading...</option>';
+
+            fetch(`/get-cities/${countryId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    citySelect.innerHTML = '<option value="">Select a city</option>';
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = city.name;
+                        citySelect.appendChild(option);
+                    });
+                });
+        });
+    </script>
 </body>
 </html>

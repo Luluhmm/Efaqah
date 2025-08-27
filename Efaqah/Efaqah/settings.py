@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'main',
     'doctor',
     'nurse',
+    'manager',
     'django_countries',
+    'cities_light',
 ]
 
 MIDDLEWARE = [

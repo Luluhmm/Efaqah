@@ -1,0 +1,239 @@
+{% extends 'doctor/base.html' %}
+{% block title %} Admin Dashboard {% endblock %}
+{% block content %}
+<!-- Numbers Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Total Hospitals -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Hospitals</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-hospitals">{{num_hospitals}}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Nurses -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Nurses</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-nurses">{{num_nurses}}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Doctors -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Doctors</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-doctors">{{num_doctors}}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Patients -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Patients</p>
+                <p class="text-2xl font-semibold text-gray-900" id="total-patients">{{num_patients}}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-gray-600">Total Demo Status</p>
+        <a href="{% url 'main:request_demo'%}">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                Requested Demo
+            </button>
+        </a>
+    </div>
+
+    <!-- Restrict chart width -->
+    <div class="max-w-sm mx-auto h-64">
+        <canvas id="demoSatusChart"></canvas>
+    </div>
+
+    {{ labels|json_script:"labels-data" }}
+    {{ data|json_script:"data-data" }}
+</div>
+
+<br>
+<br> 
+
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+<div class="flex justify-between items-center px-6 py-4 border-b">
+    <a href="" class="font-semibold text-lg ">Hospitals</a>
+    <form method="GET" action="{% url 'main:admin_view' %}" class="flex flex-wrap gap-3 items-center mb-4">
+  <!-- Subscription Status -->
+  <div>
+    <label class="sr-only" for="subscription_status">Status</label>
+    <select name="subscription_status" id="subscription_status"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <option value="">Filter by Status</option>
+      {% for status, display in status_choices %}
+        <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Plan -->
+  <div>
+    <label class="sr-only" for="plan">Plan</label>
+    <select name="plan" id="plan"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <option value="">Filter by Plan</option>
+      {% for plan, display in plan_choices %}
+        <option value="{{ plan }}" {% if plan == selected_plan %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <button type="submit"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+      Filter
+    </button>
+  </div>
+
+</form>
+
+  </div>
+            <div class="p-6">
+                {% if all_hospitals %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Start Date</th>
+                                    <th class="px-4 py-2">End Date</th>
+                                    <th class="px-4 py-2">Status</th>
+                                    <th class="px-4 py-2">Subsicription</th>
+                                    <th class="px-4 py-2">Contact Email</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for hospital in all_hospitals %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{hospital.name}}</td>
+                                        <td class="px-4 py-2">{{hospital.subscription_start_date}}</td>
+                                        <td class="px-4 py-2">{{hospital.subscription_end_date}}</td>
+                                        <td class="px-4 py-2">{{hospital.subscription_status}}</td>
+                                        <td class="px-4 py-2">{{hospital.plan}}</td>
+                                        <td class="px-4 py-2">{{hospital.contact_email}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                <p class="text-gray-500">No doctors added yet.</p>
+                {% endif %}
+            </div>
+            </div>
+
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const canvas = document.getElementById('demoSatusChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const data = JSON.parse(document.getElementById('data-data').textContent);
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Registrations',
+                data: data,
+                backgroundColor: [
+                    'rgba(249, 115, 22, 0.8)',
+                    'rgba(250, 204, 21, 0.8)',
+                    'rgba(34, 197, 94, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(249, 115, 22, 1)',
+                    'rgba(250, 204, 21, 1)',
+                    'rgba(34, 197, 94, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // ✅ allow custom height
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{%endblock%}

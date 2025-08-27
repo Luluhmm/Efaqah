@@ -1,7 +1,8 @@
 from django.db import models
+from main.models import Hospital, staffProfile
+
 
 class Patient(models.Model):
-
     class Gender(models.TextChoices):
         MALE = 'M', 'Male'
         FEMALE = 'F', 'Female'
@@ -9,7 +10,7 @@ class Patient(models.Model):
     class ResidenceType(models.TextChoices):
         URBAN = 'urban', 'Urban'
         RURAL = 'rural', 'Rural'
-
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="patients")
     patient_id = models.IntegerField(unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -18,5 +19,6 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=Gender.choices)
     age = models.IntegerField()
     residence_type = models.CharField(max_length=10, choices=ResidenceType.choices, null=True, blank=True)
-    doctor_name = models.CharField(max_length=255, null=True, blank=True, default=None)
+    doctor = models.ForeignKey(staffProfile,on_delete=models.SET_NULL, null=True,blank=True,limit_choices_to={'role': 'doctor'},
+    )
     created_at = models.DateField(auto_now_add=True)

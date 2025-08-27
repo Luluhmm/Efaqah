@@ -13,12 +13,13 @@ from django.utils.timezone import now
 
 def doctor_dashboard(request:HttpRequest):
     # All patients for this doctor
-    all_patient = Patient.objects.filter(doctor_name=request.user)
+    doctor_profile = request.user.staffprofile
+    all_patient = Patient.objects.filter(doctor=doctor_profile)
     patient_num = all_patient.count()
 
     # Critical patients: more than 2 stroke records
     critical_patient_ids = PatientRecord.objects.filter(
-        patient__doctor_name=request.user,
+        patient__doctor=doctor_profile,
         symptoms__stroke=True
     ).values('patient').annotate(stroke_count=Count('symptoms')).filter(stroke_count__gt=2).values_list('patient', flat=True)
     critical_patient_num = Patient.objects.filter(id__in=critical_patient_ids).count()
@@ -36,7 +37,7 @@ def doctor_dashboard(request:HttpRequest):
     high_risk_patient_num = len(high_risk_patient_ids)
 
     # Pagination
-    paginator = Paginator(all_patient, 10)
+    paginator = Paginator(all_patient, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

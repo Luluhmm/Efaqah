@@ -1,10 +1,12 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
-from django.contrib.auth import login , authenticate,logout
+from django.contrib.auth import login , authenticate, logout
 from django.contrib import messages
+from nurse.models import Patient
 from .forms import RegistrationForm
-from .models import Registration
+from .models import Registration, Hospital, staffProfile
 from django.conf import settings
 from django.core.mail import send_mail , EmailMessage
 import uuid
@@ -14,7 +16,13 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from django.utils import timezone
+from cities_light.models import Country, City
 import time
+from django.db.models import Count
+
+
+
 
 
 
@@ -22,10 +30,53 @@ import time
 #------------------------------------------------------------------------------------------------------
 
 def user_login(request):
-    if request.GET.get('status') == 'success':
-        messages.success(request, "Payment successful! Your account has been created. Please check your email for your login credentials.")
-    elif request.GET.get('status') == 'cancelled':
-        messages.warning(request, "Your payment was cancelled. You can try again from the payment link in your email.")
+    payment_status = request.GET.get('payment')
+    hospital_id = request.GET.get('hospital_id')
+
+    if payment_status == 'success' and hospital_id:
+        hospital = get_object_or_404(Hospital, id=hospital_id)
+        
+
+        if not hasattr(hospital, 'manager') or hospital.manager is None:
+
+            manager_username = request.session.get('manager_username')
+            manager_password = request.session.get('manager_password')
+            manager_email = request.session.get('manager_email')
+            first_name = request.session.get('first_name')
+            last_name = request.session.get('last_name')
+
+
+            user = User.objects.create_user(
+                username=manager_username,
+                password=manager_password,
+                email=manager_email,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+
+            staffProfile.objects.create(
+                user=user,
+                hospital=hospital,
+                role='manager'
+            )
+
+
+            manager_group, created = Group.objects.get_or_create(name='Manager')
+            user.groups.add(manager_group)
+
+            hospital.manager = user
+            hospital.activate_subscription(plan_year=1)
+
+
+            del request.session['manager_username']
+            del request.session['manager_password']
+            del request.session['manager_email']
+            del request.session['first_name']
+            del request.session['last_name']
+            del request.session['hospital_id']
+
+            messages.success(request, f"Your hospital subscription is complete! Your account is created. You can now log in.")
 
     if request.method == "POST":
         username = request.POST["username"]
@@ -41,6 +92,11 @@ def user_login(request):
             
             elif user.groups.filter(name="Nurse").exists():
                 return redirect("nurse:nurse_dashboard")
+            
+            elif user.groups.filter(name="Manager").exists():
+                return redirect("manager:manager_dashboard")
+            elif user.is_superuser:
+                return redirect("main:admin_view")
             
             else:
                 messages.error(request, "Invalid username or password", "alert-danger")
@@ -61,6 +117,12 @@ def request_form(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            if Registration.objects.filter(email=email).exists():
+                messages.error(request, "This email has already been used for a demo request.")
+                return redirect("main:request_form")
+
             registration = form.save() #saving the user info
 
             subject = "New Registration Form Submission"
@@ -262,7 +324,6 @@ def send_payment_link_email(request, registration):
     except Exception as e:
         print(f"Error creating Stripe session: {e}")
         return False
-
 #------------------------------------------------------------------------------------------------------
 
 def subscribe_view(request):
@@ -271,7 +332,79 @@ def subscribe_view(request):
 #------------------------------------------------------------------------------------------------------
 
 def subscribe_form(request):
-    return render(request, "main/subscribe_form.html")
+    plan = request.GET.get("plan")
+    countries = Country.objects.all().order_by('name')
+    if request.method == "POST":
+        hospital_name = request.POST.get('hospital_name')
+        country = request.POST.get('country')
+        city_id = request.POST.get('city')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        plan = request.POST.get('plan')
+        manager_user = request.POST.get('manager_username')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        manager_email = request.POST.get('manager_email')
+        password = request.POST.get('password')
+
+
+        city_instance = None
+        if city_id:
+            try:
+                city_instance = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request,"Selected city does not exist.")
+                return redirect("main:subscribe_form")
+
+        active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
+
+        if active_hospital:
+            messages.error(request, "This hospital already has an active subscription.")
+            return redirect("main:subscribe_form")
+
+
+        active_email = Hospital.objects.filter(
+            contact_email__iexact=manager_email,
+            subscription_status="paid",
+            subscription_end_date__gt=timezone.now()
+        ).first()
+
+        if active_email:
+            messages.error(request, "This email is already associated with an active subscription.")
+            return redirect("main:subscribe_form")
+
+        request.session['manager_username'] = manager_user
+        request.session['manager_password'] = password
+        request.session['manager_email'] = manager_email
+        request.session['first_name'] = first_name
+        request.session['last_name'] = last_name
+
+        plan_map = {
+            "499": "basic",
+            "999": "pro",
+            "1999": "enterprise",
+        }
+
+        hospital_plan = plan_map.get(plan, "basic")
+
+        hospital = Hospital.objects.create(
+            name=hospital_name,
+            country=country,
+            city=city_instance,
+            address=address,
+            contact_email=manager_email,
+            contact_phone=phone,
+            plan=hospital_plan,
+            subscription_status='pending'
+        )
+        
+
+        request.session['hospital_id'] = hospital.id
+
+        return redirect("main:create_checkout_session", plan=plan, hospital_id=hospital.id)
+    
+    return render(request, 'main/subscribe_form.html', {"plan": plan, "countries":countries})
+    
 
 #------------------------------------------------------------------------------------------------------
 
@@ -300,7 +433,95 @@ def payment_pending(request):
     return render(request, "main/payment_pending.html")
 
 #------------------------------------------------------------------------------------------------------
+#    
+def create_checkout_session(request, plan, hospital_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
+    hospital_id = request.session.get('hospital_id')
+    if not hospital_id:
+        messages.error(request, "Hospital registration data not found.")
+        return redirect("main:subscribe_form")
+
+    hospital = get_object_or_404(Hospital, id=hospital_id)
+
+    price_map = {
+        "499": 49900,
+        "999": 99900,
+        "1999": 199900,
+    }
+
+    if plan not in price_map:
+        return JsonResponse({"error":"Invalid plan"}, status=400)
+    
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': f"{plan} Plan Subscription",
+                },
+                'unit_amount': price_map[plan],
+            },
+            "quantity": 1,
+        }],
+        mode='payment',
+
+        success_url=request.build_absolute_uri(reverse('main:login') + f"?payment=success&hospital_id={hospital.id}"),
+        cancel_url=request.build_absolute_uri(reverse('main:payment_cancelled')),
+    )
+
+    return redirect(session.url, code=303)
+
+#------------------------------------------------------------------------------------------------------
+def admin_view(request):
+    all_hospitals = Hospital.objects.all()
+    selected_status = request.GET.get("subscription_status")
+    selected_plan = request.GET.get("plan")
+    if selected_status:
+        all_hospitals = all_hospitals.filter(subscription_status=selected_status)
+    if selected_plan:
+        all_hospitals = all_hospitals.filter(plan=selected_plan)
+    plan_choices = all_hospitals.model.PLAN_CHOICES
+    status_choices = all_hospitals.model.SUBSCRIPTION_STATUS_CHOICES
+    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
+    num_patients = Patient.objects.all().count()
+    num_doctors = staffProfile.objects.filter(role="doctor").count()
+    num_nurses = staffProfile.objects.filter(role="nurse").count()
+    num_managers = staffProfile.objects.filter(role="manager").count()
+    status_demo = Registration.objects.values("status").annotate(count=Count("status"))
+    labels = [d["status"].capitalize() for d in status_demo]  # ["Pending", "Approved", "Paid"]
+    data = [d["count"] for d in status_demo] 
+    return render(request, "main/admin_dashboard.html",{"all_hospitals":all_hospitals,"num_hospitals":num_hospitals,"num_patients":num_patients
+                ,"num_doctors":num_doctors,"num_nurses":num_nurses,"num_managers":num_managers,"labels":labels,"data":data,
+                 "selected_status": selected_status,"selected_plan": selected_plan,"plan_choices":plan_choices,
+                  "status_choices":status_choices })
+#------------------------------------------------------------------------------------------------------
+def request_demo(request):
+    pending_demo = Registration.objects.filter(status="pending")
+    approved_demo = Registration.objects.filter(status="approved")
+    return render(request, "main/request_demo.html", {
+            "pending_demo": pending_demo,
+            "approved_demo": approved_demo
+        })
+
+#------------------------------------------------------------------------------------------------------
+def update_status(request,demo_id:int):
+
+    demo_request = Registration.objects.get(pk=demo_id)
+    demo_request.status = "approved"
+    demo_request.save()
+    return redirect('main:request_demo')
+#------------------------------------------------------------------------------------------------------
 
 def logout_view(request):
     logout(request)
     return render(request, "main/landing_page.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+def get_cities(request, country_id):
+    cities = City.objects.filter(country_id=country_id).order_by('name')
+    city_list = [{'id': c.id, 'name': c.name} for c in cities]
+    return JsonResponse({'cities': city_list})
