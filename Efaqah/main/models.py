@@ -49,6 +49,13 @@ class Hospital(models.Model):
     def is_active_subscription(self):
         return bool(self.subscription_end_date and self.subscription_end_date > timezone.now())
 
+    def daily_patient_limit(self):
+        limits = {
+            "basic": 50,
+            "pro": 150,
+            "enterprise": 500,
+        }
+        return limits.get(self.plan, 50)
 
     def __str__(self):
         return self.name

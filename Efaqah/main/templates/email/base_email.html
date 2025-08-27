@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            height: 80px;
+        }
+
+        h2 {
+            color: #4f46e5;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 5px 0 ;
+            font-size: 14px;
+            color: #1e293b;
+            text-align: left;
+        }
+
+        .highlight {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://safenet-production.up.railway.app/static/images/logo_2.PNG" alt="Logo" class="logo">
+        <h2>{{header}}</h2>
+        {{content|safe}}
+        <p style="margin-top: 20;">Regards, <br><strong>Efaqah Team</strong></p>
+    </div>
+</body>
+</html>
