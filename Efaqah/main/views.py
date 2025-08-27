@@ -1,8 +1,10 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login , authenticate, logout
 from django.contrib import messages
+from nurse.models import Patient
 from .forms import RegistrationForm
 from .models import Registration, Hospital, staffProfile
 from django.conf import settings
@@ -14,7 +16,11 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from django.utils import timezone
+from cities_light.models import Country, City
 import time
+from django.db.models import Count
+
 
 
 
@@ -60,8 +66,7 @@ def user_login(request):
             user.groups.add(manager_group)
 
             hospital.manager = user
-            hospital.subscription_status = 'paid'
-            hospital.save()
+            hospital.activate_subscription(plan_year=1)
 
 
             del request.session['manager_username']
@@ -90,6 +95,8 @@ def user_login(request):
             
             elif user.groups.filter(name="Manager").exists():
                 return redirect("manager:manager_dashboard")
+            elif user.is_superuser:
+                return redirect("main:admin_view")
             
             else:
                 messages.error(request, "Invalid username or password", "alert-danger")
@@ -110,6 +117,12 @@ def request_form(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            if Registration.objects.filter(email=email).exists():
+                messages.error(request, "This email has already been used for a demo request.")
+                return redirect("main:request_form")
+
             registration = form.save() #saving the user info
 
             subject = "New Registration Form Submission"
@@ -320,10 +333,11 @@ def subscribe_view(request):
 
 def subscribe_form(request):
     plan = request.GET.get("plan")
+    countries = Country.objects.all().order_by('name')
     if request.method == "POST":
         hospital_name = request.POST.get('hospital_name')
         country = request.POST.get('country')
-        city = request.POST.get('city')
+        city_id = request.POST.get('city')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
         plan = request.POST.get('plan')
@@ -333,6 +347,31 @@ def subscribe_form(request):
         manager_email = request.POST.get('manager_email')
         password = request.POST.get('password')
 
+
+        city_instance = None
+        if city_id:
+            try:
+                city_instance = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request,"Selected city does not exist.")
+                return redirect("main:subscribe_form")
+
+        active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
+
+        if active_hospital:
+            messages.error(request, "This hospital already has an active subscription.")
+            return redirect("main:subscribe_form")
+
+
+        active_email = Hospital.objects.filter(
+            contact_email__iexact=manager_email,
+            subscription_status="paid",
+            subscription_end_date__gt=timezone.now()
+        ).first()
+
+        if active_email:
+            messages.error(request, "This email is already associated with an active subscription.")
+            return redirect("main:subscribe_form")
 
         request.session['manager_username'] = manager_user
         request.session['manager_password'] = password
@@ -351,7 +390,7 @@ def subscribe_form(request):
         hospital = Hospital.objects.create(
             name=hospital_name,
             country=country,
-            city=city,
+            city=city_instance,
             address=address,
             contact_email=manager_email,
             contact_phone=phone,
@@ -364,7 +403,7 @@ def subscribe_form(request):
 
         return redirect("main:create_checkout_session", plan=plan, hospital_id=hospital.id)
     
-    return render(request, 'main/subscribe_form.html', {"plan": plan})
+    return render(request, 'main/subscribe_form.html', {"plan": plan, "countries":countries})
     
 
 #------------------------------------------------------------------------------------------------------
@@ -392,7 +431,9 @@ def payment_cancelled(request):
 
 def payment_pending(request):
     return render(request, "main/payment_pending.html")
-    
+
+#------------------------------------------------------------------------------------------------------
+#    
 def create_checkout_session(request, plan, hospital_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     
@@ -433,7 +474,54 @@ def create_checkout_session(request, plan, hospital_id):
     return redirect(session.url, code=303)
 
 #------------------------------------------------------------------------------------------------------
+def admin_view(request):
+    all_hospitals = Hospital.objects.all()
+    selected_status = request.GET.get("subscription_status")
+    selected_plan = request.GET.get("plan")
+    if selected_status:
+        all_hospitals = all_hospitals.filter(subscription_status=selected_status)
+    if selected_plan:
+        all_hospitals = all_hospitals.filter(plan=selected_plan)
+    plan_choices = all_hospitals.model.PLAN_CHOICES
+    status_choices = all_hospitals.model.SUBSCRIPTION_STATUS_CHOICES
+    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
+    num_patients = Patient.objects.all().count()
+    num_doctors = staffProfile.objects.filter(role="doctor").count()
+    num_nurses = staffProfile.objects.filter(role="nurse").count()
+    num_managers = staffProfile.objects.filter(role="manager").count()
+    status_demo = Registration.objects.values("status").annotate(count=Count("status"))
+    labels = [d["status"].capitalize() for d in status_demo]  # ["Pending", "Approved", "Paid"]
+    data = [d["count"] for d in status_demo] 
+    return render(request, "main/admin_dashboard.html",{"all_hospitals":all_hospitals,"num_hospitals":num_hospitals,"num_patients":num_patients
+                ,"num_doctors":num_doctors,"num_nurses":num_nurses,"num_managers":num_managers,"labels":labels,"data":data,
+                 "selected_status": selected_status,"selected_plan": selected_plan,"plan_choices":plan_choices,
+                  "status_choices":status_choices })
+#------------------------------------------------------------------------------------------------------
+def request_demo(request):
+    pending_demo = Registration.objects.filter(status="pending")
+    approved_demo = Registration.objects.filter(status="approved")
+    return render(request, "main/request_demo.html", {
+            "pending_demo": pending_demo,
+            "approved_demo": approved_demo
+        })
+
+#------------------------------------------------------------------------------------------------------
+def update_status(request,demo_id:int):
+
+    demo_request = Registration.objects.get(pk=demo_id)
+    demo_request.status = "approved"
+    demo_request.save()
+    return redirect('main:request_demo')
+#------------------------------------------------------------------------------------------------------
 
 def logout_view(request):
     logout(request)
     return render(request, "main/landing_page.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+def get_cities(request, country_id):
+    cities = City.objects.filter(country_id=country_id).order_by('name')
+    city_list = [{'id': c.id, 'name': c.name} for c in cities]
+    return JsonResponse({'cities': city_list})

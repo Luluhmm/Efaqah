@@ -1,8 +1,9 @@
 {% extends 'doctor/base.html' %}
 {% block title %}Doctor Dashboard{% endblock %}
+<style>
 
+</style>
 {% block content %}
-
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
     <!-- My Patients -->
@@ -77,6 +78,7 @@
     </div>
 
     <div id="patient-overview-list" class="space-y-4">
+        {% if page_obj %}
         {% for patient in page_obj %}
         <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between" 
              data-name="{{ patient.first_name }} {{ patient.last_name }}"
@@ -105,12 +107,76 @@
             </a>
         </div>
         {% endfor %}
+        {%endif%}
     </div>
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav class="flex justify-center mt-6" aria-label="Page navigation">
+  <ul class="inline-flex items-center -space-x-px">
 
-    <!-- Empty state -->
-    <p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
+    <!-- Previous -->
+    {% if page_obj.has_previous %}
+      <li>
+        <a href="?page={{ page_obj.previous_page_number }}"
+           class="px-3 py-2 ml-0 leading-tight text-blue-600 bg-white border border-gray-300 rounded-l-lg hover:bg-blue-50 hover:text-blue-700">
+          &laquo;
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span
+           class="px-3 py-2 ml-0 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-l-lg cursor-not-allowed">
+          &laquo;
+        </span>
+      </li>
+    {% endif %}
+
+    <!-- Page numbers -->
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li>
+          <span
+            class="px-3 py-2 leading-tight text-white bg-blue-600 border border-blue-600">
+            {{ num }}
+          </span>
+        </li>
+      {% else %}
+        <li>
+          <a href="?page={{ num }}"
+             class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Next -->
+    {% if page_obj.has_next %}
+      <li>
+        <a href="?page={{ page_obj.next_page_number }}"
+           class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 rounded-r-lg hover:bg-blue-50 hover:text-blue-700">
+          &raquo;
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span
+          class="px-3 py-2 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-r-lg cursor-not-allowed">
+          &raquo;
+        </span>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
+
+<!-- Empty state -->
+<p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
 </div>
 {% endblock %}
+
 
 {% block scripts %}
 <script>

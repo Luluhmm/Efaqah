@@ -6,16 +6,20 @@ from .views import send_payment_link_email
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
-    list_display = ("name", "plan", "subscription_status", "created_at")
-    search_fields = ("name", "contact_email")
-    list_filter = ("plan", "subscription_status", "country")
+    list_display = (
+        'name', 'country', 'city', 'plan', 
+        'subscription_status', 'subscription_start_date', 
+        'subscription_end_date', 'created_at'
+    )
+    list_filter = ('plan', 'subscription_status', 'country')
+    search_fields = ('name', 'contact_email', 'city')
+    ordering = ('-created_at',)
 
 @admin.register(staffProfile)
 class StaffProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "role", "hospital", "is_active", "created_at")
-    search_fields = ("user__username", "user__email", "hospital__name")
-    list_filter = ("role", "is_active", "hospital")
-
+    list_display = ('user', 'role', 'hospital', 'is_active', 'created_at')
+    list_filter = ('role', 'is_active')
+    search_fields = ('user__username', 'hospital__name')
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
