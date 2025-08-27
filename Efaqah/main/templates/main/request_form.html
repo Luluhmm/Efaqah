@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthCare Portal - Request Form</title>
+    <title>Efaqah - Request Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -80,15 +80,23 @@
             <p class="text-blue-800 text-sm">Please fill this form</p>
         </div>
 
-        <div id="alert-container">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{message.tags}}">
-                        {{message}}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+        {% if messages %}
+            <div class="mb-4">
+                
+                    {% for message in messages %}
+                        {% if "success" in message.tags %}
+                            <script>
+                                alert("{{message|escapejs}}");
+                            </script>
+                        {% else %}
+                        <div
+                            class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+            </div>
+        {% endif %}
 
         <form method="POST" action="{% url 'main:request_form' %}" class="space-y-4">
             {% csrf_token %}

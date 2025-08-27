@@ -1,6 +1,22 @@
 {% extends 'doctor/base.html' %}
 {% block title %}Manager Dashboard{% endblock %}
 {% block content %}
+{% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    {% if "success" in message.tags %}
+                            <script>
+                                alert("{{message|escapejs}}");
+                            </script>
+                        {% else %}
+                        <div
+                            class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Total Patients -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

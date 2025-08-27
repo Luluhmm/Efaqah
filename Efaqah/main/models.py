@@ -3,6 +3,10 @@ from django_countries.fields import CountryField
 from django.conf import settings
 import stripe
 from django.core.mail import send_mail
+from django.utils import timezone
+from datetime import timedelta
+from cities_light.models import City, Country as CitiesLightCountry
+
 
 # Create your models here.
 
@@ -22,7 +26,7 @@ class Hospital(models.Model):
 
     name = models.CharField(max_length=255)
     country = CountryField(blank_label="(Select country)")
-    city = models.CharField(max_length=100)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name="hospitals")
     address = models.TextField(blank=True, null=True)
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=20, blank=True, null=True)
@@ -35,6 +39,23 @@ class Hospital(models.Model):
     invoice_url = models.URLField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def activate_subscription(self, plan_year = 1):
+        self.subscription_start_date = timezone.now().date()
+        self.subscription_end_date = self.subscription_start_date.replace(year=self.subscription_start_date.year + plan_year)
+        self.subscription_status = "paid"
+        self.save()
+
+    def is_active_subscription(self):
+        return bool(self.subscription_end_date and self.subscription_end_date > timezone.now())
+
+    def daily_patient_limit(self):
+        limits = {
+            "basic": 50,
+            "pro": 150,
+            "enterprise": 500,
+        }
+        return limits.get(self.plan, 50)
 
     def __str__(self):
         return self.name

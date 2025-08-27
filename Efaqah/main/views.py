@@ -1,8 +1,10 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login , authenticate, logout
 from django.contrib import messages
+from nurse.models import Patient
 from .forms import RegistrationForm
 from .models import Registration, Hospital, staffProfile
 from django.conf import settings
@@ -14,7 +16,14 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from django.utils import timezone
+from cities_light.models import Country, City
 import time
+from django.db.models import Count
+from django.template.loader import render_to_string
+from django.templatetags.static import static
+from email.mime.image import MIMEImage
+
 
 
 
@@ -60,8 +69,7 @@ def user_login(request):
             user.groups.add(manager_group)
 
             hospital.manager = user
-            hospital.subscription_status = 'paid'
-            hospital.save()
+            hospital.activate_subscription(plan_year=1)
 
 
             del request.session['manager_username']
@@ -90,12 +98,15 @@ def user_login(request):
             
             elif user.groups.filter(name="Manager").exists():
                 return redirect("manager:manager_dashboard")
+            elif user.is_superuser:
+                return redirect("main:admin_view")
             
             else:
-                messages.error(request, "Invalid username or password", "alert-danger")
-
-        return redirect("main:login")
-    
+                logout(request)
+                messages.warning(request, "Your account has no assigned role. Please contact an administrator.")
+                return redirect("main:login")
+        else:
+            messages.error(request, "Invalid username or password")
     
     return render(request, "main/login.html")
 
@@ -110,48 +121,59 @@ def request_form(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            if Registration.objects.filter(email=email).exists():
+                messages.error(request, "This email has already been used for a demo request.")
+                return redirect("main:request_form")
+
             registration = form.save() #saving the user info
 
-            subject = "New Registration Form Submission"
-            message = f"""
-            <html>
-                <body>
-                    <h2>New Registration Form Submission</h2>
-                    <p><strong>First Name</strong>: {registration.firstname}</p>
-                    <p><strong>Last Name</strong>: {registration.lastname}</p>
-                    <p><strong>Email</strong>: {registration.email}</p>
-                    <p><strong>Phone</strong>: {registration.phone}</p>
-                    <p><strong>Medical Affiliation</strong>: {registration.medical_affiliation}</p>
-                    <p><strong>Description</strong>: {registration.description}</p>
-                </body>
-            </html>
+            logo_url = get_logo_url(request)
+
+            #Admin email
+            admin_content = f"""
+            <p><span class="highlight">First Name:</span> {registration.firstname}</p>
+            <p><span class="highlight">Last Name:</span> {registration.lastname}</p>
+            <p><span class="highlight">Email:</span> {registration.email}</p>
+            <p><span class="highlight">Phone:</span> {registration.phone}</p>
+            <p><span class="highlight">Medical Affiliation:</span> {registration.medical_affiliation}</p>
+            <p><span class="highlight">Description:</span> {registration.description}</p>
             """
 
-            email = EmailMessage(
-                subject,
-                message,
+            admin_message = render_to_string("email/base_email.html",{
+                "subject": "New Registration Form Submission",
+                "header": "New Registration Form Submission",
+                "content": admin_content,
+
+            })
+
+            admin_email = EmailMessage(
+                "New Registration Form Submission",
+                admin_message,
                 settings.DEFAULT_FROM_EMAIL,
                 [settings.EMAIL_HOST_USER],
                 reply_to=[registration.email],
             )
-            email.content_subtype = "html"
-            email.send()
-
-            
+            admin_email.mixed_subtype = "html"
+            admin_email.send()
 
 
-            user_subject = "Your Registration was Successful"
-            user_message = f"""
-                <html>
-                    <body>
-                        <p>Hi {registration.firstname},</p>
-                        <p>Your message has been submitted successfully. We'll reply to you soon.</p>
-                        <p>Thank you for reaching out!</p>
-                    </body>
-                </html>
+            #User Email
+            user_content = f"""
+            <p>Hi {registration.firstname},</p>
+            <p>Your registration has been submitted successfully. We'll reply soon.</p>
+            <p>Thank you for reaching out!</p>
             """
+
+            user_message = render_to_string("email/base_email.html", {
+                "subject": "Your Registration was Successful",
+                "header": "Thank you for Registering!",
+                "content": user_content,
+                "logo_url": logo_url,
+            })
             user_email = EmailMessage(
-                user_subject,
+                "Your Registration was Successful",
                 user_message,
                 settings.DEFAULT_FROM_EMAIL,
                 [registration.email],
@@ -168,7 +190,7 @@ def request_form(request):
 
 #------------------------------------------------------------------------------------------------------
 
-def create_user_and_send_credentials(registration):
+def create_user_and_send_credentials(registration, request=None):
     """A helper function to create the user and send the email."""
     email = registration.email
 
@@ -194,23 +216,32 @@ def create_user_and_send_credentials(registration):
     #Assign the user to the 'demo' group
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
+    
+    login_url = "http://127.0.0.1:8000/login/"
+    logo_url = get_logo_url(request) if request else ""
 
-    #Send the welcome email with credentials
-    subject = "Your New Account Details"
-    message = f"""
-    <html>
-        <body>
-            <p>Hello {user.first_name},</p>
-            <p>Thank you for your payment. Your account has been created.</p>
-            <p>You can now log in using these credentials:</p>
-            <p><strong>Username:</strong> {username}<br>
-               <strong>Password:</strong> {password}</p>
-            <p>Please log in at: <a href="http://127.0.0.1:8000/login/">Login</a></p>
-            <p>Regards,<br>Efaqah</p>
-        </body>
-    </html>
+    content = f"""
+        <p>Hello, {user.first_name}</p>
+        <p>Thank you for your payment. Your account has been created successfully.</p>
+        <p>You can now log in using these credentails:</p>
+        <p><strong>Username:</strong> {username}<br>
+            <strong>Password:</strong> {password}</p>
+        <p>Please log in at: <a href='{login_url}'>Login</a></p>
     """
-    email_msg = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+    message = render_to_string("email/base_email.html", {
+        "subject": "Your New Account Details",
+        "header": "YourAccount is Ready",
+        "content":content,
+        "logo_url": logo_url,
+    })
+
+    email_msg = EmailMessage(
+        "Your New Account Details",
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [email],
+    )
+
     email_msg.content_subtype = "html"
     email_msg.send()
 
@@ -261,7 +292,7 @@ def send_payment_link_email(request, registration):
 
     success_url = request.build_absolute_uri(reverse('main:payment_success') + f"?registration_id={registration.id}")
     cancel_url = request.build_absolute_uri(reverse('main:payment_cancelled'))
-
+    logo_url = get_logo_url(request)
     try:
         session = stripe.checkout.Session.create(
                     payment_method_types=['card'],
@@ -288,24 +319,30 @@ def send_payment_link_email(request, registration):
 
         registration.payment_link = session.url
 
-        subject = "Your Payment Link for Demo Access"
-        message = f"""
-                Hello {registration.firstname},
 
-                Your request has been approved! Please complete the payment to create your account.
+        content = f"""
+        <p>Hello {registration.firstname}</p>
+        <p>Your request has been approved! Please complete the payment to create your account.</p>
+        <p><a href='{registration.payment_link}'>Click here to pay</a></p>
+        """
 
-                Click here to pay: {registration.payment_link}
+        message = render_to_string("email/base_email.html", {
+            "subject": "Your Payment Link for Demo Access",
+            "header": "Complete Your Payment",
+            "content": content,
+            "logo_url": logo_url,
+        })
 
-                Thank you,
-                Efaqah
-                """
-        send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [registration.email], # Send to the user who registered
-                    fail_silently=False,
-                )
+        email_msg = EmailMessage(
+            "Your Payment Link for Demo Access",
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [registration.email], # Send to the user who registered
+        )
+        email_msg.content_subtype = "html"
+        email_msg.send()
+
+
         return True
 
     except Exception as e:
@@ -320,10 +357,11 @@ def subscribe_view(request):
 
 def subscribe_form(request):
     plan = request.GET.get("plan")
+    countries = Country.objects.all().order_by('name')
     if request.method == "POST":
         hospital_name = request.POST.get('hospital_name')
         country = request.POST.get('country')
-        city = request.POST.get('city')
+        city_id = request.POST.get('city')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
         plan = request.POST.get('plan')
@@ -333,6 +371,31 @@ def subscribe_form(request):
         manager_email = request.POST.get('manager_email')
         password = request.POST.get('password')
 
+
+        city_instance = None
+        if city_id:
+            try:
+                city_instance = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request,"Selected city does not exist.")
+                return redirect("main:subscribe_form")
+
+        active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
+
+        if active_hospital:
+            messages.error(request, "This hospital already has an active subscription.")
+            return redirect("main:subscribe_form")
+
+
+        active_email = Hospital.objects.filter(
+            contact_email__iexact=manager_email,
+            subscription_status="paid",
+            subscription_end_date__gt=timezone.now()
+        ).first()
+
+        if active_email:
+            messages.error(request, "This email is already associated with an active subscription.")
+            return redirect("main:subscribe_form")
 
         request.session['manager_username'] = manager_user
         request.session['manager_password'] = password
@@ -351,7 +414,7 @@ def subscribe_form(request):
         hospital = Hospital.objects.create(
             name=hospital_name,
             country=country,
-            city=city,
+            city=city_instance,
             address=address,
             contact_email=manager_email,
             contact_phone=phone,
@@ -364,7 +427,7 @@ def subscribe_form(request):
 
         return redirect("main:create_checkout_session", plan=plan, hospital_id=hospital.id)
     
-    return render(request, 'main/subscribe_form.html', {"plan": plan})
+    return render(request, 'main/subscribe_form.html', {"plan": plan, "countries":countries})
     
 
 #------------------------------------------------------------------------------------------------------
@@ -392,7 +455,9 @@ def payment_cancelled(request):
 
 def payment_pending(request):
     return render(request, "main/payment_pending.html")
-    
+
+#------------------------------------------------------------------------------------------------------
+#    
 def create_checkout_session(request, plan, hospital_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     
@@ -433,7 +498,63 @@ def create_checkout_session(request, plan, hospital_id):
     return redirect(session.url, code=303)
 
 #------------------------------------------------------------------------------------------------------
+def admin_view(request):
+    all_hospitals = Hospital.objects.all()
+    selected_status = request.GET.get("subscription_status")
+    selected_plan = request.GET.get("plan")
+    if selected_status:
+        all_hospitals = all_hospitals.filter(subscription_status=selected_status)
+    if selected_plan:
+        all_hospitals = all_hospitals.filter(plan=selected_plan)
+    plan_choices = all_hospitals.model.PLAN_CHOICES
+    status_choices = all_hospitals.model.SUBSCRIPTION_STATUS_CHOICES
+    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
+    num_patients = Patient.objects.all().count()
+    num_doctors = staffProfile.objects.filter(role="doctor").count()
+    num_nurses = staffProfile.objects.filter(role="nurse").count()
+    num_managers = staffProfile.objects.filter(role="manager").count()
+    status_demo = Registration.objects.values("status").annotate(count=Count("status"))
+    labels = [d["status"].capitalize() for d in status_demo]  # ["Pending", "Approved", "Paid"]
+    data = [d["count"] for d in status_demo] 
+    return render(request, "main/admin_dashboard.html",{"all_hospitals":all_hospitals,"num_hospitals":num_hospitals,"num_patients":num_patients
+                ,"num_doctors":num_doctors,"num_nurses":num_nurses,"num_managers":num_managers,"labels":labels,"data":data,
+                 "selected_status": selected_status,"selected_plan": selected_plan,"plan_choices":plan_choices,
+                  "status_choices":status_choices })
+#------------------------------------------------------------------------------------------------------
+def request_demo(request):
+    pending_demo = Registration.objects.filter(status="pending")
+    approved_demo = Registration.objects.filter(status="approved")
+    return render(request, "main/request_demo.html", {
+            "pending_demo": pending_demo,
+            "approved_demo": approved_demo
+        })
+
+#------------------------------------------------------------------------------------------------------
+def update_status(request,demo_id:int):
+
+    demo_request = Registration.objects.get(pk=demo_id)
+    demo_request.status = "approved"
+    demo_request.save()
+    return redirect('main:request_demo')
+#------------------------------------------------------------------------------------------------------
 
 def logout_view(request):
     logout(request)
     return render(request, "main/landing_page.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+def get_cities(request, country_id):
+    cities = City.objects.filter(country_id=country_id).order_by('name')
+    city_list = [{'id': c.id, 'name': c.name} for c in cities]
+    return JsonResponse({'cities': city_list})
+
+
+#------------------------------------------------------------------------------------------------------
+
+def get_logo_url(request=None):
+    if request:
+        return request.build_absolute_uri(static("images/logo_1.png"))
+    site_url = getattr(settings, "SITE_URL", "")
+    return f"{site_url}{static("images/logo_1.png")}"
