@@ -1,8 +1,21 @@
 from django.contrib import admin
-from .models import Registration
+from .models import Registration, Hospital, staffProfile
 from .views import send_payment_link_email
 
 # Register your models here.
+
+@admin.register(Hospital)
+class HospitalAdmin(admin.ModelAdmin):
+    list_display = ("name", "plan", "subscription_status", "created_at")
+    search_fields = ("name", "contact_email")
+    list_filter = ("plan", "subscription_status", "country")
+
+@admin.register(staffProfile)
+class StaffProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "role", "hospital", "is_active", "created_at")
+    search_fields = ("user__username", "user__email", "hospital__name")
+    list_filter = ("role", "is_active", "hospital")
+
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):

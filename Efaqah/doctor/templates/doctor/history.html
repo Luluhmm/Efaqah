@@ -36,7 +36,7 @@
                     <circle cx="9" cy="9" r="2"/>
                     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                 </svg>
-                CT Scans
+                Diagnosis
             </a>
 
             <!-- Back Button -->
@@ -63,41 +63,87 @@
     <div class="space-y-4">
         {% for record in records %}
         <div class="flex items-center justify-between bg-gray-50 border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            
-            <!-- Date Circle -->
-            <div class="flex-shrink-0 flex flex-col items-center justify-center w-16 h-16 bg-blue-100 rounded-full text-center text-sm font-semibold text-blue-700">
-                <span>{{ record.date|date:"d" }}</span>
-                <span>{{ record.date|date:"M" }}</span>
+      
+          <!-- Date Circle -->
+          <div class="flex-shrink-0 flex flex-col items-center justify-center w-16 h-16 bg-blue-100 rounded-full text-center text-sm font-semibold text-blue-700">
+            <span>{{ record.date|date:"d" }}</span>
+            <span>{{ record.date|date:"M" }}</span>
+          </div>
+      
+          <!-- Main Info -->
+          <div class="flex-1 ml-4">
+            {% with band="" %}
+              {% if record.stroke_risk >= 0.60 %}{% with band="High" %}{% endwith %}
+              {% elif record.stroke_risk >= 0.30 %}{% with band="Medium" %}{% endwith %}
+              {% else %}{% with band="Low" %}{% endwith %}
+              {% endif %}
+            {% endwith %}
+      
+            <div class="flex items-center gap-3">
+              <p class="text-sm text-gray-600">Estimated Risk</p>
+              <span class="px-3 py-1 rounded-full text-xs font-medium
+                {% if record.stroke_risk >= 0.60 %}bg-red-100 text-red-700
+                {% elif record.stroke_risk >= 0.30 %}bg-yellow-100 text-yellow-700
+                {% else %}bg-green-100 text-green-700{% endif %}">
+                {% if record.stroke_risk >= 0.60 %}High{% elif record.stroke_risk >= 0.30 %}Medium{% else %}Low{% endif %}
+              </span>
             </div>
-
-            <!-- Main Info -->
-            <div class="flex-1 ml-4">
-                <p><strong>Stroke Risk:</strong> 
-                    <span class="{% if record.stroke_risk > 0.7 %}text-red-600{% elif record.stroke_risk > 0.4 %}text-yellow-600{% else %}text-green-600{% endif %}">
-                        {{ record.stroke_risk }}
-                    </span>
-                </p>
-                <p><strong>CT Result:</strong> {{ record.ct_result }}</p>
-                <p><strong>Symptom Score:</strong> {{ record.symptom_score }}</p>
-
-                {% if record.symptoms %}
-                <div class="mt-2 text-sm text-gray-700 space-y-1">
-                    <p><strong>Hypertension:</strong> {{ record.symptoms.hypertension|yesno:"Yes,No" }}</p>
-                    <p><strong>Heart Disease:</strong> {{ record.symptoms.heart_disease|yesno:"Yes,No" }}</p>
-                    <p><strong>Stroke:</strong> {{ record.symptoms.stroke|yesno:"Yes,No" }}</p>
-                    <p><strong>Work Type:</strong> {{ record.symptoms.work_type }}</p>
-                    <p><strong>Smoking Status:</strong> {{ record.symptoms.smoking_status }}</p>
-                    <p><strong>BMI:</strong> {{ record.symptoms.bmi }}</p>
-                </div>
-                {% endif %}
+      
+            <p class="mt-1"><strong>Risk:</strong>
+              <span class="{% if record.stroke_risk > 0.7 %}text-red-600{% elif record.stroke_risk > 0.4 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                {{ record.stroke_risk|floatformat:2 }}
+              </span>
+            </p>
+            <p><strong>CT Result:</strong> {{ record.ct_result|default:"—" }}</p>
+            <p><strong>Symptom Score:</strong> {{ record.symptom_score|default:"—" }}</p>
+      
+            {% if record.symptoms %}
+            <div class="mt-2 text-sm text-gray-700 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
+              <p><strong>Gender:</strong> {{ record.symptoms.gender|default:"—" }}</p>
+              <p><strong>Residence:</strong> {{ record.symptoms.Residence_type|default:"—" }}</p>
+          
+              <p><strong>Age:</strong> {{ record.symptoms.age|default:"—" }}</p>
+              <p><strong>Glucose:</strong>
+                <span class="{% if record.symptoms.avg_glucose_level and record.symptoms.avg_glucose_level > 140 %}text-red-600{% else %}text-gray-800{% endif %}">
+                  {{ record.symptoms.avg_glucose_level|default:"—" }}
+                </span>
+              </p>
+          
+              <p><strong>Hypertension:</strong>
+                <span class="{% if record.symptoms.hypertension %}text-red-600{% else %}text-gray-800{% endif %}">
+                  {{ record.symptoms.hypertension|yesno:"Yes,No" }}
+                </span>
+              </p>
+              <p><strong>Heart Disease:</strong>
+                <span class="{% if record.symptoms.heart_disease %}text-red-600{% else %}text-gray-800{% endif %}">
+                  {{ record.symptoms.heart_disease|yesno:"Yes,No" }}
+                </span>
+              </p>
+              <p><strong>Smoking:</strong>
+                <span class="{% if record.symptoms.smoking_status == 'smokes' or record.symptoms.smoking_status == 'formerly smoked' %}text-red-600{% else %}text-gray-800{% endif %}">
+                  {{ record.symptoms.smoking_status }}
+                </span>
+              </p>
+              <p><strong>BMI:</strong>
+                <span class="{% if record.symptoms.bmi and record.symptoms.bmi > 30 %}text-yellow-700{% else %}text-gray-800{% endif %}">
+                  {{ record.symptoms.bmi }}
+                </span>
+              </p>
+          
+              <p><strong>Work Type:</strong> {{ record.symptoms.work_type }}</p>
             </div>
-
-            <!-- CT Image -->
-            {% if record.ct_image %}
-            <img src="{{ record.ct_image.url }}" alt="CT Scan" class="w-24 h-24 object-cover rounded-md border ml-4">
-            {% endif %}
+          {% endif %}
+          
+          </div>
+      
+          <!-- CT Image -->
+          {% if record.ct_image %}
+          <img src="{{ record.ct_image.url }}" alt="CT Scan" class="w-24 h-24 object-cover rounded-md border ml-4">
+          {% endif %}
         </div>
         {% endfor %}
+      </div>
+      
     </div>
     {% else %}
     <p class="text-gray-500">No history records available.</p>
