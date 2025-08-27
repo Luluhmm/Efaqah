@@ -17,6 +17,10 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+MODEL_CACHE_DIR = BASE_DIR / "model_cache"  # where downloads of the google dive models are stored
 
 
 # Quick-start development settings - unsuitable for production
@@ -32,7 +36,7 @@ ALLOWED_HOSTS = ['dd0669e62d57.ngrok-free.app', '.ngrok-free.app']
 
 ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost'])
 
-CSRF_TRUSTED_ORIGINS = ['https://dd0669e62d57.ngrok-free.app/', 'https://*.ngrok-free.app/']
+CSRF_TRUSTED_ORIGINS = ['https://dd0669e62d57.ngrok-free.app/', 'https://*.ngrok-free.app/',"http://127.0.0.1:8000", "http://localhost:8000"]
 
 
 # Application definition
@@ -50,6 +54,7 @@ INSTALLED_APPS = [
     'manager',
     'django_countries',
     'cities_light',
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [

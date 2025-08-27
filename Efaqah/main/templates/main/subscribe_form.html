@@ -87,10 +87,16 @@
         {% if messages %}
             <div class="mb-4">
                 {% for message in messages %}
-                    <div
-                        class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
-                        {{ message }}
-                    </div>
+                    {% if "success" in message.tags %}
+                            <script>
+                                alert("{{message|escapejs}}");
+                            </script>
+                        {% else %}
+                        <div
+                            class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% endif %}
