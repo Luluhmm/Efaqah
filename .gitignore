@@ -205,3 +205,16 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- Keep runtime cache & big DL weights out of Git ---
+model_cache/
+*.keras
+*.h5
+*.tflite
+*.onnx
+*.joblib
+
+# We DO want to commit classical ML artifacts in doctor/strokemodels
+!doctor/strokemodels/
+!doctor/strokemodels/*.pkl
+!doctor/strokemodels/*.json
