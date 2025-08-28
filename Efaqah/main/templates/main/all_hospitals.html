@@ -1,0 +1,85 @@
+{% extends 'doctor/base.html' %}
+{% block title %} All Hospitals {% endblock %}
+{% block content %}
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+    <div class="flex justify-end ">
+         <a href="{% url 'main:admin_view' %}"
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                ← Back
+            </a>
+    </div>
+<div class="flex justify-between items-center px-6 py-4 border-b">
+    <a href="" class="font-semibold text-lg ">Hospitals</a>
+    <form method="GET" action="{% url 'main:all_hospital_view' %}" class="flex flex-wrap gap-3 items-center mb-4">
+  <!-- Subscription Status -->
+  <div>
+    <label class="sr-only" for="subscription_status">Status</label>
+    <select name="subscription_status" id="subscription_status"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <option value="">Filter by Status</option>
+      {% for status, display in status_choices %}
+        <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Plan -->
+  <div>
+    <label class="sr-only" for="plan">Plan</label>
+    <select name="plan" id="plan"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <option value="">Filter by Plan</option>
+      {% for plan, display in plan_choices %}
+        <option value="{{ plan }}" {% if plan == selected_plan %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <button type="submit"
+            class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">
+      Filter
+    </button>
+  </div>
+
+</form>
+
+  </div>
+            <div class="p-6">
+                {% if all_hopitals %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Start Date</th>
+                                    <th class="px-4 py-2">End Date</th>
+                                    <th class="px-4 py-2">Status</th>
+                                    <th class="px-4 py-2">Subsicription</th>
+                                    <th class="px-4 py-2">Contact Email</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for hospital in all_hopitals %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2"><a href="{% url 'main:hospital_detail' hospital.id %}"class="text-blue-800">{{hospital.name}}</a></td>
+                                        <td class="px-4 py-2">{{hospital.subscription_start_date}}</td>
+                                        <td class="px-4 py-2">{{hospital.subscription_end_date}}</td>
+                                        <td class="px-4 py-2">{{hospital.subscription_status}}</td>
+                                        <td class="px-4 py-2">{{hospital.plan}}</td>
+                                        <td class="px-4 py-2">{{hospital.contact_email}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                <p class="text-gray-500">No Hospital added yet.</p>
+                {% endif %}
+            </div>
+            </div>
+
+</div>
+
+{%endblock%}

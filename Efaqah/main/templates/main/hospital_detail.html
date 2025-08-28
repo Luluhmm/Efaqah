@@ -1,0 +1,51 @@
+{% extends 'doctor/base.html' %}
+{% block title %}Hospital Detail{% endblock %}
+
+{% block content %}
+<div class="bg-white border shadow-md p-6 space-y-6 rounded-lg">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+        <h2 class="text-2xl text-gray-800">{{ hospital.name }} Details</h2>
+
+            <!-- Back Button -->
+            <a href="{% url 'main:all_hospital_view' %}"
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                ← Back
+            </a>
+    </div>
+<div class="space-y-6 mb-6">
+    <!-- Hospital Info -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">Hospital Info</h3>
+        <p><strong>Country:</strong>{{ country}}</p>
+        <p><strong>City:</strong> {{ hospital.city }}</p>
+        <p><strong>Address:</strong> {{ hospital.address }}</p>
+    </div>
+
+<hr class="border-gray-200">
+<div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">Subscription Info</h3>
+        <p><strong>Subscription Plan:</strong> {{ hospital.plan }}</p>
+        <p><strong>Subscription Status:</strong> {{ hospital.subscription_status }}</p>
+        <p><strong>Subscription Start Date:</strong> {{ hospital.subscription_start_date }}</p>
+        <p><strong>Subscription End Date:</strong> {{ hospital.subscription_end_date }}</p>
+    </div>
+
+<hr class="border-gray-200">  
+<div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">Hospital Overview</h3>
+        <p><strong>Total Doctors:</strong> {{ doctors }}</p>
+        <p><strong>Total Nurse:</strong> {{ nurses }}</p>
+        <p><strong>Total Patient:</strong> {{ patients }}</p>
+    </div>
+
+<hr class="border-gray-200">  
+    <!-- Contact Info -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800  mb-2">Contact Info</h3>
+        <p><strong>Phone:</strong> {{ hospital.contact_phone }}</p>
+        <p><strong>Email:</strong> {{ hospital.contact_email }}</p>
+    </div>
+</div>
+
+</div>
+{% endblock %}

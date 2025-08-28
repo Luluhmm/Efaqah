@@ -1,108 +1,128 @@
 {% extends 'doctor/base.html' %}
 {% block title %} Admin Dashboard {% endblock %}
 {% block content %}
-<!-- Numbers Section -->
+
+<!-- Top Metrics Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
     <!-- Total Hospitals -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600">Total Hospitals</p>
-                <p class="text-2xl font-semibold text-gray-900" id="total-hospitals">{{num_hospitals}}</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-lg">
-                <div class="bg-blue-100 p-3 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-            </div>
-            </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex items-center justify-between hover:shadow-lg transition">
+        <div>
+            <p class="text-sm text-gray-500 uppercase font-medium">Total Hospitals</p>
+            <p class="text-2xl font-bold text-gray-900">{{ num_hospitals }}</p>
+        </div>
+        <div class="bg-blue-100 p-3 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 lucide" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M3 21V3h18v18H3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 8v8M8 12h8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </div>
     </div>
 
     <!-- Total Nurses -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600">Total Nurses</p>
-                <p class="text-2xl font-semibold text-gray-900" id="total-nurses">{{num_nurses}}</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-lg">
-                <div class="bg-blue-100 p-3 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-            </div>
-            </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex items-center justify-between hover:shadow-lg transition">
+        <div>
+            <p class="text-sm text-gray-500 uppercase font-medium">Total Nurses</p>
+            <p class="text-2xl font-bold text-gray-900">{{ num_nurses }}</p>
+        </div>
+        <div class="bg-green-100 p-3 rounded-lg">
+            <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
         </div>
     </div>
 
     <!-- Total Doctors -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600">Total Doctors</p>
-                <p class="text-2xl font-semibold text-gray-900" id="total-doctors">{{num_doctors}}</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-lg">
-                <div class="bg-blue-100 p-3 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-            </div>
-            </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex items-center justify-between hover:shadow-lg transition">
+        <div>
+            <p class="text-sm text-gray-500 uppercase font-medium">Total Doctors</p>
+            <p class="text-2xl font-bold text-gray-900">{{ num_doctors }}</p>
+        </div>
+        <div class="bg-yellow-100 p-3 rounded-lg">
+            <svg class="w-6 h-6 text-yellow-600 lucide" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
         </div>
     </div>
 
     <!-- Total Patients -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600">Total Patients</p>
-                <p class="text-2xl font-semibold text-gray-900" id="total-patients">{{num_patients}}</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-lg">
-                <div class="bg-blue-100 p-3 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-            </div>
-            </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex items-center justify-between hover:shadow-lg transition">
+        <div>
+            <p class="text-sm text-gray-500 uppercase font-medium">Total Patients</p>
+            <p class="text-2xl font-bold text-gray-900">{{ num_patients }}</p>
+        </div>
+        <div class="bg-red-100 p-3 rounded-lg">
+            <svg class="w-6 h-6 text-red-600 lucide" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
         </div>
     </div>
+
 </div>
 
-<!-- Chart Section -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="flex items-center justify-between mb-4">
-        <p class="text-sm text-gray-600">Total Demo Status</p>
-        <a href="{% url 'main:request_demo'%}">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                Requested Demo
-            </button>
-        </a>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    <!-- Demo Requests Status -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-center justify-between mb-4">
+            <p class="text-sm text-gray-500 uppercase font-medium">Demo Requests Status</p>
+            <a href="{% url 'main:request_demo' %}">
+                <button type="button" class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">
+                    Requested Demo
+                </button>
+            </a>
+        </div>
+        <div class="h-64">
+            <canvas id="demoSatusChart"></canvas>
+        </div>
+        {{ labels|json_script:"labels-data" }}
+        {{ data|json_script:"data-data" }}
     </div>
 
-    <!-- Restrict chart width -->
-    <div class="max-w-sm mx-auto h-64">
-        <canvas id="demoSatusChart"></canvas>
+    <!-- Revenue Per Year -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition">
+        <p class="text-sm text-gray-500 uppercase font-medium mb-4">Revenue Per Year</p>
+        <div class="mb-4">
+            <select id="yearSelect" class="border rounded-lg px-3 py-2 w-full md:w-auto">
+                {% for year in revenue_by_year.keys %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+            <p class="text-lg font-semibold mt-2">Revenue: <span id="yearRevenue"></span> SAR</p>
+        </div>
+        <div class="h-64">
+            <canvas id="revenueChart" width="400" height="200"></canvas>
+        </div>
+        {{ revenue_by_year|json_script:"revenue-data" }}
     </div>
 
-    {{ labels|json_script:"labels-data" }}
-    {{ data|json_script:"data-data" }}
 </div>
+
+<!-- Total Revenue Card -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex items-center justify-between hover:shadow-lg transition mb-8">
+    <div>
+        <p class="text-sm text-gray-500 uppercase font-medium">Total Revenue</p>
+        <p class="text-2xl font-bold text-gray-900">{{ total_revenue }}$</p>
+    </div>
+    <div class="bg-blue-100 p-3 rounded-lg">
+        <!-- Blue Dollar Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 lucide" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+</div>
+
+
 
 <br>
 <br> 
@@ -110,44 +130,16 @@
 <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
 <div class="flex justify-between items-center px-6 py-4 border-b">
     <a href="" class="font-semibold text-lg ">Hospitals</a>
-    <form method="GET" action="{% url 'main:admin_view' %}" class="flex flex-wrap gap-3 items-center mb-4">
-  <!-- Subscription Status -->
-  <div>
-    <label class="sr-only" for="subscription_status">Status</label>
-    <select name="subscription_status" id="subscription_status"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      <option value="">Filter by Status</option>
-      {% for status, display in status_choices %}
-        <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ display }}</option>
-      {% endfor %}
-    </select>
-  </div>
 
-  <!-- Plan -->
-  <div>
-    <label class="sr-only" for="plan">Plan</label>
-    <select name="plan" id="plan"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      <option value="">Filter by Plan</option>
-      {% for plan, display in plan_choices %}
-        <option value="{{ plan }}" {% if plan == selected_plan %}selected{% endif %}>{{ display }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <!-- Submit Button -->
-  <div>
+    <a href="{% url 'main:all_hospital_view' %}">
     <button type="submit"
-            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-      Filter
+            class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">
+      More
     </button>
-  </div>
-
-</form>
-
+    </a>
   </div>
             <div class="p-6">
-                {% if all_hospitals %}
+                {% if latest_hospitals %}
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-600">
                             <thead class="bg-gray-100 text-gray-700 uppercase">
@@ -161,7 +153,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
-                                {% for hospital in all_hospitals %}
+                                {% for hospital in latest_hospitals %}
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 py-2">{{hospital.name}}</td>
                                         <td class="px-4 py-2">{{hospital.subscription_start_date}}</td>
@@ -175,7 +167,7 @@
                         </table>
                     </div>
                 {% else %}
-                <p class="text-gray-500">No doctors added yet.</p>
+                <p class="text-gray-500">No Hospital added yet.</p>
                 {% endif %}
             </div>
             </div>
@@ -235,5 +227,53 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+// Safely get revenue data from Django
+const revenueData = JSON.parse(document.getElementById("revenue-data").textContent);
+
+const ctx = document.getElementById("revenueChart").getContext("2d");
+let currentYear = document.getElementById("yearSelect").value;
+let monthlyRevenue = revenueData[currentYear];
+
+const chart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+        datasets: [{
+            label: "Monthly Revenue (SAR)",
+            data: monthlyRevenue,
+            fill: true,
+            backgroundColor: "rgba(59, 130, 246, 0.2)",
+            borderColor: "rgba(59, 130, 246, 1)",
+            tension: 0.3,
+            pointBackgroundColor: "rgba(59, 130, 246, 1)",
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Revenue (SAR)' } },
+            x: { title: { display: true, text: 'Month' } }
+        }
+    }
+});
+
+// Function to update chart and total revenue
+function updateChart(year) {
+    chart.data.datasets[0].data = revenueData[year];
+    chart.update();
+
+    const total = revenueData[year].reduce((a, b) => a + b, 0);
+    document.getElementById("yearRevenue").textContent = total.toLocaleString();
+}
+
+// Listen for dropdown changes
+document.getElementById("yearSelect").addEventListener("change", (e) => {
+    updateChart(e.target.value);
+});
+
+// Initialize total revenue on page load
+updateChart(currentYear);
+
 </script>
 {%endblock%}

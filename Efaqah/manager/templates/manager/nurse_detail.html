@@ -1,0 +1,31 @@
+{% extends 'doctor/base.html' %}
+{% block title %}Nurse Detail {% endblock %}
+{% block content %}
+<div class="bg-white border shadow-md p-6 space-y-6 rounded-lg">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+        <h2 class="text-2xl text-gray-800">{{nurse.user.first_name}} {{nurse.user.last_name}} Details</h2>
+
+            <!-- Back Button -->
+            <a href="{% url 'manager:all_nurse' %}"
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                ← Back
+            </a>
+    </div>
+<div class="space-y-6 mb-6">
+    <!-- Hospital Info -->
+    <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">Personal Info</h3>
+        <p><strong>User name:</strong> {{ nurse.user.username}}</p>
+        <p><strong>Email:</strong> {{ nurse.user.email }}</p>
+        <p><strong>Date Joined:</strong> {{ nurse.created_at }}</p>
+        {%if nurse.is_active == 1%}
+          <p><strong>Status:</strong> Active</p>
+        {% else %}
+        <p><strong>Status:</strong> Inactive</p>
+        {% endif %}
+    </div>
+
+</div>
+
+</div>
+{%endblock%}
