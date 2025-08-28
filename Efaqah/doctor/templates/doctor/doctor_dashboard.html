@@ -1,210 +1,251 @@
 {% extends 'doctor/base.html' %}
 {% block title %}Doctor Dashboard{% endblock %}
-<style>
 
-</style>
 {% block content %}
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
 
-    <!-- My Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
-        <div class="flex flex-col">
-            <p class="text-sm text-gray-600">My Patients</p>
-            <p class="text-2xl font-semibold">{{ patient_num }}</p>
-        </div>
-        <div class="bg-blue-100 p-3 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-        </div>
+  <!-- My Patients -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
+    <div>
+      <p class="text-sm text-gray-600">My Patients</p>
+      <p class="text-2xl font-semibold">{{ patient_num }}</p>
+      <a href="{% url 'doctor:all_patient_view' %}"
+         class="inline-block mt-2 text-sm text-blue-700 hover:underline">View all</a>
     </div>
-
-    <!-- Critical Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
-        <div class="flex flex-col">
-            <p class="text-sm text-gray-600">Critical Patients</p>
-            <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
-        </div>
-        <div class="bg-red-100 p-3 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-red-600 lucide" viewBox="0 0 24 24">
-                <path d="M12 9v4"/>
-                <path d="M12 17h.01"/>
-                <circle cx="12" cy="12" r="10"/>
-            </svg>
-        </div>
+    <div class="bg-blue-100 p-3 rounded-lg">
+      <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
     </div>
+  </div>
 
-    <!-- Patients This Month -->
-    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
-        <div class="flex flex-col">
-            <p class="text-sm text-gray-600">New Patients This Month</p>
-            <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
-        </div>
-        <div class="bg-green-100 p-3 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
-                <path d="M12 4v16"/>
-                <path d="M4 12h16"/>
-            </svg>
-        </div>
+  <!-- Critical Patients -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
+    <div>
+      <p class="text-sm text-gray-600">Critical Patients</p>
+      <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
+      <a href="{% url 'doctor:all_patient_view' %}?critical=1"
+         class="inline-block mt-2 text-sm text-red-700 hover:underline">View critical</a>
     </div>
-
-    <!-- High Stroke Risk Patients -->
-    <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center">
-        <div class="flex flex-col">
-            <p class="text-sm text-gray-600">High Stroke Risk</p>
-            <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
-        </div>
-        <div class="bg-yellow-100 p-3 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-yellow-600 lucide" viewBox="0 0 24 24">
-                <path d="M12 8v4"/>
-                <path d="M12 16h.01"/>
-                <circle cx="12" cy="12" r="10"/>
-            </svg>
-        </div>
+    <div class="bg-red-100 p-3 rounded-lg">
+      <svg class="w-6 h-6 text-red-600 lucide" viewBox="0 0 24 24">
+        <path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/>
+      </svg>
     </div>
+  </div>
 
+  <!-- High Stroke Risk -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
+    <div>
+      <p class="text-sm text-gray-600">High Stroke Risk - Requires Close Monitoring</p>
+      <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
+      <a href="{% url 'doctor:all_patient_view' %}?highrisk=1"
+         class="inline-block mt-2 text-sm text-yellow-700 hover:underline">View high-risk</a>
+    </div>
+    <div class="bg-yellow-100 p-3 rounded-lg">
+      <svg class="w-6 h-6 text-yellow-600 lucide" viewBox="0 0 24 24">
+        <path d="M12 8v4"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="10"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- New Patients This Month -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
+    <div>
+      <p class="text-sm text-gray-600">New Patients This Month</p>
+      <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
+    </div>
+    <div class="bg-green-100 p-3 rounded-lg">
+      <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
+        <path d="M12 4v16"/><path d="M4 12h16"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Trend Alerts -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
+    <div>
+      <p class="text-sm text-gray-600">Clinical Alerts</p>
+      <p class="text-2xl font-semibold">{{ trend_alerts_num }}</p>
+      <p class="text-xs text-gray-500 mt-1">BMI/Glucose/Symptom score worsened</p>
+    </div>
+    <div class="bg-purple-100 p-3 rounded-lg">
+      <svg class="w-6 h-6 text-purple-600 lucide" viewBox="0 0 24 24">
+        <polyline points="3 17 9 11 13 15 21 7"/>
+        <polyline points="14 7 21 7 21 14"/>
+      </svg>
+    </div>
+  </div>
 </div>
 
-
-<!-- Patient List -->
-<div class="bg-white rounded-lg border shadow-sm p-6">
-    <div class="flex justify-between mb-4">
-        <h2 class="text-xl font-semibold text-blue-800 p-3">Patient List ({{ patient_num }})</h2>
-        <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." 
-               class="border rounded-lg px-3 py-2 w-80">
-    </div>
-
-    <div id="patient-overview-list" class="space-y-4">
-        {% if page_obj %}
-        {% for patient in page_obj %}
-        <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between" 
-             data-name="{{ patient.first_name }} {{ patient.last_name }}"
-             data-id="{{ patient.patient_id }}"
-             data-phone="{{ patient.phone_number }}">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span class="bg-blue-100 text-blue-700 font-medium rounded-full w-12 h-12 flex items-center justify-center">
-                        {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
-                    </span>
-                </div>
-                <div>
-                    <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg ">{{ patient.first_name }} {{ patient.last_name }}</a>
-                    <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
-                    <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
-                </div>
-            </div>
-            <a href="{% url 'doctor:patient_detail_view' patient.id %}" 
-               class="inline-flex items-center justify-center rounded-md text-sm font-medium  border-input bg-green-100 
-              hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
-        <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
-            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-            <circle cx="12" cy="12" r="3"/>
-        </svg>
-                View
-            </a>
-        </div>
-        {% endfor %}
-        {%endif%}
-    </div>
-<!-- Pagination -->
-{% if page_obj.has_other_pages %}
-<nav class="flex justify-center mt-6" aria-label="Page navigation">
-  <ul class="inline-flex items-center -space-x-px">
-
-    <!-- Previous -->
-    {% if page_obj.has_previous %}
-      <li>
-        <a href="?page={{ page_obj.previous_page_number }}"
-           class="px-3 py-2 ml-0 leading-tight text-blue-600 bg-white border border-gray-300 rounded-l-lg hover:bg-blue-50 hover:text-blue-700">
-          &laquo;
+<!-- who is unstable -->
+{% if unstable_details %}
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+  <h3 class="text-lg font-semibold text-blue-800 mb-3">Clinical Alerts </h3>
+  <ul class="space-y-2">
+    {% for item in unstable_details %}
+      <li class="flex flex-wrap items-center gap-2 border rounded p-3">
+        <a href="{% url 'doctor:patient_detail_view' item.patient.id %}" class="font-medium text-gray-800 hover:underline">
+          {{ item.patient.first_name }} {{ item.patient.last_name }}
         </a>
-      </li>
-    {% else %}
-      <li>
-        <span
-           class="px-3 py-2 ml-0 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-l-lg cursor-not-allowed">
-          &laquo;
-        </span>
-      </li>
-    {% endif %}
-
-    <!-- Page numbers -->
-    {% for num in page_obj.paginator.page_range %}
-      {% if page_obj.number == num %}
-        <li>
-          <span
-            class="px-3 py-2 leading-tight text-white bg-blue-600 border border-blue-600">
-            {{ num }}
+        <!-- {% if item.score_up %}
+          <span class="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+            Symptom score increased ({{ item.score_from|default:"—" }} → {{ item.score_to|default:"—" }})
           </span>
-        </li>
-      {% else %}
-        <li>
-          <a href="?page={{ num }}"
-             class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">
-            {{ num }}
-          </a>
-        </li>
-      {% endif %}
+        {% endif %} -->
+        {% if item.glucose_up %}
+          <span class="text-xs px-2 py-1 rounded-full bg-red-50 text-red-800 border border-red-200">
+            Glucose high ({{ item.glucose_from|default:"—" }} → {{ item.glucose_to|default:"—" }})
+          </span>
+        {% endif %}
+        {% if item.bmi_up %}
+          <span class="text-xs px-2 py-1 rounded-full bg-yellow-50 text-yellow-800 border border-yellow-200">
+            BMI high ({{ item.bmi_from|default:"—" }} → {{ item.bmi_to|default:"—" }})
+          </span>
+        {% endif %}
+      </li>
     {% endfor %}
-
-    <!-- Next -->
-    {% if page_obj.has_next %}
-      <li>
-        <a href="?page={{ page_obj.next_page_number }}"
-           class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 rounded-r-lg hover:bg-blue-50 hover:text-blue-700">
-          &raquo;
-        </a>
-      </li>
-    {% else %}
-      <li>
-        <span
-          class="px-3 py-2 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-r-lg cursor-not-allowed">
-          &raquo;
-        </span>
-      </li>
-    {% endif %}
-
   </ul>
-</nav>
+</div>
 {% endif %}
 
+<!-- Patient List (search keeps your styling) -->
+<div class="bg-white rounded-lg border shadow-sm p-6">
+  <div class="flex justify-between mb-4">
+    <h2 class="text-xl font-semibold text-blue-800 p-3">
+      Patient List ({{ page_obj.paginator.count }})
+      {% if request.GET.critical == '1' %}
+        <span class="text-red-600 text-sm font-normal">• Critical only</span>
+      {% endif %}
+      {% if request.GET.highrisk == '1' %}
+        <span class="text-yellow-600 text-sm font-normal ml-2">• High risk only</span>
+      {% endif %}
+    </h2>
+    <input
+    type="text"
+    id="patient-search"
+    placeholder="Search by name, ID, or phone..."
+    class="border rounded-lg px-3 py-2 w-80"
+    />
+  </div>
 
-<!-- Empty state -->
-<p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
+  <div id="patient-overview-list" class="space-y-4">
+    {% if page_obj %}
+      {% for patient in page_obj %}
+      <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between"
+           data-name="{{ patient.first_name }} {{ patient.last_name }}"
+           data-id="{{ patient.patient_id }}"
+           data-phone="{{ patient.phone_number }}">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="bg-blue-100 text-blue-700 font-medium rounded-full w-12 h-12 flex items-center justify-center">
+              {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+            </span>
+          </div>
+          <div>
+            <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg">
+              {{ patient.first_name }} {{ patient.last_name }}
+            </a>
+            <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
+            <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
+          </div>
+        </div>
+        <a href="{% url 'doctor:patient_detail_view' patient.id %}"
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-100 h-9 px-3 text-green-700 hover:scale-105 transition-all duration-300">
+          View
+        </a>
+      </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+<br><br>
+
+<!-- Recent Activity -->
+<div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
+  <h3 class="text-xl font-semibold text-blue-800 mb-4">Recent Diagnoses</h3>
+  {% if recent_records %}
+  <div class="space-y-3">
+    {% for r in recent_records %}
+      <div class="flex items-center justify-between border rounded-lg p-3">
+        <div class="text-sm">
+          <p class="font-medium">
+            {{ r.patient.first_name }} {{ r.patient.last_name }}
+            <span class="ml-2 text-gray-500">({{ r.date }})</span>
+          </p>
+          <p class="text-gray-600">
+            {% if r.symptoms %}
+            Symptoms assessment — Risk: {{ r.risk_pct|floatformat:1 }}%
+          {% else %}
+            Imaging (CNN) — Confidence: {{ r.risk_pct|floatformat:1 }}%, {{ r.ct_result }}
+          {% endif %}
+          </p>
+        </div>
+        <a href="{% url 'doctor:patient_detail_view' r.patient.id %}"
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-blue-100 text-blue-700 h-9 px-3 hover:bg-blue-200">
+           View
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="text-gray-500 text-sm">No recent activity.</p>
+  {% endif %}
+</div>
+
+
+
+<!-- pagination -->
+  {% if page_obj.has_other_pages %}
+  <nav class="flex justify-center mt-6" aria-label="Page navigation">
+    <ul class="inline-flex items-center -space-x-px">
+      {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 ml-0 leading-tight text-blue-600 bg-white border border-gray-300 rounded-l-lg hover:bg-blue-50 hover:text-blue-700">&laquo;</a></li>
+      {% else %}
+      <li><span class="px-3 py-2 ml-0 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-l-lg cursor-not-allowed">&laquo;</span></li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li><span class="px-3 py-2 leading-tight text-white bg-blue-600 border border-blue-600">{{ num }}</span></li>
+        {% else %}
+        <li><a href="?page={{ num }}" class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 rounded-r-lg hover:bg-blue-50 hover:text-blue-700">&raquo;</a></li>
+      {% else %}
+      <li><span class="px-3 py-2 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-r-lg cursor-not-allowed">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
 </div>
 {% endblock %}
-
 
 {% block scripts %}
 <script>
 function filterPatients() {
-    const query = document.getElementById('patient-search').value.toLowerCase();
-    const cards = document.querySelectorAll('#patient-overview-list .patient-card');
-    let anyVisible = false;
-
-    cards.forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const id = card.dataset.id.toLowerCase();
-        const phone = card.dataset.phone.toLowerCase();
-
-        if (name.includes(query) || id.includes(query) || phone.includes(query)) {
-            card.style.display = 'flex';
-            anyVisible = true;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    const emptyState = document.getElementById('empty-state');
-    if (emptyState) {
-        emptyState.style.display = anyVisible ? 'none' : 'block';
+  const query = document.getElementById('patient-search').value.toLowerCase();
+  const cards = document.querySelectorAll('#patient-overview-list .patient-card');
+  let anyVisible = false;
+  cards.forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const id = (card.dataset.id || '').toLowerCase();
+    const phone = (card.dataset.phone || '').toLowerCase();
+    if (name.includes(query) || id.includes(query) || phone.includes(query)) {
+      card.style.display = 'flex'; anyVisible = true;
+    } else {
+      card.style.display = 'none';
     }
+  });
+  document.getElementById('empty-state').style.display = anyVisible ? 'none' : 'block';
 }
-
-// Bind the search input
 document.getElementById('patient-search').addEventListener('input', filterPatients);
 </script>
 {% endblock %}
