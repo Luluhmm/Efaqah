@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Portal - Professional Medical Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.3)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .lucide { 
+        width: 1em; 
+        height: 1em; 
+        stroke: currentColor; 
+        stroke-width: 2; 
+        fill: none; 
+        stroke-linecap: round; 
+        stroke-linejoin: round; 
+    }
+
+    .bg-gradient-animated { 
+        background: linear-gradient(-45deg, #d4d8ea, #c2d3ff, #dbe4f5, #acc4e4, #e1e9f6, #c9d9f7); 
+        background-size: 400% 400%; 
+        animation: gradientShift 15s ease infinite; 
+    }
+
+    @keyframes gradientShift { 
+        0% { background-position: 0% 50%; } 
+        50% { background-position: 100% 50%; } 
+        100% { background-position: 0% 50%; } 
+    }
+
+    .glass-effect { 
+        backdrop-filter: blur(20px); 
+        background: rgba(255,255,255,0.1); 
+        border: 1px solid rgba(255,255,255,0.2); 
+    }
+
+    .button-glow:hover { 
+        animation: glow 0.5s ease-in-out; 
+    }
+
+    .text-shadow { 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
+
+    .particles { 
+        position: absolute; 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        z-index: 1; 
+    }
+
+    @keyframes particleFloat { 
+        0% { transform: translateY(600px) rotate(0deg); opacity:0; } 
+        10% { opacity:1; } 
+        90% { opacity:1; } 
+        100% { transform: translateY(-200px) rotate(360deg); opacity:0; } 
+    }
+</style>
+
+</head>
+<body>
+<div class="min-h-screen bg-gradient-animated overflow-hidden">
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4 z-10">
+<br>
+        <!-- Logo -->
+        <div class="animate-fade-in mb-8 flex justify-center">
+            <a href="{% url 'main:landing_page' %}">
+                <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-24 w-auto">
+            </a>
+        </div>
+
+        <!-- Intro Text -->
+        <div class="animate-fade-in animation-delay-200 mb-12 max-w-3xl text-center">
+            <p class="text-lg md:text-xl text-blue-900 leading-relaxed tracking-wide drop-shadow-lg px-4"
+               style="font-family: 'Poppins', sans-serif;">
+                At Efaqah, we value our users’ privacy and are committed to protecting their data. Below we explain how we handle information:
+            </p>
+        </div>
+
+        <!-- Features Grid (3 + 2 layout) -->
+        <div class="animate-fade-in animation-delay-400 mb-12 w-full max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Row 1 -->
+                <!-- Data Collection -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center bg-white/20 text-blue-900 hover:scale-105 transition-transform duration-300">
+                    <div class="bg-blue-700/50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2 text-center">Data Collection</h3>
+                    <br>
+                    <p class="text-sm text-center">A. We collect some basic information during registration or while using the app, such as name, mobile number, and email address.</p>
+                    <br>
+                    <p class="text-sm text-center">B. Health-related data may also be collected if provided by the user (such as weight).</p>
+                </div>
+
+                <!-- Use of Data -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center bg-white/20 text-blue-900 hover:scale-105 transition-transform duration-300">
+                    <div class="bg-blue-700/50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2 text-center">Use of Data</h3>
+                    <br>
+                    <p class="text-sm text-center">A. Your data is used only to provide medical services directly or indirectly, or for educational and awareness purposes through the app.</p>
+                    <br>
+                    <p class="text-sm text-center">B. The data helps us improve service quality and communicate with you when needed.</p>
+                </div>
+
+                <!-- Data Sharing -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center bg-white/20 text-blue-900 hover:scale-105 transition-transform duration-300">
+                    <div class="bg-blue-700/50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2 text-center">Data Sharing</h3>
+                    <br>
+                    <p class="text-sm text-center">We do not share your data with third parties except in the following cases:</p>
+                    <p class="text-sm text-center">A. With your explicit consent.</p>
+                    <br>
+                    <p class="text-sm text-center">B. If required by law or to protect your safety.</p>
+                    <br>
+                    <p class="text-sm text-center">C. With trusted service providers (such as payment or cloud storage providers), who are obligated to maintain confidentiality.</p>
+                </div>
+
+                <!-- Row 2 -->
+                <!-- Data Protection -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center bg-white/20 text-blue-900 hover:scale-105 transition-transform duration-300 sm:col-span-1 lg:col-span-1">
+                    <div class="bg-blue-700/50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2 text-center">Data Protection</h3>
+                    <br>
+                    <p class="text-sm mb-2 text-center">A. We apply technical and organizational measures to protect your data from unauthorized access or unlawful use.</p>
+                    <br>
+                    <p class="text-sm mb-2 text-center">B. Data is retained only for as long as necessary to provide the service or comply with legal requirements.</p>
+                </div>
+
+                <!-- User Rights -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center bg-white/20 text-blue-900 hover:scale-105 transition-transform duration-300 sm:col-span-1 lg:col-span-1">
+                    <div class="bg-blue-700/50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 lucide" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2 text-center">User Rights</h3>
+                    <br>
+                    <p class="text-sm text-center">A. You have the right to request access to your data, correct it, or delete it.</p>
+                    <br>
+                    <p class="text-sm text-center">B. You can withdraw your consent to the use of your data at any time by contacting us.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="animate-fade-in animation-delay-600 flex justify-center mt-8">
+            <a href="{% url 'main:login' %}" 
+               class="w-48 py-3 text-lg text-white bg-blue-900 rounded-full shadow-lg hover:bg-blue-800 transform hover:scale-105 transition-all duration-300 text-center">
+                Back
+            </a>
+        </div>
+
+    </div>
+</div>
+</body>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize animations and particles
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for scroll animations
+            document.querySelectorAll('.glass-effect').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

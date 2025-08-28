@@ -216,7 +216,7 @@
                             <a href="{% url 'nurse:view_patient' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-100 hover:scale-105 transition-all duration-300 h-8 px-3 text-green-700">
                                 <svg class="w-5 h-5 mr-1 lucide" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </a>
-                            <a href="{% url 'manager:update_patient_view' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-8 px-3 text-yellow-700">
+                            <a href="{% url 'nurse:update_patient_view' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-8 px-3 text-yellow-700">
                                 <span class="material-symbols-outlined text-sm">edit_square</span>
                             </a>
                             <a href="{% url 'nurse:delete_patient_view' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-8 px-3 text-red-700">

@@ -19,5 +19,6 @@ urlpatterns = [
     path('update/request_demo/<int:demo_id>/',views.update_status,name="update_status"),
     path('all_hospital/',views.all_hospital_view,name="all_hospital_view"),
     path('hospital_detail/<int:hospital_id>',views.hospital_detail,name="hospital_detail"),
+    path('privacy/',views.privacy_view,name="privacy_view"),
     path('logout/',views.logout_view,name="logout_view"),
 ]
