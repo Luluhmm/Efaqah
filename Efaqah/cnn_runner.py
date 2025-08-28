@@ -6,7 +6,6 @@ from PIL import Image
 import numpy as np
 # pyright: reportMissingImports=false
 
-# TensorFlow imports must be in this env
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 

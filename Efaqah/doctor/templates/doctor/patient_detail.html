@@ -1,69 +1,95 @@
 {% extends 'doctor/base.html' %}
-{% block title %}Patient Detail{% endblock %}
+{% block title %}Patient — Personal Info{% endblock %}
 
 {% block content %}
 <div class="bg-white border shadow-md p-6 space-y-6 rounded-lg">
-    <!-- Header with Patient Name and Actions -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-        <h2 class="text-2xl text-gray-800">{{ patient.first_name }} {{ patient.last_name }} Details</h2>
-        <nav class="flex flex-wrap gap-2">
-            <!-- Details Button -->
-            <!-- Details Button -->
-            <a href="{% url 'doctor:patient_detail_view' patient.id %}"
-            class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium
-            {% if request.resolver_match.url_name == 'patient_detail_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">
-                <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
-                Details
-            </a>
-            <!-- History Button -->
-            <a href="{% url 'doctor:history_view' patient.id %}"
-               class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
-                <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12,6 12,12 16,14"/>
-                </svg>
-                History
-            </a>
 
-            <!-- CT Scans Button -->
-            <a href="{% url 'doctor:add_ct_view' patient.id %}"
-               class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
-                <svg class="w-4 h-4 lucide" viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="9" cy="9" r="2"/>
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                </svg>
-                Diagnosis
-            </a>
+  <!-- Header + Tabs -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h2 class="text-2xl text-gray-800">{{ patient.first_name }} {{ patient.last_name }} — Personal Info</h2>
+    <nav class="flex flex-wrap gap-2">
+      <a href="{% url 'doctor:patient_detail_view' patient.id %}"
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'patient_detail_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">
+        <svg class="w-4 h-4 lucide" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Personal Info
+      </a>
 
-            <!-- Back Button -->
-            <a href="{% url 'doctor:doctor_dashboard' %}"
-               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
-                ← Back
-            </a>
-        </nav>
-    </div>
-<div class="space-y-6 mb-6">
-    <!-- Personal Info -->
+      <a href="{% url 'doctor:history_view' patient.id %}"
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'history_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">
+        <svg class="w-4 h-4 lucide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Medical History
+      </a>
+
+      <a href="{% url 'doctor:add_ct_view' patient.id %}"
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'add_ct_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">
+        <svg class="w-4 h-4 lucide" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        New Diagnosis
+      </a>
+
+      <a href="{% url 'doctor:doctor_dashboard' %}"
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+        Dashboard
+      </a>
+    </nav>
+  </div>
+
+  <!-- Personal Info -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="bg-white rounded-xl shadow-sm border p-6">
-        <h3 class="text-xl font-semibold text-blue-800 mb-2">Personal Info</h3>
-        <p><strong>Age:</strong> {{ patient.age }}</p>
-        <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
-        <p><strong>Doctor Name:</strong> {{ patient.doctor.user.get_full_name }}</p>
-        <p><strong>Email:</strong> {{ patient.email|default:"Not provided" }}</p>
+      <h3 class="text-xl font-semibold text-blue-800 mb-2">General</h3>
+      <p><strong>Full Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</p>
+      <p><strong>Age:</strong> {{ patient.age }}</p>
+      <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
+      <p><strong>Residence:</strong> {{ patient.get_residence_type_display|default:"Not provided" }}</p>
     </div>
-<hr class="border-gray-200">
-    <!-- Contact Info -->
+
     <div class="bg-white rounded-xl shadow-sm border p-6">
-        <h3 class="text-xl font-semibold text-blue-800 mb-2">Contact Info</h3>
-        <p><strong>Phone:</strong> {{ patient.phone_number|default:"Not provided" }}</p>
-        <p><strong>Emergency Phone:</strong> {{ patient.emergency_phone|default:"Not provided" }}</p>
-        <p><strong>Residence:</strong> {{ patient.get_residence_type_display|default:"Not provided" }}</p>
+      <h3 class="text-xl font-semibold text-blue-800 mb-2">Contacts</h3>
+      <p><strong>Phone:</strong> {{ patient.phone_number|default:"Not provided" }}</p>
+      <p><strong>Emergency Phone:</strong> {{ patient.emergency_phone|default:"Not provided" }}</p>
+      <p><strong>Email:</strong> {{ patient.email|default:"Not provided" }}</p>
+      <p><strong>Assigned Doctor:</strong> {{ patient.doctor.user.get_full_name }}</p>
     </div>
-</div>
+  </div>
+
+  <!-- Mini summary -->
+  <div class="bg-white rounded-xl border p-6">
+    <h3 class="text-xl font-semibold text-blue-800 mb-4">Latest Summary</h3>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div>
+        <p class="font-medium mb-2">Last 3 Assessments</p>
+        {% if last_records %}
+          <ul class="space-y-2 text-sm">
+            {% for r in last_records %}
+              <li class="border rounded p-3">
+                <span class="text-gray-600">{{ r.date }}</span> —
+                Risk: <strong>{{ r.risk_pct|floatformat:1 }}%</strong>
+                {% if r.symptoms %}
+                  • Symptoms-based (Score: {{ r.symptom_score|floatformat:1 }})
+                {% else %}
+                  • CNN: {{ r.ct_result }}
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-gray-500 text-sm">No records.</p>
+        {% endif %}
+      </div>
+      <div>
+        <p class="font-medium mb-2">Recent Scans</p>
+        {% if last_scans %}
+        <div class="grid grid-cols-5 gap-2">
+          {% for rec in last_scans %}
+            <img src="{{ rec.ct_image.url }}" alt="CT" class="w-20 h-20 object-cover rounded border">
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-gray-500 text-sm">No scans yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
 </div>
 {% endblock %}

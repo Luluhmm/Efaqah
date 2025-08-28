@@ -1,49 +1,36 @@
 {% extends 'doctor/base.html' %}
 {% load widget_tweaks %}
 
+{% block title %}Patient — New Diagnosis{% endblock %}
 {% block content %}
 <div class="bg-white rounded-lg border shadow-sm p-6">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl text-gray-800">
-      {{ patient.first_name }} {{ patient.last_name }} — Patient Diagnosis
-    </h2>
-
+    <h2 class="text-2xl text-gray-800">{{ patient.first_name }} {{ patient.last_name }} — New Diagnosis</h2>
     <nav class="flex flex-wrap gap-2">
       <a href="{% url 'doctor:patient_detail_view' patient.id %}"
-         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">Details</a>
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">Personal Info</a>
       <a href="{% url 'doctor:history_view' patient.id %}"
-         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'history_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">History</a>
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">Medical History</a>
       <a href="{% url 'doctor:add_ct_view' patient.id %}"
-         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'add_ct_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">Diagnosis</a>
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 gap-2 text-sm font-medium {% if request.resolver_match.url_name == 'add_ct_view' %}bg-blue-500 text-white{% else %}bg-blue-100 text-blue-700 hover:bg-blue-200{% endif %}">New Diagnosis</a>
       <a href="{% url 'doctor:doctor_dashboard' %}"
-         class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">← Back</a>
+         class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Dashboard</a>
     </nav>
   </div>
 
   <hr class="my-4">
 
   <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-    <!-- ======= Symptoms Risk (Tabular) ======= -->
+    <!-- Symptoms Risk (Tabular ML) -->
     <section class="border rounded-2xl p-6 bg-white">
       <h3 class="text-xl font-semibold mb-4">Risk Assessment (Symptoms)</h3>
       {% if error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ error }}</div>{% endif %}
 
-      <!-- Read-only patient factors drawn from nurse profile -->
+      <!-- Read-only factors from patient -->
       <div class="mb-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="bg-gray-50 border rounded-lg p-3">
-          <p class="text-xs text-gray-500">Gender</p>
-          <p class="font-medium">{{ patient.get_gender_display }}</p>
-        </div>
-        <div class="bg-gray-50 border rounded-lg p-3">
-          <p class="text-xs text-gray-500">Age</p>
-          <p class="font-medium">{{ patient.age }}</p>
-        </div>
-        <div class="bg-gray-50 border rounded-lg p-3">
-          <p class="text-xs text-gray-500">Residence</p>
-          <p class="font-medium">
-            {% if patient.residence_type %}{{ patient.get_residence_type_display }}{% else %}—{% endif %}
-          </p>
-        </div>
+        <div class="bg-gray-50 border rounded-lg p-3"><p class="text-xs text-gray-500">Gender</p><p class="font-medium">{{ patient.get_gender_display }}</p></div>
+        <div class="bg-gray-50 border rounded-lg p-3"><p class="text-xs text-gray-500">Age</p><p class="font-medium">{{ patient.age }}</p></div>
+        <div class="bg-gray-50 border rounded-lg p-3"><p class="text-xs text-gray-500">Residence</p><p class="font-medium">{% if patient.residence_type %}{{ patient.get_residence_type_display }}{% else %}—{% endif %}</p></div>
       </div>
 
       <form method="post" class="space-y-4">
@@ -52,7 +39,6 @@
           <div><label class="block text-sm text-gray-700">{{ form.ever_married.label }}</label>{{ form.ever_married }}</div>
           <div><label class="block text-sm text-gray-700">{{ form.work_type.label }}</label>{{ form.work_type }}</div>
           <div><label class="block text-sm text-gray-700">{{ form.smoking_status.label }}</label>{{ form.smoking_status }}</div>
-
           <div><label class="block text-sm text-gray-700">{{ form.hypertension.label }}</label>{{ form.hypertension }}</div>
           <div><label class="block text-sm text-gray-700">{{ form.heart_disease.label }}</label>{{ form.heart_disease }}</div>
           <div><label class="block text-sm text-gray-700">{{ form.avg_glucose_level.label }}</label>{{ form.avg_glucose_level }}</div>
@@ -64,7 +50,7 @@
                   class="inline-flex items-center rounded-md bg-gray-900 text-white px-4 py-2 text-sm hover:opacity-90">
             Assess Risk
           </button>
-          <p class="text-xs text-gray-500">Outputs a probability and risk band.</p>
+          <p class="text-xs text-gray-500">Outputs: Probability (%), band, decision.</p>
         </div>
       </form>
 
@@ -87,14 +73,12 @@
       {% endif %}
     </section>
 
-    <!-- ======= Imaging Classifier (CNN) ======= -->
+    <!-- Imaging Classifier (CNN) -->
     <section class="border rounded-2xl p-6 bg-white">
-      <h3 class="text-xl font-semibold mb-4">Imaging Classifier</h3>
+      <h3 class="text-xl font-semibold mb-4">Imaging (CT) — CNN</h3>
       {% if cnn_error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ cnn_error }}</div>{% endif %}
 
-      <!-- Big preview panel -->
-      <div id="ctPreview"
-           class="relative mb-4 border-2 border-dashed rounded-2xl p-4 flex items-center justify-center min-h-[280px] bg-gray-50">
+      <div id="ctPreview" class="relative mb-4 border-2 border-dashed rounded-2xl p-4 flex items-center justify-center min-h-[280px] bg-gray-50">
         <img id="ctPreviewImg" src="" alt="CT Preview" class="max-h-[420px] w-auto rounded-xl hidden" />
         <div id="ctPreviewPlaceholder" class="text-center text-gray-500">
           <p class="font-medium">Upload a CT image to preview</p>
@@ -126,7 +110,7 @@
       <div class="mt-5 p-5 bg-gray-50 border rounded-xl">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Image Assessment</p>
+            <p class="text-sm text-gray-600">CNN Confidence</p>
             <p class="text-2xl font-semibold">{{ cnn_result.prob_pct }}%</p>
             <p class="text-sm text-gray-500">Decision: {{ cnn_result.label }}</p>
           </div>
@@ -139,35 +123,43 @@
         </div>
       </div>
       {% endif %}
+
+      <!-- Last 5 scans -->
+      <div class="mt-6">
+        <p class="font-medium mb-2">Recent Scans</p>
+        {% if last_scans %}
+          <div class="grid grid-cols-5 gap-2">
+            {% for rec in last_scans %}
+              <img src="{{ rec.ct_image.url }}" alt="CT" class="w-20 h-20 object-cover rounded border">
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-gray-500 text-sm">No scans yet.</p>
+        {% endif %}
+      </div>
     </section>
   </div>
 </div>
 
-<!-- Lightweight preview JS (no external deps) -->
 <script>
-  (function () {
-    const input = document.getElementById("id_ct");           // Django's default id for field "ct"
-    const img   = document.getElementById("ctPreviewImg");
-    const ph    = document.getElementById("ctPreviewPlaceholder");
-    const clr   = document.getElementById("clearCtn");
-
-    if (!input) return;
-
-    input.addEventListener("change", function (e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      img.src = url;
-      img.classList.remove("hidden");
-      ph.classList.add("hidden");
-    });
-
-    clr && clr.addEventListener("click", function () {
-      if (input) input.value = "";
-      img.src = "";
-      img.classList.add("hidden");
-      ph.classList.remove("hidden");
-    });
-  })();
+(function () {
+  const input = document.getElementById("id_ct");
+  const img   = document.getElementById("ctPreviewImg");
+  const ph    = document.getElementById("ctPreviewPlaceholder");
+  const clr   = document.getElementById("clearCtn");
+  if (!input) return;
+  input.addEventListener("change", function (e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    img.src = url;
+    img.classList.remove("hidden");
+    ph.classList.add("hidden");
+  });
+  clr && clr.addEventListener("click", function () {
+    if (input) input.value = "";
+    img.src = ""; img.classList.add("hidden"); ph.classList.remove("hidden");
+  });
+})();
 </script>
 {% endblock %}
