@@ -101,6 +101,18 @@ def user_login(request):
             
             elif user.groups.filter(name="Manager").exists():
                 return redirect("manager:manager_dashboard")
+
+            elif user.groups.filter(name="demo").exists():
+                doctor_profile = staffProfile.objects.get(user=user, role="doctor")
+                patient = Patient.objects.filter(doctor=doctor_profile).first()
+                if patient:
+                    return redirect("doctor:demo_add_ct_view", patient_id=patient.id)
+                else:
+                    logout(request)
+                    messages.warning(request, "You don't have patient.")
+                    return redirect("main:login")
+                
+
             elif user.is_superuser:
                 return redirect("main:admin_view")
             
@@ -132,7 +144,7 @@ def request_form(request):
 
             registration = form.save() #saving the user info
 
-            logo_url = get_logo_url(request)
+
 
             #Admin email
             admin_content = f"""
@@ -158,7 +170,7 @@ def request_form(request):
                 [settings.EMAIL_HOST_USER],
                 reply_to=[registration.email],
             )
-            admin_email.mixed_subtype = "html"
+            admin_email.content_subtype = "html"
             admin_email.send()
 
 
@@ -173,7 +185,6 @@ def request_form(request):
                 "subject": "Your Registration was Successful",
                 "header": "Thank you for Registering!",
                 "content": user_content,
-                "logo_url": logo_url,
             })
             user_email = EmailMessage(
                 "Your Registration was Successful",
@@ -220,8 +231,36 @@ def create_user_and_send_credentials(registration, request=None):
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
     
+    demo_hospital, _ = Hospital.objects.get_or_create(
+        name = "Demo Hospital",
+        defaults={
+            "country": "US",
+            "contact_email": "demo@example.com",
+            "subscription_status": "paid",
+            "plan": "basic",
+        }
+    )
+
+    doctor_profile = staffProfile.objects.create(
+    user=user,
+    hospital=demo_hospital,
+    role="doctor"
+    )
+
+    patient = Patient.objects.create(
+    hospital=demo_hospital,
+    patient_id=uuid.uuid4().int % (10**12),  # unique int
+    first_name="Demo",
+    last_name=f"Patient {registration.firstname}",
+    age=50,
+    gender="M",
+    doctor=doctor_profile
+    )
+
+    registration.demo_patient_id = patient.id
+    registration.save()
+
     login_url = "http://127.0.0.1:8000/login/"
-    logo_url = get_logo_url(request) if request else ""
 
     content = f"""
         <p>Hello, {user.first_name}</p>
@@ -233,9 +272,8 @@ def create_user_and_send_credentials(registration, request=None):
     """
     message = render_to_string("email/base_email.html", {
         "subject": "Your New Account Details",
-        "header": "YourAccount is Ready",
+        "header": "Your Account is Ready",
         "content":content,
-        "logo_url": logo_url,
     })
 
     email_msg = EmailMessage(
@@ -295,7 +333,6 @@ def send_payment_link_email(request, registration):
 
     success_url = request.build_absolute_uri(reverse('main:payment_success') + f"?registration_id={registration.id}")
     cancel_url = request.build_absolute_uri(reverse('main:payment_cancelled'))
-    logo_url = get_logo_url(request)
     try:
         session = stripe.checkout.Session.create(
                     payment_method_types=['card'],
@@ -333,7 +370,6 @@ def send_payment_link_email(request, registration):
             "subject": "Your Payment Link for Demo Access",
             "header": "Complete Your Payment",
             "content": content,
-            "logo_url": logo_url,
         })
 
         email_msg = EmailMessage(
@@ -609,6 +645,7 @@ def get_cities(request, country_id):
 
 #------------------------------------------------------------------------------------------------------
 
+
 def get_logo_url(request=None):
     if request:
         return request.build_absolute_uri(static("images/logo_1.png"))
@@ -617,3 +654,4 @@ def get_logo_url(request=None):
 
 def privacy_view(request):
     return render(request,"main/privacy_policy.html")
+
