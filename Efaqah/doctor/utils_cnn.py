@@ -11,7 +11,6 @@ RUNNER = Path(settings.BASE_DIR) / "cnn_runner.py"
 
 CNN_DRIVE = "1fQ8ht1TwHMIyYvXVcKfn1csvK2VtIZAz"  
 
-# Cache location (downloaded once, then reused)
 CNN_MODEL_PATH = Path(settings.MODEL_CACHE_DIR) / "trained_cnn_modelfinal96.keras"
 download_if_missing(CNN_DRIVE, CNN_MODEL_PATH)
 
