@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest,HttpResponse
-from doctor.models import PatientRecord
+from doctor.models import PatientRecord, PatientSymptom
 from nurse.models import Patient
 from main.models import staffProfile
 from django.contrib.auth.models import User, Group
@@ -20,7 +20,14 @@ def manager_dashboard(request:HttpRequest):
     num_doctor = staffProfile.objects.filter(role="doctor", hospital=request.user.staffprofile.hospital).count()
     num_nurse = staffProfile.objects.filter(role="nurse", hospital=request.user.staffprofile.hospital).count()
     num_patient = Patient.objects.filter(hospital=request.user.staffprofile.hospital).count()
-    total_scans = PatientRecord.objects.filter(patient__hospital=hospital).count()
+
+    total_scans = PatientRecord.objects.filter(
+    patient__hospital=hospital,
+    ct_image__isnull=False
+    ).exclude(ct_image='images/default.jpg').count()
+    
+    total_symptoms = PatientSymptom.objects.filter(record__patient__hospital=hospital).count()
+
     #total patient in each doctor 
     doctor_patient_counts = (
     Patient.objects.filter(hospital=hospital)
@@ -40,7 +47,10 @@ def manager_dashboard(request:HttpRequest):
     scan_labels = [d["patient__doctor__user__username"] for d in doctor_scan_counts]
     scan_data = [d["total"] for d in doctor_scan_counts]
     return render(request, "manager/manager_dashboard.html", {"doctors":doctors, "nurses":nurses,"num_doctor":num_doctor,"num_nurse":num_nurse,"num_patient":num_patient,
-                "labels": labels,"data": data,"patients":patients,"scan_labels":scan_labels,"scan_data":scan_data,"total_scans":total_scans})
+                "labels": labels,"data": data,"patients":patients,"scan_labels":scan_labels,"scan_data":scan_data,"total_scans":total_scans,
+                "total_symptoms":total_symptoms})
+
+#------------------------------------------------------------------------------------------------------
 
 @login_required
 def add_patient_view(request: HttpRequest):
@@ -99,6 +109,9 @@ def add_patient_view(request: HttpRequest):
         "RESIDENCE_CHOICES": Patient.ResidenceType.choices,
         "doctors": doctors
     })
+
+#------------------------------------------------------------------------------------------------------
+
 def update_patient_view(request, patient_id):
     # جلب المريض أو إعطاء 404 إذا لم يوجد
     patient = get_object_or_404(Patient, id=patient_id)
@@ -143,6 +156,8 @@ def update_patient_view(request, patient_id):
         "doctors": doctors
     })
 
+#------------------------------------------------------------------------------------------------------
+
 def add_doctor(request):
     if request.method == "POST":
         form = DoctorForm(request.POST)
@@ -166,6 +181,8 @@ def add_doctor(request):
     else:
         form = DoctorForm()
     return render(request, "manager/add_doctor.html", {"form":form})
+
+#------------------------------------------------------------------------------------------------------
 
 def add_nurse(request):
     if request.method == "POST":
@@ -191,6 +208,8 @@ def add_nurse(request):
         form = NurseForm()
     return render(request, "manager/add_nurse.html", {"form":form})
 
+#------------------------------------------------------------------------------------------------------
+
 def update_doctor(request, doctor_id):
     doctor = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
 
@@ -214,6 +233,7 @@ def update_doctor(request, doctor_id):
     
     return render(request, "manager/update_doctor.html", {"doctor":doctor})
 
+#------------------------------------------------------------------------------------------------------
 
 def update_nurse(request, nurse_id):
     nurse = get_object_or_404(staffProfile, id=nurse_id, role="nurse")
@@ -238,6 +258,7 @@ def update_nurse(request, nurse_id):
     
     return render(request, "manager/update_nurse.html", {"nurse":nurse})
 
+#------------------------------------------------------------------------------------------------------
 
 def remove_doctor(request, doctor_id):
     doctor = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
@@ -246,6 +267,8 @@ def remove_doctor(request, doctor_id):
     user.delete()
     messages.success(request, f"Doctor {user.username} has been removed.")
     return redirect("manager:manager_dashboard")
+
+#------------------------------------------------------------------------------------------------------
     
 def remove_nurse(request, nurse_id):
     nurse = get_object_or_404(staffProfile, id=nurse_id, role="nurse")
@@ -255,25 +278,40 @@ def remove_nurse(request, nurse_id):
     messages.success(request, f"Nurse {user.username} has been removed.")
     return redirect("manager:manager_dashboard")
 
+#------------------------------------------------------------------------------------------------------
 
 def all_patient(request):
     patients = Patient.objects.filter(hospital=request.user.staffprofile.hospital)
-    return render(request, "manager/all_patient.html", {"patients":patients})
+    total_patient = patients.count()
+    return render(request, "manager/all_patient.html", {"patients":patients,"total_patient":total_patient})
+
+#------------------------------------------------------------------------------------------------------
 
 def all_nurse(request):
     nurses = staffProfile.objects.filter(role="nurse", hospital=request.user.staffprofile.hospital)
-    return render(request, "manager/all_nurse.html", {"nurses":nurses})
+    total_nurse = nurses.count()
+    return render(request, "manager/all_nurse.html", {"nurses":nurses,"total_nurse":total_nurse})
+
+#------------------------------------------------------------------------------------------------------
 
 def all_doctor(request):   
     doctors = staffProfile.objects.filter(role="doctor", hospital=request.user.staffprofile.hospital)
-    return render(request, "manager/all_doctors.html", {"doctors":doctors})
+    total_doctor = doctors.count()
+    return render(request, "manager/all_doctors.html", {"doctors":doctors,"total_doctor":total_doctor})
+
+#------------------------------------------------------------------------------------------------------
 
 def detail_doctor(request,doctor_id:int):
     doctor = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
     all_patient = Patient.objects.filter(doctor=doctor)
     patient_num = all_patient.count()
-    total_ct_scans = PatientRecord.objects.filter(patient__in=all_patient).count()
+    total_ct_scans = PatientRecord.objects.filter(
+        patient__in=all_patient,
+        ct_image__isnull=False
+    ).exclude(ct_image='images/default.jpg').count()
     return render(request, "manager/doctor_detail.html", {"doctor":doctor,"patient_num":patient_num,"total_ct_scans":total_ct_scans})
+
+#------------------------------------------------------------------------------------------------------
 
 def detail_nurse(request,nurse_id:int):
     nurse = get_object_or_404(staffProfile, id=nurse_id, role="nurse")

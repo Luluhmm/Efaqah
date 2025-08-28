@@ -2,50 +2,45 @@
 {% block title %} All Hospitals {% endblock %}
 {% block content %}
 <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
-    <div class="flex justify-end ">
-         <a href="{% url 'main:admin_view' %}"
-               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
-                ← Back
-            </a>
+<div class="flex justify-between items-center mb-6 px-6">
+    <h2 class="text-2xl text-blue-800">All Hospitals</h2>
+    <div class="flex items-center gap-3">
+        <form method="GET" action="{% url 'main:all_hospital_view' %}" class="flex flex-wrap gap-3 items-center">
+            <!-- Subscription Status -->
+            <div>
+                <label class="sr-only" for="subscription_status">Status</label>
+                <select name="subscription_status" id="subscription_status"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Filter by Status</option>
+                    {% for status, display in status_choices %}
+                        <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="sr-only" for="plan">Plan</label>
+                <select name="plan" id="plan"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Filter by Plan</option>
+                    {% for plan, display in plan_choices %}
+                        <option value="{{ plan }}" {% if plan == selected_plan %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <button type="submit"
+                        class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">
+                    Filter
+                </button>
+            </div>
+        </form>
+            <a href="{% url 'main:admin_view' %}"
+           class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+            ← Back
+        </a>
     </div>
-<div class="flex justify-between items-center px-6 py-4 border-b">
-    <a href="" class="font-semibold text-lg ">Hospitals</a>
-    <form method="GET" action="{% url 'main:all_hospital_view' %}" class="flex flex-wrap gap-3 items-center mb-4">
-  <!-- Subscription Status -->
-  <div>
-    <label class="sr-only" for="subscription_status">Status</label>
-    <select name="subscription_status" id="subscription_status"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      <option value="">Filter by Status</option>
-      {% for status, display in status_choices %}
-        <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ display }}</option>
-      {% endfor %}
-    </select>
-  </div>
+</div>
 
-  <!-- Plan -->
-  <div>
-    <label class="sr-only" for="plan">Plan</label>
-    <select name="plan" id="plan"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      <option value="">Filter by Plan</option>
-      {% for plan, display in plan_choices %}
-        <option value="{{ plan }}" {% if plan == selected_plan %}selected{% endif %}>{{ display }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <!-- Submit Button -->
-  <div>
-    <button type="submit"
-            class="bg-blue-100 px-4 py-2 rounded-lg text-blue-700 font-medium hover:bg-blue-200 transition">
-      Filter
-    </button>
-  </div>
-
-</form>
-
-  </div>
             <div class="p-6">
                 {% if all_hopitals %}
                     <div class="overflow-x-auto">
