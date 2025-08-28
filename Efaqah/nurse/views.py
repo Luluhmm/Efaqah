@@ -7,6 +7,7 @@ from datetime import date
 from main.models import staffProfile
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.utils.timezone import now
 
 def nurse_dashboard(request: HttpRequest):
     patients = Patient.objects.all()
@@ -32,15 +33,24 @@ def nurse_dashboard(request: HttpRequest):
 @login_required
 def add_patient_view(request: HttpRequest):
     nurse_profile = staffProfile.objects.get(user=request.user)
+    hospital = nurse_profile.hospital
 
     # Get doctors from the same hospital
     doctors = staffProfile.objects.filter(
-        hospital=nurse_profile.hospital,
+        hospital=hospital,
         role="doctor",
         is_active=True
     )
 
     if request.method == "POST":
+        today = now().date()
+        patients_today = Patient.objects.filter(
+            hospital=hospital,
+            created_at=today
+        ).count()
+        if patients_today >= hospital.daily_patient_limit():
+            messages.error(request, f"Daily limit reached ({hospital.daily_patient_limit()}) patients for {hospital.get_plan_display()} plan.")
+            return redirect('nurse:nurse_dashboard')
         patient_id = request.POST.get("patient_id")
         phone_number = request.POST.get("phone_number")
         doctor_id = request.POST.get("doctor")  # ForeignKey
