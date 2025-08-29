@@ -59,7 +59,7 @@ def add_patient_view(request: HttpRequest):
         if Patient.objects.filter(patient_id=patient_id).exists() or \
            (phone_number and Patient.objects.filter(phone_number=phone_number).exists()):
             messages.error(request, "This patient already exists in the system.")
-            return redirect('nurse:add_patient') 
+            return redirect('nurse:add_patient_view') 
 
         # Get doctor object or None
         doctor_obj = staffProfile.objects.get(id=doctor_id) if doctor_id else None
@@ -146,4 +146,4 @@ def update_patient_view(request, patient_id):
 def delete_patient_view(request:HttpRequest, patient_id:int):
     patient = Patient.objects.get(pk=patient_id)
     patient.delete()
-    return redirect('manger:manager_dashboard')
+    return redirect('manager:manager_dashboard')
