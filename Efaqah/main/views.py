@@ -656,9 +656,6 @@ def about_view(request):
 
 #------------------------------------------------------------------------------------------------------
 
-
-
-
 def contact_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
