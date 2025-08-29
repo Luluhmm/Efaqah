@@ -32,6 +32,9 @@ import certifi
 
 
 
+import calendar
+import calendar
+from collections import defaultdict
 
 
 # Create your views here.
@@ -103,6 +106,18 @@ def user_login(request):
             
             elif user.groups.filter(name="Manager").exists():
                 return redirect("manager:manager_dashboard")
+
+            elif user.groups.filter(name="demo").exists():
+                doctor_profile = staffProfile.objects.get(user=user, role="doctor")
+                patient = Patient.objects.filter(doctor=doctor_profile).first()
+                if patient:
+                    return redirect("doctor:demo_add_ct_view", patient_id=patient.id)
+                else:
+                    logout(request)
+                    messages.warning(request, "You don't have patient.")
+                    return redirect("main:login")
+                
+
             elif user.is_superuser:
                 return redirect("main:admin_view")
             
@@ -134,7 +149,7 @@ def request_form(request):
 
             registration = form.save() #saving the user info
 
-            logo_url = get_logo_url(request)
+
 
             #Admin email
             admin_content = f"""
@@ -160,7 +175,7 @@ def request_form(request):
                 [settings.EMAIL_HOST_USER],
                 reply_to=[registration.email],
             )
-            admin_email.mixed_subtype = "html"
+            admin_email.content_subtype = "html"
             admin_email.send()
 
 
@@ -175,7 +190,6 @@ def request_form(request):
                 "subject": "Your Registration was Successful",
                 "header": "Thank you for Registering!",
                 "content": user_content,
-                "logo_url": logo_url,
             })
             user_email = EmailMessage(
                 "Your Registration was Successful",
@@ -222,8 +236,36 @@ def create_user_and_send_credentials(registration, request=None):
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
     
+    demo_hospital, _ = Hospital.objects.get_or_create(
+        name = "Demo Hospital",
+        defaults={
+            "country": "US",
+            "contact_email": "demo@example.com",
+            "subscription_status": "paid",
+            "plan": "basic",
+        }
+    )
+
+    doctor_profile = staffProfile.objects.create(
+    user=user,
+    hospital=demo_hospital,
+    role="doctor"
+    )
+
+    patient = Patient.objects.create(
+    hospital=demo_hospital,
+    patient_id=uuid.uuid4().int % (10**12),  # unique int
+    first_name="Demo",
+    last_name=f"Patient {registration.firstname}",
+    age=50,
+    gender="M",
+    doctor=doctor_profile
+    )
+
+    registration.demo_patient_id = patient.id
+    registration.save()
+
     login_url = "http://127.0.0.1:8000/login/"
-    logo_url = get_logo_url(request) if request else ""
 
     content = f"""
         <p>Hello, {user.first_name}</p>
@@ -235,9 +277,8 @@ def create_user_and_send_credentials(registration, request=None):
     """
     message = render_to_string("email/base_email.html", {
         "subject": "Your New Account Details",
-        "header": "YourAccount is Ready",
+        "header": "Your Account is Ready",
         "content":content,
-        "logo_url": logo_url,
     })
 
     email_msg = EmailMessage(
@@ -297,7 +338,6 @@ def send_payment_link_email(request, registration):
 
     success_url = request.build_absolute_uri(reverse('main:payment_success') + f"?registration_id={registration.id}")
     cancel_url = request.build_absolute_uri(reverse('main:payment_cancelled'))
-    logo_url = get_logo_url(request)
     try:
         session = stripe.checkout.Session.create(
                     payment_method_types=['card'],
@@ -335,7 +375,6 @@ def send_payment_link_email(request, registration):
             "subject": "Your Payment Link for Demo Access",
             "header": "Complete Your Payment",
             "content": content,
-            "logo_url": logo_url,
         })
 
         email_msg = EmailMessage(
@@ -504,6 +543,56 @@ def create_checkout_session(request, plan, hospital_id):
 
 #------------------------------------------------------------------------------------------------------
 def admin_view(request):
+    # To calculate the revenue 
+    PLAN_PRICES = {
+        'basic': 499,
+        'pro': 999,
+        'enterprise': 1999,
+    }
+    paid_hospitals = Hospital.objects.filter(subscription_status='paid')
+    total_revenue = sum(PLAN_PRICES[h.plan] for h in paid_hospitals)
+
+    # to calculate num of hospitals, doctors, patients , nurses 
+    latest_hospitals = Hospital.objects.order_by('-created_at')[:3]
+    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
+    num_patients = Patient.objects.all().count()
+    num_doctors = staffProfile.objects.filter(role="doctor").count()
+    num_nurses = staffProfile.objects.filter(role="nurse").count()
+    num_managers = staffProfile.objects.filter(role="manager").count()
+
+    # to calculate the status of demo request 
+    status_demo = Registration.objects.values("status").annotate(count=Count("status"))
+    labels = [d["status"].capitalize() for d in status_demo]  # ["Pending", "Approved", "Paid"]
+    data = [d["count"] for d in status_demo] 
+    
+    # to calculate total revenue per month on each year 
+    revenue_by_year = defaultdict(lambda: [0]*12)
+
+    for h in paid_hospitals:
+        if h.subscription_start_date:
+            year = h.subscription_start_date.year
+            month_index = h.subscription_start_date.month - 1
+            plan_price = PLAN_PRICES.get(h.plan.lower(), 0)
+            revenue_by_year[year][month_index] += plan_price
+
+    revenue_by_year = dict(revenue_by_year)
+    years = list(revenue_by_year.keys())
+
+    return render(request, "main/admin_dashboard.html", {
+        "latest_hospitals": latest_hospitals,
+        "num_hospitals": num_hospitals,
+        "num_patients": num_patients,
+        "num_doctors": num_doctors,
+        "num_nurses": num_nurses,
+        "num_managers": num_managers,
+        "labels": labels,
+        "data": data,
+        "total_revenue": total_revenue,
+        "revenue_by_year": revenue_by_year,
+        "years": years
+    })
+#------------------------------------------------------------------------------------------------------
+def all_hospital_view(request):
     all_hospitals = Hospital.objects.all()
     selected_status = request.GET.get("subscription_status")
     selected_plan = request.GET.get("plan")
@@ -513,19 +602,22 @@ def admin_view(request):
         all_hospitals = all_hospitals.filter(plan=selected_plan)
     plan_choices = all_hospitals.model.PLAN_CHOICES
     status_choices = all_hospitals.model.SUBSCRIPTION_STATUS_CHOICES
-    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
-    num_patients = Patient.objects.all().count()
-    num_doctors = staffProfile.objects.filter(role="doctor").count()
-    num_nurses = staffProfile.objects.filter(role="nurse").count()
-    num_managers = staffProfile.objects.filter(role="manager").count()
-    status_demo = Registration.objects.values("status").annotate(count=Count("status"))
-    labels = [d["status"].capitalize() for d in status_demo]  # ["Pending", "Approved", "Paid"]
-    data = [d["count"] for d in status_demo] 
-    return render(request, "main/admin_dashboard.html",{"all_hospitals":all_hospitals,"num_hospitals":num_hospitals,"num_patients":num_patients
-                ,"num_doctors":num_doctors,"num_nurses":num_nurses,"num_managers":num_managers,"labels":labels,"data":data,
-                 "selected_status": selected_status,"selected_plan": selected_plan,"plan_choices":plan_choices,
-                  "status_choices":status_choices })
+    return render (request,"main/all_hospitals.html",{"all_hopitals":all_hospitals, "selected_status": selected_status,"selected_plan": selected_plan,"plan_choices":plan_choices,
+                  "status_choices":status_choices 
+    })
+
 #------------------------------------------------------------------------------------------------------
+
+def hospital_detail(request,hospital_id:int):
+    hospital = get_object_or_404(Hospital, pk=hospital_id)
+    doctors = hospital.staff.filter(role="doctor").count()
+    nurses  = hospital.staff.filter(role="nurse").count()
+    patients = hospital.patients.count()
+    country = hospital.get_country_display()
+    return render(request,"main/hospital_detail.html",{"hospital":hospital,"doctors":doctors,"nurses":nurses,"patients":patients,"country":country})
+
+#------------------------------------------------------------------------------------------------------
+
 def request_demo(request):
     pending_demo = Registration.objects.filter(status="pending")
     approved_demo = Registration.objects.filter(status="approved")
@@ -557,7 +649,6 @@ def get_cities(request, country_id):
 
 
 #------------------------------------------------------------------------------------------------------
-
 
 def about_view(request):
     return render(request, "main/about.html")
@@ -613,8 +704,15 @@ def contact_view(request):
 
 #------------------------------------------------------------------------------------------------------
 
+
 def get_logo_url(request=None):
     if request:
         return request.build_absolute_uri(static("images/logo_1.png"))
     site_url = getattr(settings, "SITE_URL", "")
     return f"{site_url}{static("images/logo_1.png")}"
+
+
+def privacy_view(request):
+    return render(request,"main/privacy_policy.html")
+
+

@@ -1,0 +1,133 @@
+{% extends 'doctor/base.html' %}
+
+{% block title %}All Patients{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg border shadow-sm p-6">
+  <!-- Header + search -->
+  <div class="flex justify-between mb-4">
+    <h2 class="text-xl font-semibold text-blue-800 p-3">
+      Patient List ({{ page_obj.paginator.count }})
+      {% if request.GET.critical == '1' %}
+        <span class="text-red-600 text-sm font-normal">• Critical only</span>
+      {% endif %}
+      {% if request.GET.highrisk == '1' %}
+        <span class="text-yellow-600 text-sm font-normal ml-2">• High risk only</span>
+      {% endif %}
+    </h2>
+
+    <div class="flex items-center gap-2">
+      <!-- quick filter buttons -->
+      <a href="{% url 'doctor:all_patient_view' %}"
+         class="text-sm px-3 py-2 rounded border hover:bg-gray-50">All</a>
+      <a href="{% url 'doctor:all_patient_view' %}?critical=1"
+         class="text-sm px-3 py-2 rounded border border-red-200 text-red-700 hover:bg-red-50">Critical</a>
+      <a href="{% url 'doctor:all_patient_view' %}?highrisk=1"
+         class="text-sm px-3 py-2 rounded border border-yellow-200 text-yellow-700 hover:bg-yellow-50">High risk</a>
+
+      <input id="patient-search" type="text" placeholder="Search by name, ID, or phone…"
+             class="border rounded-lg px-3 py-2 w-72 ml-2">
+    </div>
+  </div>
+
+  <!-- List -->
+  <div id="patient-overview-list" class="space-y-4">
+    {% if page_obj and page_obj.object_list %}
+      {% for patient in page_obj %}
+      <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between"
+           data-name="{{ patient.first_name }} {{ patient.last_name }}"
+           data-id="{{ patient.patient_id }}"
+           data-phone="{{ patient.phone_number }}">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-700 font-semibold">
+              {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+            </span>
+          </div>
+          <div>
+            <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg">
+              {{ patient.first_name }} {{ patient.last_name }}
+            </a>
+            <div class="flex items-center gap-3 mt-1">
+              <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">ID: {{ patient.patient_id }}</p>
+              <p class="text-sm text-gray-600">Phone: {{ patient.phone_number|default:"—" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <a href="{% url 'doctor:patient_detail_view' patient.id %}"
+             class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-100 h-9 px-3 text-green-700 hover:scale-105 transition-all">
+            View
+          </a>
+          <a href="{% url 'doctor:add_ct_view' patient.id %}"
+             class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-blue-100 h-9 px-3 text-blue-700 hover:bg-blue-200">
+            New Diagnosis
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center text-gray-500">No patients found.</p>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <nav class="flex justify-center mt-6" aria-label="Page navigation">
+    <ul class="inline-flex items-center -space-x-px">
+      {% if page_obj.has_previous %}
+        <li><a href="?page={{ page_obj.previous_page_number }}{% if request.GET.critical %}&critical={{ request.GET.critical }}{% endif %}{% if request.GET.highrisk %}&highrisk={{ request.GET.highrisk }}{% endif %}"
+               class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 rounded-l-lg hover:bg-blue-50 hover:text-blue-700">&laquo;</a></li>
+      {% else %}
+        <li><span class="px-3 py-2 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-l-lg cursor-not-allowed">&laquo;</span></li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li><span class="px-3 py-2 leading-tight text-white bg-blue-600 border border-blue-600">{{ num }}</span></li>
+        {% else %}
+          <li><a href="?page={{ num }}{% if request.GET.critical %}&critical={{ request.GET.critical }}{% endif %}{% if request.GET.highrisk %}&highrisk={{ request.GET.highrisk }}{% endif %}"
+                 class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li><a href="?page={{ page_obj.next_page_number }}{% if request.GET.critical %}&critical={{ request.GET.critical }}{% endif %}{% if request.GET.highrisk %}&highrisk={{ request.GET.highrisk }}{% endif %}"
+               class="px-3 py-2 leading-tight text-blue-600 bg-white border border-gray-300 rounded-r-lg hover:bg-blue-50 hover:text-blue-700">&raquo;</a></li>
+      {% else %}
+        <li><span class="px-3 py-2 leading-tight text-gray-400 bg-gray-100 border border-gray-200 rounded-r-lg cursor-not-allowed">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- Empty state -->
+  <p id="empty-state" class="text-center text-gray-500 mt-4" style="display:none;">No results found.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  const input = document.getElementById('patient-search');
+  if(!input) return;
+  function filterPatients() {
+    const q = input.value.toLowerCase();
+    const cards = document.querySelectorAll('#patient-overview-list .patient-card');
+    let any = false;
+    cards.forEach(card => {
+      const name = (card.dataset.name || '').toLowerCase();
+      const id = (card.dataset.id || '').toLowerCase();
+      const phone = (card.dataset.phone || '').toLowerCase();
+      const show = name.includes(q) || id.includes(q) || phone.includes(q);
+      card.style.display = show ? 'flex' : 'none';
+      if (show) any = true;
+    });
+    const empty = document.getElementById('empty-state');
+    if (empty) empty.style.display = any ? 'none' : 'block';
+  }
+  input.addEventListener('input', filterPatients);
+})();
+</script>
+{% endblock %}

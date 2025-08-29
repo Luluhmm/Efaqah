@@ -110,7 +110,12 @@
                 <label class="block text-sm font-medium text-blue-900 mb-1">Password</label>
                 <input type="password" name="password" required class="form-input" placeholder="Enter your password">
             </div>
-
+        <div class="flex justify-center mt-4">
+        <a href="{% url 'main:privacy_view' %}" 
+            class="text-sm text-blue-900 hover:underline">
+            Check Privacy Policy
+        </a>
+        </div>
             <button type="submit" class="login-button mt-4">Sign In</button>
         </form>
 
