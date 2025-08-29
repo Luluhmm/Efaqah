@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Efaqah - Contact Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins', 'sans-serif'] },
+      animation: { 'fade-in': 'fadeIn 1s ease-out' },
+      keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0px)' } } }
+    }
+  }
+}
+</script>
+<style>
+body { font-family: 'Poppins', sans-serif; }
+.bg-gradient-animated { background: linear-gradient(-45deg,#d4d8ea,#c2d3ff,#dbe4f5,#acc4e4,#e1e9f6,#c9d9f7); background-size:400% 400%; animation: gradientShift 15s ease infinite; }
+@keyframes gradientShift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+.glass-effect { backdrop-filter: blur(20px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.lucide { width: 2rem; height: 2rem; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-animated flex flex-col items-center justify-start p-4 sm:p-6">
+
+<!-- Logo -->
+<div class="animate-fade-in mb-6 mt-4">
+    <a href="{% url 'main:landing_page' %}" class="flex justify-center">
+        <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-14 w-auto">
+    </a>
+</div>
+
+<!-- Contact Section -->
+<div class="animate-fade-in max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-6 md:gap-12 items-start mt-8">
+
+    <!-- Left Column: Contact Info -->
+   <div class="w-full md:w-1/2 mt-6 pr-0 md:pr-6 border-r border-gray-300 md:border-r md:border-gray-300 space-y-6 h-full">
+        <h2 class="text-2xl md:text-3xl font-semibold text-blue-900 mb-4">Let's Connect with Efaqah </h2>
+    <p class="text-gray-600 text-sm md:text-base">
+    At Efaqah, we are committed to making healthcare faster and smarter. Whether you have questions about our platform, suggestions, partnership opportunities, or just want to give feedback, we’re here to listen.<br><br>
+
+    Your input helps us improve and ensures that our platform serves both doctors and users effectively. Please fill out the form below and our team will respond as soon as possible.<br><br>
+
+    We value your time and thoughts — every message matters. Let’s work together to raise awareness, promote early detection of strokes, and make a real impact on people’s lives.
+</p>
+
+       <div class="flex items-center gap-2 text-blue-900">
+    <a href="https://www.google.com/maps/place/Riyadh,+Saudi+Arabia" target="_blank" class="flex items-center gap-2 hover:text-blue-700 transition">
+        <!-- Location Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21C12 21 19 13 19 8a7 7 0 10-14 0c0 5 7 13 7 13z" />
+            <circle cx="12" cy="8" r="3" />
+        </svg>
+        <p>Riyadh, Saudi Arabia</p>
+    </a>
+</div>
+
+
+        <div class="flex items-center gap-2 text-blue-900 mt-2">
+            <!-- Email Icon + mailto -->
+            <a href="mailto:Efaqaaah@gmail.com" class="flex items-center gap-2 hover:text-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22,4 L12,13 L2,4" />
+                </svg>
+                <p>Efaqaaah@gmail.com</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Right Column: Contact Form -->
+<div class="w-full md:w-1/2 mt-6">
+    <form action="{% url 'main:contact_view' %}" method="POST" class="space-y-4 bg-white/20 p-6 rounded-2xl backdrop-blur-md shadow-md">
+        {% csrf_token %}
+
+        <!-- Messages inside the form -->
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-3 rounded-xl {% if message.tags == 'success' %}bg-green-200 text-green-800{% else %}bg-red-200 text-red-800{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div>
+            <label class="block text-sm font-semibold text-blue-900 mb-1">Full Name</label>
+            <input type="text" name="name" placeholder="Your name" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-blue-900 mb-1">Email</label>
+            <input type="email" name="email" placeholder="Your email" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-blue-900 mb-1">Subject</label>
+            <input type="text" name="subject" placeholder="Subject" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-blue-900 mb-1">Message</label>
+            <textarea name="message" placeholder="Your message" rows="4" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required></textarea>
+        </div>
+        <button type="submit" class="bg-blue-700 text-white px-6 py-2 rounded-full hover:bg-blue-800 transition mx-auto block">
+            Send Message
+        </button>
+    </form>
+</div>
+
+
+</div>
+</body>
+</html>

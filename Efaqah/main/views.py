@@ -23,6 +23,11 @@ from django.db.models import Count
 from django.template.loader import render_to_string
 from django.templatetags.static import static
 from email.mime.image import MIMEImage
+import ssl
+from django.core.mail import EmailMessage
+from django.conf import settings
+import ssl
+import certifi
 
 
 
@@ -645,6 +650,57 @@ def get_cities(request, country_id):
 
 #------------------------------------------------------------------------------------------------------
 
+def about_view(request):
+    return render(request, "main/about.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject_input = request.POST.get("subject")
+        message_content = request.POST.get("message")
+
+        if name and email and subject_input and message_content:
+            try:
+                subject = f"Contact Form: {subject_input}"
+                message = f"""
+                            Hello Efaqah Team,
+
+                            You have received a new message from the Contact Form:
+
+                            Name: {name}
+                            Email: {email}
+                            Subject: {subject_input}
+
+                            Message:
+                            {message_content}
+                            """
+
+                email_msg = EmailMessage(
+                    subject,
+                    message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.DEFAULT_FROM_EMAIL],
+                    reply_to=[email],  
+                )
+                email_msg.send(fail_silently=False)
+
+                messages.success(request, "Your message has been sent successfully!")
+            except Exception as e:
+                messages.error(request, f"Failed to send message. Error: {e}")
+
+            return redirect('main:contact_view')
+        else:
+            messages.error(request, "Please fill all fields.")
+
+    return render(request, "main/contact.html")
+
+
+#------------------------------------------------------------------------------------------------------
+
 
 def get_logo_url(request=None):
     if request:
@@ -652,6 +708,8 @@ def get_logo_url(request=None):
     site_url = getattr(settings, "SITE_URL", "")
     return f"{site_url}{static("images/logo_1.png")}"
 
+#------------------------------------------------------------------------------------------------------
 def privacy_view(request):
     return render(request,"main/privacy_policy.html")
+
 
