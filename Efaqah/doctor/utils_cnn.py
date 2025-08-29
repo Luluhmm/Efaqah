@@ -4,14 +4,15 @@ from pathlib import Path
 from django.conf import settings
 from tempfile import NamedTemporaryFile
 from .drive_fetcher import download_if_missing
+import sys
 
-TF_PY = Path(settings.BASE_DIR) / "venv_tf" / ("bin/python" if os.name != "nt" else "Scripts/python.exe")
+TF_PY = Path(sys.executable)
 RUNNER = Path(settings.BASE_DIR) / "cnn_runner.py"
 
 
-CNN_DRIVE = "1fQ8ht1TwHMIyYvXVcKfn1csvK2VtIZAz"  
+CNN_DRIVE = "108FL4thMFan-U6XWm20lwzYB3tl1KxHB" 
 
-CNN_MODEL_PATH = Path(settings.MODEL_CACHE_DIR) / "trained_cnn_modelfinal96.keras"
+CNN_MODEL_PATH = Path(settings.MODEL_CACHE_DIR) / "trained_cnn_modelfinal96.onnx"
 download_if_missing(CNN_DRIVE, CNN_MODEL_PATH)
 
 def cnn_predict_from_uploaded_file(django_file) -> tuple[float, int]:
