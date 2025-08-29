@@ -235,11 +235,13 @@ def create_user_and_send_credentials(registration, request=None):
     #Assign the user to the 'demo' group
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
+
+    us_country = Country.objects.filter(code="US").first()
     
     demo_hospital, _ = Hospital.objects.get_or_create(
         name = "Demo Hospital",
         defaults={
-            "country": "US",
+            "country": us_country,
             "contact_email": "demo@example.com",
             "subscription_status": "paid",
             "plan": "basic",
@@ -455,9 +457,16 @@ def subscribe_form(request):
 
         hospital_plan = plan_map.get(plan, "basic")
 
+        try:
+            country_instance = Country.objects.get(id=country)
+        except Country.DoesNotExist:
+            messages.error(request, "Selected country does not exist.")
+            return redirect("main:subscribe_form")
+
+
         hospital = Hospital.objects.create(
             name=hospital_name,
-            country=country,
+            country=country_instance,
             city=city_instance,
             address=address,
             contact_email=manager_email,
@@ -613,7 +622,7 @@ def hospital_detail(request,hospital_id:int):
     doctors = hospital.staff.filter(role="doctor").count()
     nurses  = hospital.staff.filter(role="nurse").count()
     patients = hospital.patients.count()
-    country = hospital.get_country_display()
+    country = hospital.country.name if hospital.country else "N/A"
     return render(request,"main/hospital_detail.html",{"hospital":hospital,"doctors":doctors,"nurses":nurses,"patients":patients,"country":country})
 
 #------------------------------------------------------------------------------------------------------
@@ -706,7 +715,7 @@ def get_logo_url(request=None):
     if request:
         return request.build_absolute_uri(static("images/logo_1.png"))
     site_url = getattr(settings, "SITE_URL", "")
-    return f"{site_url}{static("images/logo_1.png")}"
+    return f"{site_url}{static('images/logo_1.png')}"
 
 #------------------------------------------------------------------------------------------------------
 def privacy_view(request):
