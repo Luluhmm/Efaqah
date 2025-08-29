@@ -1,0 +1,148 @@
+{% extends 'doctor/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="bg-white rounded-lg border shadow-sm p-6">
+  <!-- Patient Header -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl text-gray-800">
+      {{ patient.first_name }} {{ patient.last_name }} — Patient Diagnosis
+    </h2>
+  </div>
+
+  <hr class="my-4">
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <!-- ======= Symptoms Risk (Tabular) ======= -->
+    <section class="border rounded-2xl p-6 bg-white">
+      <h3 class="text-xl font-semibold mb-4">Risk Assessment (Symptoms)</h3>
+      {% if error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ error }}</div>{% endif %}
+
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><p class="block text-sm text-gray-700">Residence</p><p class="font-medium">{{ form.residence_type }}</p></div>
+          <div><p class="block text-sm text-gray-700">Gender</p><p class="font-medium">{{ form.gender }}</p></div>
+          <div><p class="block text-sm text-gray-700">Age</p><p class="font-medium">{{ form.age }}</p></div>
+          <div><label class="block text-sm text-gray-700">{{ form.ever_married.label }}</label>{{ form.ever_married }}</div>
+          <div><label class="block text-sm text-gray-700">{{ form.work_type.label }}</label>{{ form.work_type }}</div>
+          <div><label class="block text-sm text-gray-700">{{ form.smoking_status.label }}</label>{{ form.smoking_status }}</div>
+
+          <div><label class="block text-sm text-gray-700">{{ form.hypertension.label }}</label>{{ form.hypertension }}</div>
+          <div><label class="block text-sm text-gray-700">{{ form.heart_disease.label }}</label>{{ form.heart_disease }}</div>
+          <div><label class="block text-sm text-gray-700">{{ form.avg_glucose_level.label }}</label>{{ form.avg_glucose_level }}</div>
+          <div><label class="block text-sm text-gray-700">{{ form.bmi.label }}</label>{{ form.bmi }}</div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" name="predict_tabular" value="1"
+                  class="inline-flex items-center rounded-md bg-gray-900 text-white px-4 py-2 text-sm hover:opacity-90">
+            Assess Risk
+          </button>
+          <p class="text-xs text-gray-500">Outputs a probability and risk band.</p>
+        </div>
+      </form>
+
+      {% if result %}
+      <div class="mt-5 p-5 bg-gray-50 border rounded-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600">Estimated Risk</p>
+            <p class="text-2xl font-semibold">{{ result.risk_pct }}%</p>
+            <p class="text-sm text-gray-500">Decision: {{ result.label }}</p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-sm font-medium
+              {% if result.band == 'High' %}bg-red-100 text-red-700
+              {% elif result.band == 'Medium' %}bg-yellow-100 text-yellow-700
+              {% else %}bg-green-100 text-green-700{% endif %}">
+            {{ result.band }} Risk
+          </span>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- ======= Imaging Classifier (CNN) ======= -->
+    <section class="border rounded-2xl p-6 bg-white">
+      <h3 class="text-xl font-semibold mb-4">Imaging Classifier</h3>
+      {% if cnn_error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ cnn_error }}</div>{% endif %}
+
+      <!-- Preview panel -->
+      <div id="ctPreview"
+           class="relative mb-4 border-2 border-dashed rounded-2xl p-4 flex items-center justify-center min-h-[280px] bg-gray-50">
+        <img id="ctPreviewImg" src="" alt="CT Preview" class="max-h-[420px] w-auto rounded-xl hidden" />
+        <div id="ctPreviewPlaceholder" class="text-center text-gray-500">
+          <p class="font-medium">Upload a CT image to preview</p>
+          <p class="text-xs">JPG or PNG</p>
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="space-y-4" id="cnnForm">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm text-gray-700">{{ cnn_form.ct.label }}</label>
+          {{ cnn_form.ct }}
+          <p class="text-xs text-gray-500 mt-1">{{ cnn_form.ct.help_text }}</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button type="submit" name="predict_cnn" value="1"
+                  class="inline-flex items-center rounded-md bg-gray-900 text-white px-4 py-2 text-sm hover:opacity-90">
+            Classify Image
+          </button>
+          <button type="button" id="clearCtn"
+                  class="inline-flex items-center rounded-md bg-gray-100 text-gray-800 px-4 py-2 text-sm hover:bg-gray-200">
+            Clear Image
+          </button>
+        </div>
+      </form>
+
+      {% if cnn_result %}
+      <div class="mt-5 p-5 bg-gray-50 border rounded-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600">Image Assessment</p>
+            <p class="text-2xl font-semibold">{{ cnn_result.prob_pct }}%</p>
+            <p class="text-sm text-gray-500">Decision: {{ cnn_result.label }}</p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-sm font-medium
+              {% if cnn_result.band == 'High' %}bg-red-100 text-red-700
+              {% elif cnn_result.band == 'Medium' %}bg-yellow-100 text-yellow-700
+              {% else %}bg-green-100 text-green-700{% endif %}">
+            {{ cnn_result.band }} Risk
+          </span>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const input = document.getElementById("id_ct");
+    const img   = document.getElementById("ctPreviewImg");
+    const ph    = document.getElementById("ctPreviewPlaceholder");
+    const clr   = document.getElementById("clearCtn");
+
+    if (!input) return;
+
+    input.addEventListener("change", function (e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      img.src = url;
+      img.classList.remove("hidden");
+      ph.classList.add("hidden");
+    });
+
+    clr && clr.addEventListener("click", function () {
+      if (input) input.value = "";
+      img.src = "";
+      img.classList.add("hidden");
+      ph.classList.remove("hidden");
+    });
+  })();
+</script>
+{% endblock %}

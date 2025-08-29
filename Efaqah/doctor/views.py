@@ -1,6 +1,10 @@
 from itertools import count
 from django.shortcuts import render,redirect, get_object_or_404
+
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
+
 from doctor.models import PatientRecord, PatientSymptom
 from nurse.models import Patient
 from django.core.paginator import Paginator
@@ -9,15 +13,25 @@ from django.db.models import Count,Q
 from django.utils.timezone import now
 from .utils import predict_risk                     
 from .utils_cnn import cnn_predict_from_uploaded_file 
+
 from .forms import StrokeForm, CnnForm
 from django.db.models import F, FloatField, ExpressionWrapper
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
+from .forms import StrokeForm, CnnForm, DemoStrokeForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+
 
 # Create your views here.
 
-def doctor_dashboard(request: HttpRequest):
+
+
+def doctor_dashboard(request:HttpRequest):
+    # All patients for this doctor
+
     doctor_profile = request.user.staffprofile
     all_patient = Patient.objects.filter(doctor=doctor_profile).order_by("-id")
     patient_num = all_patient.count()
@@ -516,5 +530,174 @@ def export_view(request: HttpRequest, patient_id: int):
 
     return response
 
+
+
+#------------------------------------------------------------------------------------------------------
+@login_required
+def demo_add_ct_view(request, patient_id: int):
+    patient = get_object_or_404(Patient, pk=patient_id)
+
+    max_attempts = 5
+
+    if "demo_attempts" not in request.session:
+        request.session["demo_attempts"] = {}
+    demo_attempts = request.session["demo_attempts"].get(str(patient.id), {"tabular": 0, "cnn": 0})
+
+    if demo_attempts.get("tabular", 0) >= max_attempts and demo_attempts.get("cnn", 0) >= max_attempts:
+        messages.success(request, "You have used all your demo attempts. Subscribe to continue using the models.")
+
+        return redirect("main:login")
+
+    result = None
+    cnn_result = None
+    error = None
+    cnn_error = None
+
+    if request.method == "POST":
+
+        # -------- Symptoms --------
+        if "predict_tabular" in request.POST:
+            if demo_attempts["tabular"] >= max_attempts:
+                error = f"You've reached the maximum of {max_attempts}"
+                form = DemoStrokeForm(request.POST)
+                cnn_form = CnnForm()
+            else:
+                form = DemoStrokeForm(request.POST)
+                cnn_form = CnnForm()
+
+                if form.is_valid():
+                    d = form.cleaned_data
+
+                    # pull from patient profile
+                    gender = _map_gender(d["gender"])
+                    age = float(d["age"])
+                    residence = _map_residence(d["residence_type"])
+
+                    work_type = _normalize_work_type(d.get("work_type"))
+
+                    # build exact payload for the ML model (EXPECTED_COLS order doesn’t matter as utils enforces in utils.py)
+                    payload = {
+                        "gender": gender,
+                        "ever_married": d["ever_married"],
+                        "work_type": work_type,
+                        "Residence_type": residence,
+                        "smoking_status": d["smoking_status"],
+                        "age": age,
+                        "hypertension": int(d["hypertension"]),
+                        "heart_disease": int(d["heart_disease"]),
+                        "avg_glucose_level": float(d["avg_glucose_level"]),
+                        "bmi": float(d["bmi"]),
+                    }
+
+                    try:
+                        proba, label, thr = predict_risk(payload)
+                        band = _band_from_prob(proba)
+
+                        result = {
+                            "risk_pct": round(proba * 100, 1),
+                            "prob": f"{proba:.6f}",
+                            "label": "stroke" if label == 1 else "no stroke",
+                            "threshold": f"{thr:.3f}",
+                            "band": band,
+                            "inputs": payload,
+                        }
+
+                        # save PatientRecord
+                        rec = PatientRecord.objects.create(
+                            patient=patient,
+                            date=now().date(),
+                            stroke_risk=proba,
+                            ct_result="—",  # no image here
+                            symptom_score=_compute_symptom_score(
+                                age=age,
+                                bmi=payload["bmi"],
+                                hypertension=payload["hypertension"],
+                                heart_disease=payload["heart_disease"],
+                                smoking_status=payload["smoking_status"],
+                            ),
+                        )
+
+                        # snapshot symptoms (including patient fields)
+                        try:
+                            PatientSymptom.objects.create(
+                                hypertension=bool(payload["hypertension"]),
+                                heart_disease=bool(payload["heart_disease"]),
+                                ever_married=(payload["ever_married"] == "Yes"),
+                                stroke=(label == 1),
+                                work_type=work_type,
+                                smoking_status=payload["smoking_status"],
+                                bmi=payload["bmi"],
+                                age=age,
+                                avg_glucose_level=payload["avg_glucose_level"],
+                                gender=gender,
+                                Residence_type=residence,
+                                record=rec,
+                            )
+                            demo_attempts["tabular"] += 1
+                            request.session["demo_attempts"][str(patient.id)] = demo_attempts
+                            request.session.modified = True
+                        except Exception:
+                            pass
+
+                    except Exception as e:
+                        error = str(e)
+                else:
+                    error = "Please correct the form errors."
+
+        # -------- CNN (CT Image) --------
+        elif "predict_cnn" in request.POST:
+            if demo_attempts["cnn"] >= max_attempts:
+                cnn_error = f"You've reached the maximum of {max_attempts}"
+                form = DemoStrokeForm()
+                cnn_form = CnnForm()
+            else:
+                form = DemoStrokeForm()
+                cnn_form = CnnForm(request.POST, request.FILES)
+                if cnn_form.is_valid():
+                    ct_file = cnn_form.cleaned_data["ct"]
+                    try:
+                        prob, label = cnn_predict_from_uploaded_file(ct_file)
+                        band = _band_from_prob(prob)
+
+                        cnn_result = {
+                            "prob": f"{prob:.6f}",
+                            "prob_pct": round(prob * 100, 1),
+                            "label": "stroke" if label == 1 else "normal",
+                            "band": band,
+                        }
+
+                        # save record with image (cnn); no symptoms on this path
+                        PatientRecord.objects.create(
+                            patient=patient,
+                            date=now().date(),
+                            stroke_risk=prob,
+                            ct_result=("Stroke likely" if label == 1 else "Normal"),
+                            symptom_score=0.0,
+                            ct_image=ct_file,
+                        )
+                        demo_attempts["cnn"] += 1
+                        request.session["demo_attempts"][str(patient.id)] = demo_attempts
+                        request.session.modified = True
+                    except Exception as e:
+                        cnn_error = str(e)
+                else:
+                    cnn_error = "Please provide a CT image."
+
+        else:
+            form = DemoStrokeForm()
+            cnn_form = CnnForm()
+    else:
+        form = DemoStrokeForm()
+        cnn_form = CnnForm()
+
+    return render(request, "doctor/demo_add_ct.html", {
+        "patient": patient,
+        "form": form,
+        "cnn_form": cnn_form,
+        "result": result,
+        "cnn_result": cnn_result,
+        "error": error,
+        "cnn_error": cnn_error,
+    })
 
 
