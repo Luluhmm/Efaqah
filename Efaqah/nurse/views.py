@@ -32,8 +32,8 @@ def nurse_dashboard(request: HttpRequest):
 #------------------------------------------------------------------------------------------------------
 @login_required
 def add_patient_view(request: HttpRequest):
-    nurse_profile = staffProfile.objects.get(user=request.user)
-    hospital = nurse_profile.hospital
+    staff_profile = staffProfile.objects.get(user=request.user)
+    hospital = staff_profile.hospital
 
     # Get doctors from the same hospital
     doctors = staffProfile.objects.filter(
@@ -66,7 +66,7 @@ def add_patient_view(request: HttpRequest):
 
         # Create new patient
         new_patient = Patient(
-            hospital=nurse_profile.hospital,  
+            hospital=staff_profile.hospital,  
             patient_id=patient_id,
             first_name=request.POST.get("first_name"),
             last_name=request.POST.get("last_name"),
@@ -79,7 +79,10 @@ def add_patient_view(request: HttpRequest):
         )
         new_patient.save()
         messages.success(request, "Patient added successfully!")
-        return redirect('nurse:nurse_dashboard')  
+        if staff_profile.role == "manager":
+            return redirect('manager:all_patient')
+        else :
+            return redirect('nurse:nurse_dashboard')  
 
     # GET: render the add patient page
     return render(request, "nurse/add_patient.html", {
@@ -129,7 +132,7 @@ def update_patient_view(request, patient_id):
         try:
             patient.save()
             messages.success(request, "Patient updated successfully!")
-            return redirect('nurse:nurse_dashboard')  
+            return redirect("nurse:view_patient", patient_id)
         except Exception as e:
             messages.error(request, f"Error updating patient: {str(e)}")
 
@@ -146,4 +149,5 @@ def update_patient_view(request, patient_id):
 def delete_patient_view(request:HttpRequest, patient_id:int):
     patient = Patient.objects.get(pk=patient_id)
     patient.delete()
-    return redirect('manager:manager_dashboard')
+    messages.success(request, f"Patient {patient.first_name} has been removed.")
+    return redirect('manager:all_patient')

@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest,HttpResponse
 from doctor.models import PatientRecord, PatientSymptom
@@ -55,25 +56,35 @@ def add_doctor(request):
     if request.method == "POST":
         form = DoctorForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name']
-            )
-            staffProfile.objects.create(
-                user=user,
-                hospital=request.user.staffprofile.hospital,
-                role="doctor"
-            )
-            doctor_group, created = Group.objects.get_or_create(name="Doctor")
-            user.groups.add(doctor_group)
-            return redirect("manager:manager_dashboard")
-    
+            try:
+                user = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password'],
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name']
+                )
+
+                staffProfile.objects.create(
+                    user=user,
+                    hospital=request.user.staffprofile.hospital,
+                    role="doctor"
+                )
+
+                doctor_group, created = Group.objects.get_or_create(name="Doctor")
+                user.groups.add(doctor_group)
+
+                messages.success(request, "Doctor added successfully.")
+                return redirect("manager:all_doctor")
+
+            except IntegrityError:
+                messages.error(request, "This username already exists. Please choose another one.")
+                return redirect("manager:add_doctor") 
+
     else:
         form = DoctorForm()
-    return render(request, "manager/add_doctor.html", {"form":form})
+
+    return render(request, "manager/add_doctor.html", {"form": form})
 
 #------------------------------------------------------------------------------------------------------
 
@@ -81,21 +92,27 @@ def add_nurse(request):
     if request.method == "POST":
         form = NurseForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name']
-            )
-            staffProfile.objects.create(
-                user=user,
-                hospital=request.user.staffprofile.hospital,
-                role="nurse"
-            )
-            nurse_group, created = Group.objects.get_or_create(name="Nurse")
-            user.groups.add(nurse_group)
-            return redirect("manager:manager_dashboard")
+            try:
+                user = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password'],
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name']
+                )
+                staffProfile.objects.create(
+                    user=user,
+                    hospital=request.user.staffprofile.hospital,
+                    role="nurse"
+                )
+                nurse_group, created = Group.objects.get_or_create(name="Nurse")
+                user.groups.add(nurse_group)
+                messages.success(request, "Nurse added successfully.")
+                return redirect("manager:all_nurse")
+            
+            except IntegrityError:
+                messages.error(request, "This username already exists. Please choose another one.")
+                return redirect("manager:add_nurse") 
     
     else:
         form = NurseForm()
@@ -122,7 +139,7 @@ def update_doctor(request, doctor_id):
         doctor.save()
 
         messages.success(request, f"Doctor {doctor.user.username} updated successfully.")
-        return redirect("manager:manager_dashboard")
+        return redirect("manager:detail_doctor",doctor_id)
     
     return render(request, "manager/update_doctor.html", {"doctor":doctor})
 
@@ -147,7 +164,7 @@ def update_nurse(request, nurse_id):
         nurse.save()
 
         messages.success(request, f"Nurse {nurse.user.username} updated successfully.")
-        return redirect("manager:manager_dashboard")
+        return redirect("manager:detail_nurse",nurse_id)
     
     return render(request, "manager/update_nurse.html", {"nurse":nurse})
 
@@ -159,7 +176,7 @@ def remove_doctor(request, doctor_id):
     doctor.delete()
     user.delete()
     messages.success(request, f"Doctor {user.username} has been removed.")
-    return redirect("manager:manager_dashboard")
+    return redirect("manager:all_doctor")
 
 #------------------------------------------------------------------------------------------------------
     
@@ -169,7 +186,7 @@ def remove_nurse(request, nurse_id):
     nurse.delete()
     user.delete()
     messages.success(request, f"Nurse {user.username} has been removed.")
-    return redirect("manager:manager_dashboard")
+    return redirect("manager:all_nurse")
 
 #------------------------------------------------------------------------------------------------------
 
