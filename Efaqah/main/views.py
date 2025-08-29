@@ -23,6 +23,11 @@ from django.db.models import Count
 from django.template.loader import render_to_string
 from django.templatetags.static import static
 from email.mime.image import MIMEImage
+import ssl
+from django.core.mail import EmailMessage
+from django.conf import settings
+import ssl
+import certifi
 
 
 
@@ -561,16 +566,18 @@ def about_view(request):
 #------------------------------------------------------------------------------------------------------
 
 
+
+
 def contact_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
         email = request.POST.get("email")
-        subject = request.POST.get("subject")
+        subject_input = request.POST.get("subject")
         message_content = request.POST.get("message")
 
-        if name and email and subject and message_content:
+        if name and email and subject_input and message_content:
             try:
-                subject=f"Contact Form: {subject}",
+                subject = f"Contact Form: {subject_input}"
                 message = f"""
                             Hello Efaqah Team,
 
@@ -578,28 +585,33 @@ def contact_view(request):
 
                             Name: {name}
                             Email: {email}
-                            Subject: {subject}
+                            Subject: {subject_input}
 
                             Message:
                             {message_content}
                             """
-                send_mail(
+
+                email_msg = EmailMessage(
                     subject,
                     message,
-                    settings.DEFAULT_FROM_EMAIL,       
-                    [settings.DEFAULT_FROM_EMAIL], 
-                    fail_silently=False,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.DEFAULT_FROM_EMAIL],
+                    reply_to=[email],  
                 )
+                email_msg.send(fail_silently=False)
+
                 messages.success(request, "Your message has been sent successfully!")
             except Exception as e:
-                messages.error(request, "Failed to send message. Please try again later.")
+                messages.error(request, f"Failed to send message. Error: {e}")
 
             return redirect('main:contact_view')
-
         else:
             messages.error(request, "Please fill all fields.")
 
     return render(request, "main/contact.html")
+
+
+#------------------------------------------------------------------------------------------------------
 
 def get_logo_url(request=None):
     if request:
