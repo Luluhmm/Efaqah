@@ -711,7 +711,7 @@ def get_logo_url(request=None):
     site_url = getattr(settings, "SITE_URL", "")
     return f"{site_url}{static("images/logo_1.png")}"
 
-
+#------------------------------------------------------------------------------------------------------
 def privacy_view(request):
     return render(request,"main/privacy_policy.html")
 
