@@ -25,7 +25,7 @@ class Hospital(models.Model):
     )
 
     name = models.CharField(max_length=255)
-    country = CountryField(blank_label="(Select country)")
+    country = models.ForeignKey(CitiesLightCountry, on_delete=models.SET_NULL, null=True, blank=True, related_name="hospitals")
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name="hospitals")
     address = models.TextField(blank=True, null=True)
     contact_email = models.EmailField()
