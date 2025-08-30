@@ -13,6 +13,12 @@
                class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
                 ← Back
             </a>
+            {% elif request.user.staffprofile.role == "doctor" %}
+            <a href="{% url 'doctor:doctor_dashboard' %}"
+               class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                ← Back
+            </a>
+
             {% elif request.user.staffprofile.role == "manager" %}
             <a href="{% url 'manager:all_patient' %}"
                class="inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">

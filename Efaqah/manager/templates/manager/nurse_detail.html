@@ -21,21 +21,7 @@
         {% endfor %}
     </div>
 {% endif %}
-<div class="space-y-6 mb-6">
-    <!-- Hospital Info -->
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-        <h3 class="text-xl font-semibold text-blue-800 mb-2">Personal Info</h3>
-        <p><strong>User name:</strong> {{ nurse.user.username}}</p>
-        <p><strong>Email:</strong> {{ nurse.user.email }}</p>
-        <p><strong>Date Joined:</strong> {{ nurse.created_at }}</p>
-        {%if nurse.is_active == 1%}
-          <p><strong>Status:</strong> Active</p>
-        {% else %}
-        <p><strong>Status:</strong> Inactive</p>
-        {% endif %}
-    </div>
-
-</div>
+{% include "manager/staff_detail.html" with staff=nurse %}
 
 </div>
 {%endblock%}

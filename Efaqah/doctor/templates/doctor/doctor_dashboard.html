@@ -134,33 +134,11 @@
 
   <div id="patient-overview-list" class="space-y-4">
     {% if page_obj %}
-      {% for patient in page_obj %}
-      <div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between"
-           data-name="{{ patient.first_name }} {{ patient.last_name }}"
-           data-id="{{ patient.patient_id }}"
-           data-phone="{{ patient.phone_number }}">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <span class="bg-blue-100 text-blue-700 font-medium rounded-full w-12 h-12 flex items-center justify-center">
-              {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
-            </span>
-          </div>
-          <div>
-            <a href="{% url 'doctor:patient_detail_view' patient.id %}" class="font-semibold text-lg">
-              {{ patient.first_name }} {{ patient.last_name }}
-            </a>
-            <p class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded w-max">Id: {{ patient.patient_id }}</p>
-            <p class="text-sm text-gray-600">Phone: {{ patient.phone_number }}</p>
-          </div>
-        </div>
-        <a href="{% url 'doctor:patient_detail_view' patient.id %}"
-           class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-100 h-9 px-3 text-green-700 hover:scale-105 transition-all duration-300">
-          View
-        </a>
-      </div>
-      {% endfor %}
-    {% endif %}
-  </div>
+    {% for patient in page_obj %}
+       {% include "nurse/patient_card.html" %}
+    {% endfor %}
+    {%endif%}
+</div>
 <br><br>
 
 <!-- Recent Activity -->

@@ -1,0 +1,53 @@
+<div class="patient-card bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-between" 
+     data-name="{{ patient.first_name }} {{ patient.last_name }}"
+     data-id="{{ patient.patient_id }}"
+     data-phone="{{ patient.phone_number }}">
+    
+    <!-- Patient Info -->
+    <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="bg-blue-100 text-blue-700 p-2 font-medium rounded-full w-12 h-12 flex items-center justify-center">
+                {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+            </span>
+        </div>
+        <div>
+            <a href="{% url 'nurse:view_patient' patient.id %}" class="font-semibold text-lg">
+                {{ patient.first_name }} {{ patient.last_name }}
+            </a>
+            <p class="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded w-max">
+                ID : {{ patient.patient_id }}
+            </p>
+            <p class="text-sm text-gray-600">Phone : {{ patient.phone_number }}</p>
+        </div>
+    </div>
+
+
+    <div class="flex flex-col gap-2">
+
+        <a href="{% url 'nurse:view_patient' patient.id %}" 
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
+                  hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
+            <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </a>
+
+
+        {% if request.user.staffprofile.role != "doctor" %}
+        <a href="{% url 'nurse:update_patient_view' patient.id %}" 
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-yellow-100 
+                  hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700 overflow-hidden">
+            <span class="material-symbols-outlined">edit_square</span>
+        </a>
+        {% endif %}
+
+        {% if request.user.staffprofile.role == "manager" %}
+        <a href="{% url 'nurse:delete_patient_view' patient.id %}" 
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 
+                  hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+            <span class="material-symbols-outlined">delete</span>
+        </a>
+        {% endif %}
+    </div>
+</div>

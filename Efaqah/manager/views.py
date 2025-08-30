@@ -9,6 +9,7 @@ from .forms import DoctorForm , NurseForm
 from django.contrib import messages
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.utils.timezone import now
 
 # Create your views here.
@@ -84,7 +85,7 @@ def add_doctor(request):
     else:
         form = DoctorForm()
 
-    return render(request, "manager/add_doctor.html", {"form": form})
+    return render(request, "manager/add_staff.html", {"form": form, "role": "doctor"})
 
 #------------------------------------------------------------------------------------------------------
 
@@ -116,12 +117,12 @@ def add_nurse(request):
     
     else:
         form = NurseForm()
-    return render(request, "manager/add_nurse.html", {"form":form})
+    return render(request, "manager/add_staff.html", {"form":form , "role": "nurse"})
 
 #------------------------------------------------------------------------------------------------------
 
 def update_doctor(request, doctor_id):
-    doctor = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
+    staff = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
 
     if request.method == "POST":
         username = request.POST.get('username')
@@ -130,23 +131,23 @@ def update_doctor(request, doctor_id):
         last_name = request.POST.get('last_name')
         password = request.POST.get('password')
 
-        doctor.user.username = username
-        doctor.user.email = email
-        doctor.user.first_name = first_name
-        doctor.user.last_name = last_name
+        staff.user.username = username
+        staff.user.email = email
+        staff.user.first_name = first_name
+        staff.user.last_name = last_name
 
-        doctor.user.save()
-        doctor.save()
+        staff.user.save()
+        staff.save()
 
-        messages.success(request, f"Doctor {doctor.user.username} updated successfully.")
+        messages.success(request, f"Doctor {staff.user.username} updated successfully.")
         return redirect("manager:detail_doctor",doctor_id)
     
-    return render(request, "manager/update_doctor.html", {"doctor":doctor})
+    return render(request, "manager/update_staff.html", {"staff": staff, "role": "doctor"})
 
 #------------------------------------------------------------------------------------------------------
 
 def update_nurse(request, nurse_id):
-    nurse = get_object_or_404(staffProfile, id=nurse_id, role="nurse")
+    staff = get_object_or_404(staffProfile, id=nurse_id, role="nurse")
 
     if request.method == "POST":
         username = request.POST.get('username')
@@ -155,18 +156,18 @@ def update_nurse(request, nurse_id):
         last_name = request.POST.get('last_name')
         password = request.POST.get('password')
 
-        nurse.user.username = username
-        nurse.user.email = email
-        nurse.user.first_name = first_name
-        nurse.user.last_name = last_name
+        staff.user.username = username
+        staff.user.email = email
+        staff.user.first_name = first_name
+        staff.user.last_name = last_name
 
-        nurse.user.save()
-        nurse.save()
+        staff.user.save()
+        staff.save()
 
-        messages.success(request, f"Nurse {nurse.user.username} updated successfully.")
+        messages.success(request, f"Nurse {staff.user.username} updated successfully.")
         return redirect("manager:detail_nurse",nurse_id)
     
-    return render(request, "manager/update_nurse.html", {"nurse":nurse})
+    return render(request, "manager/update_staff.html", {"staff": staff, "role": "nurse"})
 
 #------------------------------------------------------------------------------------------------------
 
@@ -192,22 +193,31 @@ def remove_nurse(request, nurse_id):
 
 def all_patient(request):
     patients = Patient.objects.filter(hospital=request.user.staffprofile.hospital)
+    paginator = Paginator(patients, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     total_patient = patients.count()
-    return render(request, "manager/all_patient.html", {"patients":patients,"total_patient":total_patient})
+    return render(request, "manager/all_patient.html", {"page_obj":page_obj,"total_patient":total_patient})
 
 #------------------------------------------------------------------------------------------------------
 
 def all_nurse(request):
     nurses = staffProfile.objects.filter(role="nurse", hospital=request.user.staffprofile.hospital)
+    paginator = Paginator(nurses, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     total_nurse = nurses.count()
-    return render(request, "manager/all_nurse.html", {"nurses":nurses,"total_nurse":total_nurse})
+    return render(request, "manager/all_nurse.html", {"page_obj":page_obj,"total_nurse":total_nurse})
 
 #------------------------------------------------------------------------------------------------------
 
 def all_doctor(request):   
     doctors = staffProfile.objects.filter(role="doctor", hospital=request.user.staffprofile.hospital)
+    paginator = Paginator(doctors, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     total_doctor = doctors.count()
-    return render(request, "manager/all_doctors.html", {"doctors":doctors,"total_doctor":total_doctor})
+    return render(request, "manager/all_doctors.html", {"page_obj":page_obj,"total_doctor":total_doctor})
 
 #------------------------------------------------------------------------------------------------------
 

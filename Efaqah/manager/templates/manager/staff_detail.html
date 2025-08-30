@@ -1,0 +1,12 @@
+ <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">Personal Info</h3>
+        <p><strong>User name:</strong> {{ staff.user.username}}</p>
+        <p><strong>Email</strong> {{ staff.user.email }}</p>
+        <p><strong>Date Joined:</strong> {{ staff.created_at }}</p>
+        {%if staff.is_active == 1%}
+          <p><strong>Status:</strong> Active</p>
+        {% else %}
+        <p><strong>Status:</strong> Inactive</p>
+        {% endif %}
+    </div>
+
