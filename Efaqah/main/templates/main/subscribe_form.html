@@ -2,123 +2,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Form</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription Form - Efaqah</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+body { font-family: 'Poppins', sans-serif; }
 
-        .bg-gradient-animated { 
-            background: linear-gradient(-45deg, #d4d8ea, #c2d3ff, #dbe4f5, #acc4e4, #e1e9f6, #c9d9f7); 
-            background-size: 400% 400%; 
-            animation: gradientShift 15s ease infinite; 
-        }
+.bg-gradient-animated { 
+    background: linear-gradient(-45deg,#d4d8ea,#c2d3ff,#dbe4f5,#acc4e4,#e1e9f6,#c9d9f7); 
+    background-size:400% 400%; 
+    animation: gradientShift 15s ease infinite; 
+}
 
-        @keyframes gradientShift { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
+@keyframes gradientShift { 
+    0% { background-position:0% 50%; } 
+    50% { background-position:100% 50%; } 
+    100% { background-position:0% 50%; } 
+}
 
-        .glass-effect { 
-            backdrop-filter: blur(20px); 
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.2); 
-        }
+.glass-effect { 
+    backdrop-filter: blur(20px); 
+    background: rgba(255,255,255,0.1); 
+    border: 1px solid rgba(255,255,255,0.2); 
+}
 
-        .animate-fade-in {
-            animation: fadeIn 1s ease-out forwards;
-        }
+.animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+}
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            border: 1px solid #cbd5e1;
-            background: rgba(255,255,255,0.2);
-            color: #1e293b;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    background: rgba(255,255,255,0.2);
+    color: #1e293b;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
 
-        .form-input:focus {
-            outline: none;
-            border-color: #4f46e5;
-            background: rgba(255,255,255,0.3);
-        }
+.form-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: rgba(255,255,255,0.3);
+}
 
-        .submit-button {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background-color: #4f46e5;
-            color: white;
-            font-weight: 600;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
+.submit-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #4f46e5;
+    color: white;
+    font-weight: 600;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
 
-        .submit-button:hover {
-            background-color: #4338ca;
-        }
+.submit-button:hover {
+    background-color: #4338ca;
+}
 
-        .text-center h2 {
-            color: #1e3a8a;
-        }
-    </style>
+.label-text {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: #4b4e52;
+}
+</style>
 </head>
-<body class="min-h-screen bg-gradient-animated flex items-center justify-center">
+<body class="min-h-screen bg-gradient-animated flex flex-col">
 
+<!-- Navbar -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <!-- Logo -->
+    <a href="{% url 'main:landing_page' %}" class="flex items-center space-x-2 hover:scale-105 transition-transform">
+      <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-10 w-auto">
+    </a>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="{% url 'main:about_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">About</a>
+      <a href="{% url 'main:contact_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">Contact</a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative z-50">
+      <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden mt-2 p-4 bg-white rounded-xl shadow-lg hidden">
+    <a href="{% url 'main:about_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">About</a>
+    <a href="{% url 'main:contact_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">Contact</a>
+  </div>
+</nav>
+
+
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center p-4 mt-24 mb-12 w-full">
     <div class="glass-effect rounded-3xl p-10 max-w-lg w-full animate-fade-in">
         <div class="text-center mb-6">
-            <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="mx-auto h-20 w-auto mb-4 cursor-pointer">
-            <h2 class="text-2xl font-bold mb-2">Subscription Form</h2>
+            <a href="{% url 'main:landing_page' %}">
+                <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="mx-auto h-12 w-auto mb-4 cursor-pointer">
+            </a>
+            <h2 class="text-2xl mb-2">Subscription Form</h2>
             <p class="text-blue-800 text-sm">Please fill in the details below</p>
         </div>
+
         {% if messages %}
             <div class="mb-4">
                 {% for message in messages %}
                     {% if "success" in message.tags %}
-                            <script>
-                                alert("{{message|escapejs}}");
-                            </script>
-                        {% else %}
-                        <div
-                            class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                        <script>alert("{{message|escapejs}}");</script>
+                    {% else %}
+                        <div class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'success' %}bg-green-200 text-green-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
                             {{ message }}
                         </div>
                     {% endif %}
                 {% endfor %}
             </div>
         {% endif %}
+
         <form method="POST" action="{% url 'main:subscribe_form' %}" class="space-y-4">
             {% csrf_token %}
-            <input type="text" name="hospital_name" placeholder="Hospital Name" required class="form-input">
-            <select id="country" name="country" required class="form-input">
-                <option value="">Select a country</option>
-                {% for country in countries %}
-                    <option value="{{country.id}}">{{country.name}}</option>
-                {% endfor %}
-            </select>
-            <select id="city" name="city" class="form-input">
-                <option value="">Select a city</option>
-            </select>
-            <input type="text" name="address" placeholder="Address" class="form-input">
-            <input type="tel" name="phone" placeholder="Contact Phone" class="form-input">
-            <input type="text" name="manager_username" placeholder="Manager Username" required class="form-input">
-            <input type="text" name="first_name" placeholder="First Name" required class="form-input">
-            <input type="text" name="last_name" placeholder="Last Name" required class="form-input">
-            <input type="email" name="manager_email" placeholder="Manager Email" required class="form-input">
-            <input type="password" name="password" placeholder="Password" required class="form-input">
+            
+            <div>
+                <label class="label-text" for="hospital_name">Hospital Name</label>
+                <input type="text" name="hospital_name" id="hospital_name" required class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="country">Country</label>
+                <select id="country" name="country" required class="form-input">
+                    <option value="">Select a country</option>
+                    {% for country in countries %}
+                        <option value="{{country.id}}">{{country.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="label-text" for="city">City</label>
+                <select id="city" name="city" class="form-input">
+                    <option value="">Select a city</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="label-text" for="address">Address</label>
+                <input type="text" name="address" id="address" class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="phone">Contact Phone</label>
+                <input type="tel" name="phone" id="phone" class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="manager_username">Manager Username</label>
+                <input type="text" name="manager_username" id="manager_username" required class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="first_name">First Name</label>
+                <input type="text" name="first_name" id="first_name" required class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="last_name">Last Name</label>
+                <input type="text" name="last_name" id="last_name" required class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="manager_email">Manager Email</label>
+                <input type="email" name="manager_email" id="manager_email" required class="form-input">
+            </div>
+
+            <div>
+                <label class="label-text" for="password">Password</label>
+                <input type="password" name="password" id="password" required class="form-input">
+            </div>
 
             <input type="hidden" name="plan" value="{{plan}}">
             
@@ -129,26 +205,65 @@
             <a href="{% url 'main:login' %}" class="text-blue-900 hover:underline">Back to Login</a>
         </div>
     </div>
+</main>
 
+<!-- Footer -->
+<footer class="mt-auto bg-slate-900 text-white py-8 w-full">
+    <div class="max-w-7xl mx-auto text-center">
+        <img src="{% static 'images/logo_1.png' %}" alt="Efaqah Logo" class="w-32 h-auto mx-auto mb-4">
+        <p class="text-slate-400 mb-4">Empowering healthcare with fast and accurate AI stroke detection.</p>
+        <div class="flex justify-center space-x-6 text-sm mb-4">
+            <a href="{% url 'main:about_view' %}" class="hover:text-blue-400">About</a>
+            <a href="{% url 'main:contact_view' %}" class="hover:text-blue-400">Contact</a>
+            <a href="{% url 'main:privacy_view' %}" class="hover:text-blue-400">Privacy</a>
+        </div>
+        <div class="text-slate-500 text-sm">© 2025 Efaqah. All rights reserved.</div>
+    </div>
+</footer>
 
-    <script>
-        document.getElementById('country').addEventListener('change', function() {
-            const countryId = this.value;
-            const citySelect = document.getElementById('city');
-            citySelect.innerHTML = '<option value="">Loading...</option>';
+<script>
+document.getElementById('country').addEventListener('change', function() {
+    const countryId = this.value;
+    const citySelect = document.getElementById('city');
+    citySelect.innerHTML = '<option value="">Loading...</option>';
 
-            fetch(`/get-cities/${countryId}/`)
-                .then(res => res.json())
-                .then(data => {
-                    citySelect.innerHTML = '<option value="">Select a city</option>';
-                    data.cities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = city.name;
-                        citySelect.appendChild(option);
-                    });
-                });
+    fetch(`/get-cities/${countryId}/`)
+        .then(res => res.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="">Select a city</option>';
+            data.cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.id;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
         });
-    </script>
+});
+
+// Navbar scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const maxScroll = 200;
+  const opacity = Math.min(scrollY / maxScroll * 0.6, 0.6);
+  navbar.style.background = `rgba(255,255,255,${opacity})`;
+  navbar.style.backdropFilter = 'blur(20px)';
+  if(scrollY>50){ navbar.classList.add('shadow-lg'); } else { navbar.classList.remove('shadow-lg'); }
+});
+
+// Mobile menu toggle
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const menuIcon = document.getElementById('menu-icon');
+const closeIcon = document.getElementById('close-icon');
+
+mobileBtn.addEventListener('click', () => {
+  mobileMenu.classList.toggle('hidden');
+  menuIcon.classList.toggle('hidden');
+  closeIcon.classList.toggle('hidden');
+});
+</script>
+
+
 </body>
 </html>

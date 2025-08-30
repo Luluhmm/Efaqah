@@ -12,8 +12,11 @@ tailwind.config = {
   theme: {
     extend: {
       fontFamily: { sans: ['Poppins', 'sans-serif'] },
-      animation: { 'fade-in': 'fadeIn 1s ease-out' },
-      keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0px)' } } }
+      animation: { 'fade-in': 'fadeIn 1s ease-out', 'glow': 'glow 2s ease-in-out infinite alternate' },
+      keyframes: {
+        fadeIn: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0px)' } },
+        glow: { '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' }, '100%': { boxShadow: '0 0 30px rgba(59,130,246,0.8),0 0 40px rgba(59,130,246,0.3)' } }
+      }
     }
   }
 }
@@ -26,92 +29,152 @@ body { font-family: 'Poppins', sans-serif; }
 .lucide { width: 2rem; height: 2rem; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
-<body class="min-h-screen bg-gradient-animated flex flex-col items-center justify-start p-4 sm:p-6">
+<body class="min-h-screen bg-gradient-animated flex flex-col">
 
-<!-- Logo -->
-<div class="animate-fade-in mb-6 mt-4">
-    <a href="{% url 'main:landing_page' %}" class="flex justify-center">
-        <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-14 w-auto">
+<!-- Navbar -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <!-- Logo -->
+    <a href="{% url 'main:landing_page' %}" class="flex items-center space-x-2 hover:scale-105 transition-transform">
+      <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-10 w-auto">
     </a>
-</div>
 
-<!-- Contact Section -->
-<div class="animate-fade-in max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-6 md:gap-12 items-start mt-8">
-
-    <!-- Left Column: Contact Info -->
-   <div class="w-full md:w-1/2 mt-6 pr-0 md:pr-6 border-r border-gray-300 md:border-r md:border-gray-300 space-y-6 h-full">
-        <h2 class="text-2xl md:text-3xl font-semibold text-blue-900 mb-4">Let's Connect with Efaqah </h2>
-    <p class="text-gray-600 text-sm md:text-base">
-    At Efaqah, we are committed to making healthcare faster and smarter. Whether you have questions about our platform, suggestions, partnership opportunities, or just want to give feedback, we’re here to listen.<br><br>
-
-    Your input helps us improve and ensures that our platform serves both doctors and users effectively. Please fill out the form below and our team will respond as soon as possible.<br><br>
-
-    We value your time and thoughts — every message matters. Let’s work together to raise awareness, promote early detection of strokes, and make a real impact on people’s lives.
-</p>
-
-       <div class="flex items-center gap-2 text-blue-900">
-    <a href="https://www.google.com/maps/place/Riyadh,+Saudi+Arabia" target="_blank" class="flex items-center gap-2 hover:text-blue-700 transition">
-        <!-- Location Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21C12 21 19 13 19 8a7 7 0 10-14 0c0 5 7 13 7 13z" />
-            <circle cx="12" cy="8" r="3" />
-        </svg>
-        <p>Riyadh, Saudi Arabia</p>
-    </a>
-</div>
-
-
-        <div class="flex items-center gap-2 text-blue-900 mt-2">
-            <!-- Email Icon + mailto -->
-            <a href="mailto:Efaqaaah@gmail.com" class="flex items-center gap-2 hover:text-blue-700 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M22,4 L12,13 L2,4" />
-                </svg>
-                <p>Efaqaaah@gmail.com</p>
-            </a>
-        </div>
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="{% url 'main:about_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">About</a>
+      <a href="{% url 'main:contact_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">Contact</a>
     </div>
 
-    <!-- Right Column: Contact Form -->
-<div class="w-full md:w-1/2 mt-6">
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative z-50">
+      <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden mt-2 p-4 bg-white rounded-xl shadow-lg hidden">
+    <a href="{% url 'main:about_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">About</a>
+    <a href="{% url 'main:contact_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">Contact</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="flex-grow relative z-10 p-4 sm:p-6 flex flex-col items-center" style="padding-top: 10rem;">
+
+
+<!-- Contact Section -->
+<div class="animate-fade-in max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-6 md:gap-12 items-start">
+
+  <!-- Left Column: Contact Info -->
+  <div class="w-full md:w-1/2 mt-15 pr-0 md:pr-6 border-r border-gray-300 md:border-r md:border-gray-300 space-y-6">
+    <h2 class="text-2xl md:text-3xl font-semibold text-blue-900 mb-4">Let's Connect with Efaqah</h2>
+    <p class="text-gray-600 text-sm md:text-base">
+      At Efaqah, we are committed to making healthcare faster and smarter. Whether you have questions about our platform, suggestions, partnership opportunities, or just want to give feedback, we’re here to listen.<br><br>
+      Your input helps us improve and ensures that our platform serves both doctors and users effectively. Please fill out the form below and our team will respond as soon as possible.<br><br>
+      We value your time and thoughts — every message matters. Let’s work together to raise awareness, promote early detection of strokes, and make a real impact on people’s lives.
+    </p>
+
+    <div class="flex items-center gap-2 text-blue-900">
+      <a href="https://www.google.com/maps/place/Riyadh,+Saudi+Arabia" target="_blank" class="flex items-center gap-2 hover:text-blue-700 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21C12 21 19 13 19 8a7 7 0 10-14 0c0 5 7 13 7 13z" />
+          <circle cx="12" cy="8" r="3" />
+        </svg>
+        <p>Riyadh, Saudi Arabia</p>
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 text-blue-900 mt-2">
+      <a href="mailto:Efaqaaah@gmail.com" class="flex items-center gap-2 hover:text-blue-700 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="lucide w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M22,4 L12,13 L2,4" />
+        </svg>
+        <p>Efaqaaah@gmail.com</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Right Column: Contact Form -->
+  <div class="w-full md:w-1/2 mt-6">
     <form action="{% url 'main:contact_view' %}" method="POST" class="space-y-4 bg-white/20 p-6 rounded-2xl backdrop-blur-md shadow-md">
-        {% csrf_token %}
-
-        <!-- Messages inside the form -->
-        {% if messages %}
-        <div class="mb-4">
-            {% for message in messages %}
-            <div class="p-3 rounded-xl {% if message.tags == 'success' %}bg-green-200 text-green-800{% else %}bg-red-200 text-red-800{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
+      {% csrf_token %}
+      {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+        <div class="p-3 rounded-xl {% if message.tags == 'success' %}bg-green-200 text-green-800{% else %}bg-red-200 text-red-800{% endif %}">
+          {{ message }}
         </div>
-        {% endif %}
-
-        <div>
-            <label class="block text-sm font-semibold text-blue-900 mb-1">Full Name</label>
-            <input type="text" name="name" placeholder="Your name" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-blue-900 mb-1">Email</label>
-            <input type="email" name="email" placeholder="Your email" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-blue-900 mb-1">Subject</label>
-            <input type="text" name="subject" placeholder="Subject" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-blue-900 mb-1">Message</label>
-            <textarea name="message" placeholder="Your message" rows="4" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required></textarea>
-        </div>
-        <button type="submit" class="bg-blue-700 text-white px-6 py-2 rounded-full hover:bg-blue-800 transition mx-auto block">
-            Send Message
-        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div>
+        <label class="block text-sm font-semibold text-blue-900 mb-1">Full Name</label>
+        <input type="text" name="name" placeholder="Your name" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-blue-900 mb-1">Email</label>
+        <input type="email" name="email" placeholder="Your email" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-blue-900 mb-1">Subject</label>
+        <input type="text" name="subject" placeholder="Subject" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-blue-900 mb-1">Message</label>
+        <textarea name="message" placeholder="Your message" rows="4" class="w-full p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required></textarea>
+      </div>
+      <button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-full hover:bg-blue-800 transition mx-auto block">
+        Send Message
+      </button>
     </form>
-</div>
+  </div>
 
-
 </div>
+</main>
+
+<!-- Footer -->
+<footer class="mt-12 py-12 px-6 bg-slate-900 text-white relative overflow-hidden">
+  <div class="relative max-w-7xl mx-auto text-center">
+    <img src="{% static 'images/logo_1.png' %}" alt="Efaqah Logo" class="w-32 h-auto rounded-lg mx-auto mb-4">
+    <p class="text-slate-400 mb-6">Empowering healthcare with fast and accurate AI stroke detection.</p>
+    <div class="flex justify-center space-x-8 text-sm mb-6">
+      <a href="{% url 'main:about_view' %}" class="hover:text-blue-400 transition-colors">About</a>
+      <a href="{% url 'main:contact_view' %}" class="hover:text-blue-400 transition-colors">Contact</a>
+      <a href="{% url 'main:privacy_view' %}" class="hover:text-blue-400 transition-colors">Privacy</a>
+    </div>
+    <div class="mt-8 pt-8 border-t border-slate-800 text-slate-500 text-sm">© 2025 Efaqah. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const maxScroll = 200;
+    const opacity = Math.min(scrollY / maxScroll * 0.6, 0.6);
+    navbar.style.background = `rgba(255,255,255,${opacity})`;
+    navbar.style.backdropFilter = 'blur(20px)';
+    if(scrollY>50){ navbar.classList.add('shadow-lg'); } else { navbar.classList.remove('shadow-lg'); }
+  });
+
+  // Mobile menu toggle
+  const mobileBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+  mobileBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+    menuIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  });
+</script>
+
 </body>
 </html>

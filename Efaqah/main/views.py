@@ -135,6 +135,7 @@ def user_login(request):
 def landing_page(request):
     return render(request, "main/landing_page.html")
 
+
 #------------------------------------------------------------------------------------------------------
 
 def request_form(request):
