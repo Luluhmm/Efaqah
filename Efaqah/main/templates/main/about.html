@@ -2,152 +2,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Efaqah - About</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 1s ease-out',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0px)' },
-                        },
-                        glow: {
-                            '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
-                            '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.3)' },
-                        }
-                    }
-                }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Efaqah - About</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: { sans: ['Poppins', 'sans-serif'] },
+            animation: { 
+                'fade-in': 'fadeIn 1s ease-out', 
+                'glow': 'glow 2s ease-in-out infinite alternate' 
+            },
+            keyframes: {
+                fadeIn: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0px)' } },
+                glow: { '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' }, '100%': { boxShadow: '0 0 30px rgba(59,130,246,0.8),0 0 40px rgba(59,130,246,0.3)' } }
             }
         }
-    </script>
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .bg-gradient-animated { 
-            background: linear-gradient(-45deg, #d4d8ea, #c2d3ff, #dbe4f5, #acc4e4, #e1e9f6, #c9d9f7); 
-            background-size: 400% 400%; 
-            animation: gradientShift 15s ease infinite; 
-        }
-        @keyframes gradientShift { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
-        .glass-effect { 
-            backdrop-filter: blur(20px); 
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.2); 
-        }
-        .lucide { 
-            width: 2rem; 
-            height: 2rem; 
-            stroke: currentColor; 
-            stroke-width: 2; 
-            fill: none; 
-            stroke-linecap: round; 
-            stroke-linejoin: round; 
-        }
-    </style>
+    }
+}
+</script>
+<style>
+body { font-family: 'Poppins', sans-serif; }
+.bg-gradient-animated { 
+    background: linear-gradient(-45deg,#d4d8ea,#c2d3ff,#dbe4f5,#acc4e4,#e1e9f6,#c9d9f7); 
+    background-size:400% 400%; 
+    animation: gradientShift 15s ease infinite; 
+}
+@keyframes gradientShift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; }
+}
+.glass-effect { backdrop-filter: blur(20px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.lucide { width: 2rem; height: 2rem; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+</style>
 </head>
-<body class="min-h-screen bg-gradient-animated flex flex-col items-center justify-start p-6">
+<body class="min-h-screen bg-gradient-animated flex flex-col">
 
-    <!-- Logo -->
-    <div class="animate-fade-in mb-6 mt-4">
-        <a href="{% url 'main:landing_page' %}" class="flex justify-center">
-            <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-16 w-auto">
-        </a>
+<!-- Navbar -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="{% url 'main:landing_page' %}" class="flex items-center space-x-2 hover:scale-105 transition-transform">
+      <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-10 w-auto">
+    </a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="{% url 'main:about_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">About</a>
+      <a href="{% url 'main:contact_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">Contact</a>
     </div>
+    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative z-50">
+      <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden mt-2 p-4 bg-white rounded-xl shadow-lg hidden">
+    <a href="{% url 'main:about_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">About</a>
+    <a href="{% url 'main:contact_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">Contact</a>
+  </div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow relative z-10 p-4 sm:p-6 flex flex-col items-center" style="padding-top: 9rem;">
 
-    <!-- About + Team -->
-    <div class="animate-fade-in animation-delay-200 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-start mt-12">
-
-        <!-- Left Column: About -->
-<div class="md:w-1/2 mx-auto mt-6 pr-6 relative">
-    <div class="absolute top-0 right-0 border-r border-white-300" style="height: 400px;"></div>
-
-    <h2 class="flex items-center gap-2 text-xl md:text-2xl font-semibold text-blue-900 mb-3">MEET EFAQAH</h2>
-    <p class="text-gray-600 text-sm md:text-base text-center md:text-left">
-        Efaqah is an innovative platform aimed at early detection of strokes, developed by students from Tuwaiq Academy. The platform helps doctors and users make quick and effective health decisions. We believe in the importance of awareness and early screening to reduce complications and protect lives.
-    </p>
-
-    <!-- Vision Section -->
-    <div class="animate-fade-in animation-delay-300 mt-10 text-center md:text-left">
-        <h2 class="flex items-center gap-2 text-xl md:text-2xl font-semibold text-blue-900 mb-3">OUR VISION</h2>
-            <p class="text-gray-700 text-sm md:text-base leading-relaxed">
-                At Efaqah, our vision is to revolutionize healthcare by leveraging technology 
-                for early detection of strokes. We aim to empower both doctors and patients 
-                with intelligent tools that enable quick decision-making, raise awareness, 
-                and ultimately save lives through timely intervention.
-            </p>
-    </div>
-</div>
+<!-- Left Column: About, Vision & Team -->
+<!-- About Section -->
+<div class="md:w-2/3 mt-6 pr-6 text-left">
+    <h2 class="text-xl md:text-2xl font-semibold text-blue-900 mb-3">MEET EFAQAH</h2>
+   <p class="text-gray-700 text-base md:text-lg leading-relaxed mb-8 text-justify">
+    Efaqah is an innovative platform focused on the early detection of strokes. 
+    Developed by students from Tuwaiq Academy, it assists both doctors and users 
+    in making fast and effective health decisions. We emphasize the importance 
+    of awareness and early screening to minimize complications and protect lives.
+</p>
 
 
-      <!-- Right Column: Team -->
-        <div class="md:w-1/2 pl-6 mt-6">
-            <!-- Team Title -->
-           <h2 class="flex items-center gap-2 text-xl md:text-2xl font-semibold text-blue-900 mb-3"> OUR TEAM</h2>
+    <h2 class="text-xl md:text-2xl font-semibold text-blue-900  mb-3">OUR VISION</h2>
+    <p class="text-gray-700 text-base md:text-lg leading-relaxed mb-8 text-justify">
+    Our vision at Efaqah is to transform healthcare through technology-driven 
+    early stroke detection. We strive to empower doctors and patients with 
+    intelligent tools that enable rapid decision-making, raise awareness, and 
+    ultimately save lives through timely intervention.
+</p>
 
-            <div class="grid grid-cols-1 gap-4">
-   
-  
-<!-- Team Member -->
-<div class="glass-effect rounded-xl p-2.5 flex flex-row items-center text-left">
-    <div class="w-14 h-14 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-        <img src="{% static 'images/luluh.JPG' %}" alt="Luluh Almogbil" class="w-12 h-12 object-cover rounded-full">
-    </div>
+<h2 class="text-xl md:text-2xl font-semibold text-blue-900 mb-6 text-center mt-12">OUR TEAM</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-center mt-12">
+    
+    <!-- Team Member 1 -->
     <div>
-        <h3 class="font-semibold text-blue-900 text-base">Luluh Almogbil</h3>
-        <h3 class="font-semibold text-blue-900 text-sm">" text "</h3>
+        <div class="w-24 h-24 mx-auto rounded-full overflow-hidden">
+            <img src="{% static 'images/luluh.JPG' %}" alt="Luluh Almogbil" class="w-full h-full object-cover">
+        </div>
+        <h3 class="mt-4 font-semibold text-blue-900 text-lg">Luluh Almogbil</h3>
+        <p class="mt-1 text-sm text-blue-900">" text "</p>
     </div>
-</div>
 
-<div class="glass-effect rounded-xl p-2.5 flex flex-row items-center text-left">
-    <div class="w-14 h-14 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-        <img src="{% static 'images/roba.png' %}" alt="Roba Almohammadi" class="w-12 h-12 object-cover rounded-full">
-    </div>
+    <!-- Team Member 2 -->
     <div>
-        <h3 class="font-semibold text-blue-900 text-base">Roba Almohammadi</h3>
-        <h3 class="font-semibold text-blue-900 text-sm">" text "</h3>
+        <div class="w-24 h-24 mx-auto rounded-full overflow-hidden">
+            <img src="{% static 'images/roba.png' %}" alt="Roba Almohammadi" class="w-full h-full object-cover">
+        </div>
+        <h3 class="mt-4 font-semibold text-blue-900 text-lg">Roba Almohammadi</h3>
+        <p class="mt-1 text-sm text-blue-900">" text "</p>
     </div>
-</div>
 
-<div class="glass-effect rounded-xl p-2.5 flex flex-row items-center text-left">
-    <div class="w-14 h-14 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-        <img src="{% static 'images/shatha.png' %}" alt="Shatha Alsuwaid" class="w-12 h-12 object-cover rounded-full">
-    </div>
+    <!-- Team Member 3 -->
     <div>
-        <h3 class="font-semibold text-blue-900 text-base">Shatha Alsuwaid</h3>
-        <h3 class="font-semibold text-blue-900 text-sm">" text "</h3>
+        <div class="w-24 h-24 mx-auto rounded-full overflow-hidden">
+            <img src="{% static 'images/shatha.png' %}" alt="Shatha Alsuwaid" class="w-full h-full object-cover">
+        </div>
+        <h3 class="mt-4 font-semibold text-blue-900 text-lg">Shatha Alsuwaid</h3>
+        <p class="mt-1 text-sm text-blue-900">" text "</p>
     </div>
-</div>
 
-<div class="glass-effect rounded-xl p-2.5 flex flex-row items-center text-left">
-    <div class="w-14 h-14 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-        <img src="{% static 'images/wasan.png' %}" alt="Wasan Alqahtani" class="w-12 h-12 object-cover rounded-full">
-    </div>
+    <!-- Team Member 4 -->
     <div>
-        <h3 class="font-semibold text-blue-900 text-base">Wasan Alqahtani</h3>
-        <h3 class="font-semibold text-blue-900 text-sm">" text "</h3>
+        <div class="w-24 h-24 mx-auto rounded-full overflow-hidden">
+            <img src="{% static 'images/wasan.png' %}" alt="Wasan Alqahtani" class="w-full h-full object-cover">
+        </div>
+        <h3 class="mt-4 font-semibold text-blue-900 text-lg">Wasan Alqahtani</h3>
+        <p class="mt-1 text-sm text-blue-900">" text "</p>
     </div>
+
 </div>
 
 
-</div>
-
-
     </div>
+  </div>
+
+</main>
+
+
+<!-- Footer -->
+<footer class="mt-24 py-12 px-6 bg-slate-900 text-white w-full">
+  <div class="max-w-7xl mx-auto text-center">
+    <img src="{% static 'images/logo_1.png' %}" alt="Efaqah Logo" class="w-32 h-auto rounded-lg mx-auto mb-4">
+    <p class="text-slate-400 mb-6">Empowering healthcare with fast and accurate AI stroke detection.</p>
+    <div class="flex justify-center space-x-8 text-sm mb-6">
+      <a href="{% url 'main:about_view' %}" class="hover:text-blue-400 transition-colors">About</a>
+      <a href="{% url 'main:contact_view' %}" class="hover:text-blue-400 transition-colors">Contact</a>
+      <a href="{% url 'main:privacy_view' %}" class="hover:text-blue-400 transition-colors">Privacy</a>
+    </div>
+    <div class="mt-8 pt-8 border-t border-slate-800 text-slate-500 text-sm">© 2025 Efaqah. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const maxScroll = 200;
+  const opacity = Math.min(scrollY / maxScroll * 0.6, 0.6);
+  navbar.style.background = `rgba(255,255,255,${opacity})`;
+  navbar.style.backdropFilter = 'blur(20px)';
+  if(scrollY>50){ navbar.classList.add('shadow-lg'); } else { navbar.classList.remove('shadow-lg'); }
+});
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const menuIcon = document.getElementById('menu-icon');
+const closeIcon = document.getElementById('close-icon');
+mobileBtn.addEventListener('click', () => {
+  mobileMenu.classList.toggle('hidden');
+  menuIcon.classList.toggle('hidden');
+  closeIcon.classList.toggle('hidden');
+});
+</script>
 
 </body>
 </html>
