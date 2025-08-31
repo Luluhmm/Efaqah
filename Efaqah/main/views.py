@@ -593,9 +593,9 @@ def create_checkout_session(request, plan, hospital_id):
 def admin_view(request):
     # To calculate the revenue 
     PLAN_PRICES = {
-        'basic': 499,
-        'pro': 999,
-        'enterprise': 1999,
+        'basic': 14900,
+        'pro': 34900,
+        'enterprise': 74900,
     }
     paid_hospitals = Hospital.objects.filter(subscription_status='paid')
     deleted_hospitals = DeletedHospital.objects.filter(subscription_status='paid')

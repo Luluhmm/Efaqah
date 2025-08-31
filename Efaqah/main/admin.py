@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Registration, Hospital, staffProfile
+from .models import Registration, Hospital, staffProfile,DeletedHospital
 from .views import send_payment_link_email
 
 # Register your models here.
-
+admin.site.register(DeletedHospital)
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
     list_display = (
