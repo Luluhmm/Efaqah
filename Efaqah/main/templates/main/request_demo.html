@@ -73,16 +73,6 @@
      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <h2 class="text-2xl text-blue-800">Approved Demo Requests</h2>
         </div>
-    <!-- Flash Messages -->
-    {% if messages %}
-        <div class="space-y-2 mb-4">
-            {% for message in messages %}
-                <div class="{% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-300{% elif message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-gray-100 text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
               <div class="p-6">
                 {% if approved_demo %}
                     <div class="overflow-x-auto">
@@ -106,6 +96,49 @@
                                         <td class="px-4 py-2">{{demo.medical_affiliation}}</td>
                                         <td class="px-4 py-2">{{demo.country}}</td>
                                         <td class="px-4 py-2">{{demo.description}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                <p class="text-gray-500">No Approved Request yet.</p>
+                {% endif %}
+            </div>
+</div>
+<br>
+<br>
+<div class="bg-white rounded-lg border shadow-sm w-full max-w-4xl mx-auto p-6">
+     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+        <h2 class="text-2xl text-blue-800">Paid Demo Requests</h2>
+        </div>
+              <div class="p-6">
+                {% if paid_demo %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="bg-gray-100 text-gray-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Email</th>
+                                    <th class="px-4 py-2">Phone Number</th>
+                                    <th class="px-4 py-2">medical Affiliation</th>
+                                    <th class="px-4 py-2">Country</th>
+                                    <th class="px-4 py-2">Description</th>
+                                    <th class="px-4 py-2">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for demo in paid_demo %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{demo.firstname}} {{demo.lastname}}</td>
+                                        <td class="px-4 py-2">{{demo.email}}</td>
+                                        <td class="px-4 py-2">{{demo.phone}}</td>
+                                        <td class="px-4 py-2">{{demo.medical_affiliation}}</td>
+                                        <td class="px-4 py-2">{{demo.country}}</td>
+                                        <td class="px-4 py-2">{{demo.description}}</td>
+                                        <td class="px-4 py-2"> <a href="{% url 'main:delete_demo' demo.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
