@@ -5,6 +5,7 @@ app_name = "main"
 
 urlpatterns = [
     path('', views.landing_page, name="landing_page"),
+    path('go-home/', views.go_home, name='go_home'),
     path('login/', views.user_login, name="login"),
     path('subscribe/', views.subscribe_view, name="subscribe_view"),
     path('request_form/', views.request_form, name="request_form"),
