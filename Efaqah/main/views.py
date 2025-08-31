@@ -16,6 +16,7 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from cities_light.models import Country as CitiesLightCountry
 from django.utils import timezone
 from cities_light.models import Country, City
 import time
@@ -235,13 +236,15 @@ def create_user_and_send_credentials(registration, request=None):
     #Assign the user to the 'demo' group
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
+    country_instance = None
+    if registration.country:
+        country_instance = CitiesLightCountry.objects.filter(code2=registration.country.code).first()
 
-    us_country = Country.objects.filter(code="US").first()
     
     demo_hospital, _ = Hospital.objects.get_or_create(
         name = "Demo Hospital",
         defaults={
-            "country": us_country,
+            "country": country_instance,
             "contact_email": "demo@example.com",
             "subscription_status": "paid",
             "plan": "basic",

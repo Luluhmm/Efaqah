@@ -1,9 +1,9 @@
 from itertools import count
 from django.shortcuts import render,redirect, get_object_or_404
 
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, FileResponse, Http404
 
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
+from mimetypes import guess_type
 
 from doctor.models import PatientRecord, PatientSymptom
 from nurse.models import Patient
@@ -22,7 +22,7 @@ from datetime import datetime
 from .forms import StrokeForm, CnnForm, DemoStrokeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+import os
 
 
 # Create your views here.
@@ -402,6 +402,7 @@ def patient_detail_view(request: HttpRequest, patient_id: int):
     })
 #------------------------------------------------------------------------------------------------------
 
+@login_required
 def history_view(request: HttpRequest, patient_id: int):
     """
     Show ML vs CNN history with date filters on-page.
@@ -690,6 +691,9 @@ def demo_add_ct_view(request, patient_id: int):
         form = DemoStrokeForm()
         cnn_form = CnnForm()
 
+    remaining_tabular = max_attempts - demo_attempts.get("tabular", 0)
+    remaining_cnn = max_attempts - demo_attempts.get("cnn", 0)
+
     return render(request, "doctor/demo_add_ct.html", {
         "patient": patient,
         "form": form,
@@ -698,6 +702,7 @@ def demo_add_ct_view(request, patient_id: int):
         "cnn_result": cnn_result,
         "error": error,
         "cnn_error": cnn_error,
+        "remaining_tabular": remaining_tabular,
+        "remaining_cnn": remaining_cnn
     })
-
 
