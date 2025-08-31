@@ -750,7 +750,7 @@ def request_demo(request):
 
 #------------------------------------------------------------------------------------------------------
 def update_status(request,demo_id:int):
-    demo_request = get_object_or_404(Registration, pk=demo_id)
+    demo_request = get_object_or_404(Registration ,pk=demo_id)
     demo_request.status = "approved"
     demo_request.save()
 
