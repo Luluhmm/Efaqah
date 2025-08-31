@@ -59,8 +59,17 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.name
+    
+#------------------------------------------------------------------------------------------------------
+class DeletedHospital(models.Model):
+    name = models.CharField(max_length=255)
+    plan = models.CharField(max_length=50)
+    subscription_status = models.CharField(max_length=50, default="paid")
+    subscription_start_date = models.DateField(null=True, blank=True)
+    deleted_at = models.DateTimeField(auto_now_add=True)
 
-
+#------------------------------------------------------------------------------------------------------
+#    
 class staffProfile(models.Model):
     ROLE_CHOICES = (
         ('manager', 'Manager'),
@@ -78,6 +87,7 @@ class staffProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.role}) - ({self.hospital.name})"
 
+#------------------------------------------------------------------------------------------------------
 
 class Registration(models.Model):
     STATUS_CHOICES = (

@@ -23,17 +23,23 @@
 
 
     <div class="flex flex-col gap-2">
-
-        <a href="{% url 'nurse:view_patient' patient.id %}" 
-           class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
+        {% if request.user.staffprofile.role == "doctor" %}
+    <a href="{% url 'doctor:patient_detail_view' patient.id %}"  class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
                   hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
             <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
                 <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
                 <circle cx="12" cy="12" r="3"/>
             </svg>
         </a>
-
-
+{% else %}
+    <a href="{% url 'nurse:view_patient' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
+                  hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
+            <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </a>
+{% endif %}
         {% if request.user.staffprofile.role != "doctor" %}
         <a href="{% url 'nurse:update_patient_view' patient.id %}" 
            class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-yellow-100 

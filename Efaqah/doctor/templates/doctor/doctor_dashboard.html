@@ -5,14 +5,8 @@
 <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
 
   <!-- My Patients -->
-  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
-    <div>
-      <p class="text-sm text-gray-600">My Patients</p>
-      <p class="text-2xl font-semibold">{{ patient_num }}</p>
-      <a href="{% url 'doctor:all_patient_view' %}"
-         class="inline-block mt-2 text-sm text-blue-700 hover:underline">View all</a>
-    </div>
-    <div class="bg-blue-100 p-3 rounded-lg">
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center text-center">
+    <div class="bg-blue-100 p-3 rounded-lg flex items-center justify-center mb-4">
       <svg class="w-6 h-6 text-blue-600 lucide" viewBox="0 0 24 24">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
@@ -20,82 +14,71 @@
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
     </div>
+    <p class="text-sm text-gray-500 font-medium">My Patients</p>
+    <p class="text-2xl font-bold text-gray-800">{{ patient_num }}</p>
+    <a href="{% url 'doctor:all_patient_view' %}" class="mt-2 text-sm text-blue-600 hover:underline">View all</a>
   </div>
 
   <!-- Critical Patients -->
-  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
-    <div>
-      <p class="text-sm text-gray-600">Critical Patients</p>
-      <p class="text-2xl font-semibold">{{ critical_patient_num }}</p>
-      <a href="{% url 'doctor:all_patient_view' %}?critical=1"
-         class="inline-block mt-2 text-sm text-red-700 hover:underline">View critical</a>
-    </div>
-    <div class="bg-red-100 p-3 rounded-lg">
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center text-center">
+    <div class="bg-red-100 p-3 rounded-lg flex items-center justify-center mb-4">
       <svg class="w-6 h-6 text-red-600 lucide" viewBox="0 0 24 24">
         <path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/>
       </svg>
     </div>
+    <p class="text-sm text-gray-500 font-medium">Critical Patients</p>
+    <p class="text-2xl font-bold text-gray-800">{{ critical_patient_num }}</p>
+    <a href="{% url 'doctor:all_patient_view' %}?critical=1" class="mt-2 text-sm text-red-600 hover:underline">View critical</a>
   </div>
 
   <!-- High Stroke Risk -->
-  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
-    <div>
-      <p class="text-sm text-gray-600">High Stroke Risk - Requires Close Monitoring</p>
-      <p class="text-2xl font-semibold">{{ high_risk_patient_num }}</p>
-      <a href="{% url 'doctor:all_patient_view' %}?highrisk=1"
-         class="inline-block mt-2 text-sm text-yellow-700 hover:underline">View high-risk</a>
-    </div>
-    <div class="bg-yellow-100 p-3 rounded-lg">
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center text-center">
+    <div class="bg-yellow-100 p-3 rounded-lg flex items-center justify-center mb-4">
       <svg class="w-6 h-6 text-yellow-600 lucide" viewBox="0 0 24 24">
         <path d="M12 8v4"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="10"/>
       </svg>
     </div>
+    <p class="text-sm text-gray-500 font-medium">High Stroke Risk</p>
+    <p class="text-2xl font-bold text-gray-800">{{ high_risk_patient_num }}</p>
+    <a href="{% url 'doctor:all_patient_view' %}?highrisk=1" class="mt-2 text-sm text-yellow-700 hover:underline">View high-risk</a>
   </div>
 
   <!-- New Patients This Month -->
-  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
-    <div>
-      <p class="text-sm text-gray-600">New Patients This Month</p>
-      <p class="text-2xl font-semibold">{{ new_patient_month }}</p>
-    </div>
-    <div class="bg-green-100 p-3 rounded-lg">
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center text-center">
+    <div class="bg-green-100 p-3 rounded-lg flex items-center justify-center mb-4">
       <svg class="w-6 h-6 text-green-600 lucide" viewBox="0 0 24 24">
         <path d="M12 4v16"/><path d="M4 12h16"/>
       </svg>
     </div>
+    <p class="text-sm text-gray-500 font-medium">New Patients This Month</p>
+    <p class="text-2xl font-bold text-gray-800">{{ new_patient_month }}</p>
   </div>
 
   <!-- Trend Alerts -->
-  <div class="bg-white rounded-xl shadow-sm border p-6 flex justify-between items-center md:col-span-1">
-    <div>
-      <p class="text-sm text-gray-600">Clinical Alerts</p>
-      <p class="text-2xl font-semibold">{{ trend_alerts_num }}</p>
-      <p class="text-xs text-gray-500 mt-1">BMI/Glucose/Symptom score worsened</p>
-    </div>
-    <div class="bg-purple-100 p-3 rounded-lg">
+  <div class="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center text-center">
+    <div class="bg-purple-100 p-3 rounded-lg flex items-center justify-center mb-4">
       <svg class="w-6 h-6 text-purple-600 lucide" viewBox="0 0 24 24">
         <polyline points="3 17 9 11 13 15 21 7"/>
         <polyline points="14 7 21 7 21 14"/>
       </svg>
     </div>
+    <p class="text-sm text-gray-500 font-medium">Clinical Alerts</p>
+    <p class="text-2xl font-bold text-gray-800">{{ trend_alerts_num }}</p>
+    <p class="text-xs text-gray-400 mt-1">BMI/Glucose/Symptom score worsened</p>
   </div>
+
 </div>
 
 <!-- who is unstable -->
 {% if unstable_details %}
 <div class="bg-white rounded-lg border shadow-sm p-6 mb-8">
-  <h3 class="text-lg font-semibold text-blue-800 mb-3">Clinical Alerts </h3>
+  <h3 class="text-lg font-semibold text-blue-800 mb-3">Clinical Alerts</h3>
   <ul class="space-y-2">
     {% for item in unstable_details %}
       <li class="flex flex-wrap items-center gap-2 border rounded p-3">
         <a href="{% url 'doctor:patient_detail_view' item.patient.id %}" class="font-medium text-gray-800 hover:underline">
           {{ item.patient.first_name }} {{ item.patient.last_name }}
         </a>
-        <!-- {% if item.score_up %}
-          <span class="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
-            Symptom score increased ({{ item.score_from|default:"—" }} → {{ item.score_to|default:"—" }})
-          </span>
-        {% endif %} -->
         {% if item.glucose_up %}
           <span class="text-xs px-2 py-1 rounded-full bg-red-50 text-red-800 border border-red-200">
             Glucose high ({{ item.glucose_from|default:"—" }} → {{ item.glucose_to|default:"—" }})
@@ -111,6 +94,7 @@
   </ul>
 </div>
 {% endif %}
+
 
 <!-- Patient List (search keeps your styling) -->
 <div class="bg-white rounded-lg border shadow-sm p-6">
