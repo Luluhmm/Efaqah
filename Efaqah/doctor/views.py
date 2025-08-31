@@ -554,6 +554,10 @@ def demo_add_ct_view(request, patient_id: int):
     error = None
     cnn_error = None
 
+    result = request.session.pop('last_tabular_result', None)
+    cnn_result = request.session.pop('last_cnn_result', None)
+
+
     if request.method == "POST":
 
         # -------- Symptoms --------
