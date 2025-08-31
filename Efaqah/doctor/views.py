@@ -547,7 +547,7 @@ def demo_add_ct_view(request, patient_id: int):
     if demo_attempts.get("tabular", 0) >= max_attempts and demo_attempts.get("cnn", 0) >= max_attempts:
         messages.success(request, "You have used all your demo attempts. Subscribe to continue using the models.")
 
-        return redirect("main:login")
+        return redirect("main:subscribe_view")
 
     result = None
     cnn_result = None

@@ -561,9 +561,9 @@ def create_checkout_session(request, plan, hospital_id):
     hospital = get_object_or_404(Hospital, id=hospital_id)
 
     price_map = {
-        "499": 49900,
-        "999": 99900,
-        "1999": 199900,
+        "499": 1490000,
+        "999": 3490000,
+        "1999": 7490000,
     }
 
     if plan not in price_map:
