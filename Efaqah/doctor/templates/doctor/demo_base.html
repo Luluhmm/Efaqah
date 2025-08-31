@@ -34,9 +34,8 @@
   <div class="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center h-20">
     
     <!-- Logo -->
-    <a href="{% if request.user.is_superuser %}{% url 'main:admin_view' %}{% elif request.user.staffprofile.role == 'doctor' %}{% url 'doctor:doctor_dashboard' %}{% elif request.user.staffprofile.role == 'nurse' %}{% url 'nurse:nurse_dashboard' %}{% elif request.user.staffprofile.role == 'manager' %}{% url 'manager:manager_dashboard' %}{% else %}{% url 'main:go_home' %}{% endif %}" class="flex items-center space-x-2 hover:scale-105 transition-transform">
-      <img src="{% static 'images/logo_1.PNG' %}" alt="Logo" class="h-10 w-auto"> 
-    </a>
+    <img src="{% static 'images/logo_1.PNG' %}" alt="Logo" class="h-10 w-auto"> 
+
 
     <!-- Desktop Menu -->
     <div class="hidden md:flex items-center space-x-6">
