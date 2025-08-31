@@ -170,11 +170,17 @@ body { font-family: 'Poppins', sans-serif; }
                 <label class="label-text" for="phone">Contact Phone</label>
                 <input type="tel" name="phone" id="phone" class="form-input">
             </div>
-
             <div>
                 <label class="label-text" for="manager_username">Manager Username</label>
-                <input type="text" name="manager_username" id="manager_username" required class="form-input">
-            </div>
+                <input
+                  type="text"
+                  name="manager_username"
+                  id="manager_username"
+                  required
+                  placeholder="Name+Hospital (e.g., sultanRCJY)"
+                  class="form-input placeholder:text-gray-400 placeholder:italic"
+                />
+              </div>
 
             <div>
                 <label class="label-text" for="first_name">First Name</label>
