@@ -185,4 +185,29 @@
     });
   })();
 </script>
+
+
+<script>
+  (function () {
+    // Find the logo link in the header
+    const logoImg  = document.querySelector('header img[alt="Logo"], header img[alt="Efaqah"]');
+    const logoLink = logoImg ? logoImg.closest('a') : null;
+
+    if (!logoLink) return;
+
+    // Prevent navigation on click
+    logoLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    // Make it feel non-clickable
+    logoLink.removeAttribute('href');           // no URL on hover
+    logoLink.setAttribute('aria-disabled','true');
+    logoLink.style.cursor = 'default';
+    // Optional: subtle hint
+    logoLink.title = 'Demo mode: logo disabled';
+  })();
+</script>
+
 {% endblock %}

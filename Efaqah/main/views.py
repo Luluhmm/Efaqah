@@ -10,7 +10,7 @@ from nurse.models import Patient
 from .forms import RegistrationForm
 from .models import Registration, Hospital, staffProfile,DeletedHospital
 from django.conf import settings
-from django.core.mail import send_mail , EmailMessage
+from django.core.mail import send_mail , EmailMessage, EmailMultiAlternatives
 import uuid
 from django.views.decorators.csrf import csrf_exempt
 import stripe
@@ -750,7 +750,7 @@ def request_demo(request):
 
 #------------------------------------------------------------------------------------------------------
 def update_status(request,demo_id:int):
-    demo_request = get_object_or_404(Registration, pk=demo_id)
+    demo_request = get_object_or_404(Registration ,pk=demo_id)
     demo_request.status = "approved"
     demo_request.save()
 
