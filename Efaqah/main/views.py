@@ -125,6 +125,17 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+
+            if user.is_superuser or user.groups.filter(name__iexact="Admin").exists():
+                login(request, user)
+                return redirect("main:admin_view")
+
+            try:
+                role = user.staffprofile.role
+            except (AttributeError, ObjectDoesNotExist):
+                messages.error(request, "Your account has been removed. Please contact the administrator.")
+                return redirect("main:login")
+            
             login(request, user)
 
             if user.groups.filter(name="Doctor").exists():
@@ -147,8 +158,6 @@ def user_login(request):
                     return redirect("main:login")
                 
 
-            elif user.is_superuser:
-                return redirect("main:admin_view")
             
             else:
                 logout(request)
@@ -198,14 +207,15 @@ def request_form(request):
 
             })
 
-            admin_email = EmailMessage(
-                "New Registration Form Submission",
-                admin_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.EMAIL_HOST_USER],
+            admin_email = EmailMultiAlternatives(
+                subject="New Registration Form Submission",
+                body=admin_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[settings.EMAIL_HOST_USER],
                 reply_to=[registration.email],
             )
-            admin_email.content_subtype = "html"
+            admin_email.attach_alternative(admin_message, "text/html")
+            attach_logo(admin_email)
             admin_email.send()
 
 
@@ -221,13 +231,14 @@ def request_form(request):
                 "header": "Thank you for Registering!",
                 "content": user_content,
             })
-            user_email = EmailMessage(
-                "Your Registration was Successful",
-                user_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [registration.email],
+            user_email = EmailMultiAlternatives(
+                subject="Your Registration was Successful",
+                body=user_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[registration.email],
             )
-            user_email.content_subtype = "html"
+            user_email.attach_alternative(user_message, "text/html")
+            attach_logo(user_email)
             user_email.send()
 
             messages.success(request, "Form submitted successfully. We'll contact you soon.")
@@ -315,14 +326,15 @@ def create_user_and_send_credentials(registration, request=None):
         "content":content,
     })
 
-    email_msg = EmailMessage(
-        "Your New Account Details",
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [email],
+    email_msg = EmailMultiAlternatives(
+        subject="Your New Account Details",
+        body=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email],
     )
 
-    email_msg.content_subtype = "html"
+    email_msg.attach_alternative(message, "text/html")
+    attach_logo(email_msg)
     email_msg.send()
 
 """
@@ -411,13 +423,14 @@ def send_payment_link_email(request, registration):
             "content": content,
         })
 
-        email_msg = EmailMessage(
-            "Your Payment Link for Demo Access",
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [registration.email], # Send to the user who registered
+        email_msg = EmailMultiAlternatives(
+            subject="Your Payment Link for Demo Access",
+            body=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[registration.email], # Send to the user who registered
         )
-        email_msg.content_subtype = "html"
+        email_msg.attach_alternative(message, "text/html")
+        attach_logo(email_msg)
         email_msg.send()
 
 
@@ -603,7 +616,7 @@ def admin_view(request):
     total_revenue += sum(PLAN_PRICES.get(h.plan.lower(), 0) for h in deleted_hospitals)
 
     # to calculate num of hospitals, doctors, patients , nurses 
-    latest_hospitals = Hospital.objects.order_by('-created_at')[:3]
+    latest_hospitals = Hospital.objects.exclude(name__iexact="Demo Hospital").order_by('-created_at')[:3]
     num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
     num_patients = Patient.objects.all().count()
     num_doctors = staffProfile.objects.filter(role="doctor").count()
@@ -646,7 +659,7 @@ def admin_view(request):
     })
 #------------------------------------------------------------------------------------------------------
 def all_hospital_view(request):
-    all_hospitals = Hospital.objects.all()
+    all_hospitals = Hospital.objects.exclude(name__iexact="Demo Hospital")
     selected_status = request.GET.get("subscription_status")
     selected_plan = request.GET.get("plan")
     if selected_status:
@@ -742,6 +755,14 @@ def request_demo(request):
     pending_demo = Registration.objects.filter(status="pending")
     approved_demo = Registration.objects.filter(status="approved")
     paid_demo = Registration.objects.filter(status="paid")
+
+    def filter_removed_staff(registrations):
+        return [r for r in registrations if not r.user or hasattr(r.user, 'staffprofile')]
+    
+    pending_demo = filter_removed_staff(pending_demo)
+    approved_demo = filter_removed_staff(approved_demo)
+    paid_demo = filter_removed_staff(paid_demo)
+
     return render(request, "main/request_demo.html", {
             "pending_demo": pending_demo,
             "approved_demo": approved_demo,
@@ -771,8 +792,13 @@ def update_status(request,demo_id:int):
 #------------------------------------------------------------------------------------------------------
 def delete_demo(request,demo_id):
     demo = get_object_or_404(Registration, pk=demo_id)
-    demo.delete()
-    messages.success(request, f"Demo for {demo.firstname} has been removed.")
+    
+    if demo.user:
+        staff_profile = getattr(demo.user, 'staffprofile', None)
+        if staff_profile:
+            staff_profile.delete()
+
+    messages.success(request, f"Demo for {demo.firstname} has been removed along with associated user and staff profile.")
     return redirect("main:request_demo")
 
 #------------------------------------------------------------------------------------------------------
@@ -876,3 +902,12 @@ def privacy_view(request):
     return render(request,"main/privacy_policy.html")
 
 
+#------------------------------------------------------------------------------------------------------
+def attach_logo(msg):
+    logo_path = finders.find("images/logo_1.png")
+    if logo_path:
+        with open(logo_path, "rb") as f:
+            img = MIMEImage(f.read())
+            img.add_header("Content-ID", "<efaqah_logo>")
+            img.add_header("Content-Disposition", "inline", filename="logo_1.PNG")
+            msg.attach(img)

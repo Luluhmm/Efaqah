@@ -64,6 +64,20 @@ body { font-family: 'Poppins', sans-serif; }
 <!-- Main Content -->
 <main class="flex-grow flex flex-col items-center justify-center p-4 mt-12 mb-12 w-full">
 
+    {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <script>alert("{{ message|escapejs }}");</script>
+                    {% else %}
+                        <div class="p-3 rounded mb-2 {% if message.tags == 'error' %}bg-red-200 text-red-800{% endif %}{% if message.tags == 'warning' %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
     <div class="relative min-h-screen flex flex-col items-center justify-center p-4 w-full z-10">
 
         <!-- Page Header -->
