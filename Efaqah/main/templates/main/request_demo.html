@@ -46,12 +46,15 @@
                                         <td class="px-4 py-2">{{demo.description}}</td>
                                         <td class="px-4 py-2">
                                             <div class="flex gap-2">
-                                            <a href="{% url 'main:update_status' demo.id %}" 
+                                            <form action="{% url 'main:update_status' demo.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit"><a href="" 
                                             class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
                                             hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
                                             <span class="material-symbols-outlined">check</span>
-                                            </a>
-                                                </div>
+                                            </a></button>
+                                            </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
