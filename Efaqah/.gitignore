@@ -1,3 +1,2 @@
 *.keras
 venv_tf/
-private_ct_scans/
