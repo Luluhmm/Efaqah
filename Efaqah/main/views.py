@@ -16,6 +16,7 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 import secrets
+from cities_light.models import Country as CitiesLightCountry
 from django.utils import timezone
 from cities_light.models import Country, City
 import time
@@ -28,7 +29,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import ssl
 import certifi
-
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -39,6 +41,31 @@ from collections import defaultdict
 
 # Create your views here.
 #------------------------------------------------------------------------------------------------------
+@login_required
+def go_home(request):
+    u = request.user
+
+    # Admin first (covers superuser or a custom Admin group)
+    if u.is_superuser or u.groups.filter(name__iexact='Admin').exists():
+        return redirect('main:admin_view')
+
+    # Staff roles via StaffProfile (manager / doctor / nurse)
+    try:
+        role = u.staffprofile.role
+    except (ObjectDoesNotExist, AttributeError):
+        role = None
+
+    if role == 'manager':
+        return redirect('manager:manager_dashboard')
+    if role == 'doctor':
+        return redirect('doctor:doctor_dashboard')
+    if role == 'nurse':
+        return redirect('nurse:nurse_dashboard')
+
+    #(not logged as any known role)
+    return redirect('main:landing_page')
+
+
 
 def user_login(request):
     payment_status = request.GET.get('payment')
@@ -236,13 +263,15 @@ def create_user_and_send_credentials(registration, request=None):
     #Assign the user to the 'demo' group
     demo_group, created = Group.objects.get_or_create(name='demo')
     user.groups.add(demo_group)
+    country_instance = None
+    if registration.country:
+        country_instance = CitiesLightCountry.objects.filter(code2=registration.country.code).first()
 
-    us_country = Country.objects.filter(code="US").first()
     
     demo_hospital, _ = Hospital.objects.get_or_create(
         name = "Demo Hospital",
         defaults={
-            "country": us_country,
+            "country": country_instance,
             "contact_email": "demo@example.com",
             "subscription_status": "paid",
             "plan": "basic",
@@ -665,46 +694,68 @@ def about_view(request):
 
 
 #------------------------------------------------------------------------------------------------------
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.staticfiles import finders
+from email.mime.image import MIMEImage
+from django.utils import timezone
 
-def contact_view(request):
+def contact_view(request: HttpRequest):
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        subject_input = request.POST.get("subject")
-        message_content = request.POST.get("message")
+        name = (request.POST.get("name") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+        subject = (request.POST.get("subject") or "").strip()
+        message_text = (request.POST.get("message") or "").strip()
 
-        if name and email and subject_input and message_content:
-            try:
-                subject = f"Contact Form: {subject_input}"
-                message = f"""
-                            Hello Efaqah Team,
-
-                            You have received a new message from the Contact Form:
-
-                            Name: {name}
-                            Email: {email}
-                            Subject: {subject_input}
-
-                            Message:
-                            {message_content}
-                            """
-
-                email_msg = EmailMessage(
-                    subject,
-                    message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[settings.DEFAULT_FROM_EMAIL],
-                    reply_to=[email],  
-                )
-                email_msg.send(fail_silently=False)
-
-                messages.success(request, "Your message has been sent successfully!")
-            except Exception as e:
-                messages.error(request, f"Failed to send message. Error: {e}")
-
-            return redirect('main:contact_view')
-        else:
+        if not all([name, email, subject, message_text]):
             messages.error(request, "Please fill all fields.")
+            return redirect("main:contact_view")
+
+        # 1) Send to your inbox
+        admin_subject = f"Contact: {subject}"
+        admin_body =(     f"Hello Efaqah Team,\n\n"
+    f"You have received a new Contact form submission.\n\n"
+    f"Sender Details:\n"
+    f"  • Name: {name}\n"
+    f"  • Email: {email}\n"
+    f"  • Subject: {subject}\n"
+    f"  • Submitted: {timezone.now():%Y-%m-%d %H:%M %Z}\n"
+    f"Message:\n"
+    f"{message_text}\n\n")
+        EmailMessage(
+            subject=admin_subject,
+            body=admin_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[settings.DEFAULT_FROM_EMAIL],
+            reply_to=[email],
+        ).send()
+
+        # 2) Confirmation email to the sender 
+        html = render_to_string(
+            "main/mail/confirmation.html",
+            {"name": name, "cid_logo": "efaqah_logo"} 
+        )
+
+        msg = EmailMultiAlternatives(
+            subject="Efaqah — We received your message",
+            body="We received your message.",  # plain-text fallback
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[email],
+        )
+        msg.attach_alternative(html, "text/html")
+
+        logo_path = finders.find("images/logo_1.PNG")
+        if logo_path:
+            with open(logo_path, "rb") as f:
+                img = MIMEImage(f.read())
+                img.add_header("Content-ID", "<efaqah_logo>")
+                img.add_header("Content-Disposition", "inline", filename="logo_1.PNG")
+                msg.attach(img)
+
+        msg.send()
+
+
+        messages.success(request, "Your message is received. Thank you.")
+        return redirect("main:contact_view")
 
     return render(request, "main/contact.html")
 
