@@ -770,7 +770,6 @@ def update_status(request,demo_id:int):
     return redirect('main:request_demo')
 #------------------------------------------------------------------------------------------------------
 def delete_demo(request,demo_id):
-    
     demo = get_object_or_404(Registration, pk=demo_id)
     demo.delete()
     messages.success(request, f"Demo for {demo.firstname} has been removed.")

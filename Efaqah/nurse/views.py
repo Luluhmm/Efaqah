@@ -10,11 +10,12 @@ from django.core.paginator import Paginator
 from django.utils.timezone import now
 
 def nurse_dashboard(request: HttpRequest):
-    patients = Patient.objects.all()
-    num_patient = Patient.objects.all().count()
-    patien_under_doctor = Patient.objects.exclude(doctor=None).count()
+    hospital = request.user.staffprofile.hospital
+    patients = Patient.objects.filter(hospital=hospital)
+    num_patient = patients.count()
+    patien_under_doctor = patients.exclude(doctor=None).count()
     today = date.today()
-    patients_today_count = Patient.objects.filter(created_at=today).count()
+    patients_today_count = patients.filter(created_at=today).count()
     # Pagination
     paginator = Paginator(patients, 5)
     page_number = request.GET.get('page')
