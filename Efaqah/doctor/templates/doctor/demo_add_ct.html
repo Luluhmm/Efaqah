@@ -16,7 +16,15 @@
     <!-- ======= Symptoms Risk (Tabular) ======= -->
     <section class="border rounded-2xl p-6 bg-white">
       <h3 class="text-xl font-semibold mb-4">Risk Assessment (Symptoms)</h3>
-      {% if error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ error }}</div>{% endif %}
+      {% if error %}
+        <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+          {{ error }}
+          <br>
+          {% if remaining_tabular is not none %}
+            Remaining tabular attempts: {{ remaining_tabular }}
+          {% endif %}
+        </div>
+      {% endif %}
 
 
       <form method="post" class="space-y-4">
@@ -66,7 +74,14 @@
     <!-- ======= Imaging Classifier (CNN) ======= -->
     <section class="border rounded-2xl p-6 bg-white">
       <h3 class="text-xl font-semibold mb-4">Imaging Classifier</h3>
-      {% if cnn_error %}<div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{{ cnn_error }}</div>{% endif %}
+      {% if cnn_error %}
+        <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+          {{ cnn_error }}
+          {% if remaining_cnn is not none %}
+            Remaining CNN attempts: {{ remaining_cnn }}
+          {% endif %}
+        </div>
+      {% endif %}
 
       <!-- Preview panel -->
       <div id="ctPreview"
