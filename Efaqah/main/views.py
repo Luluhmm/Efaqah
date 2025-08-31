@@ -1,12 +1,14 @@
+from datetime import timedelta
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login , authenticate, logout
 from django.contrib import messages
+from sympy import Sum
 from nurse.models import Patient
 from .forms import RegistrationForm
-from .models import Registration, Hospital, staffProfile
+from .models import Registration, Hospital, staffProfile,DeletedHospital
 from django.conf import settings
 from django.core.mail import send_mail , EmailMessage
 import uuid
@@ -487,6 +489,12 @@ def subscribe_form(request):
 #------------------------------------------------------------------------------------------------------
 
 def payment_success(request):
+    PLAN_PRICES = {
+    "basic": 499,
+    "pro": 999,
+    "enterprise": 1999,
+}
+    
     registration_id = request.GET.get("registration_id")
     if registration_id:
         try:
@@ -495,6 +503,7 @@ def payment_success(request):
                 registration.status = "paid"
                 registration.save()
                 create_user_and_send_credentials(registration)
+
         except Registration.DoesNotExist:
             messages.error(request, "Registration not found.")
     return render(request, "main/payment_success.html")
@@ -560,7 +569,9 @@ def admin_view(request):
         'enterprise': 1999,
     }
     paid_hospitals = Hospital.objects.filter(subscription_status='paid')
-    total_revenue = sum(PLAN_PRICES[h.plan] for h in paid_hospitals)
+    deleted_hospitals = DeletedHospital.objects.filter(subscription_status='paid')
+    total_revenue = sum(PLAN_PRICES.get(h.plan.lower(), 0) for h in paid_hospitals)
+    total_revenue += sum(PLAN_PRICES.get(h.plan.lower(), 0) for h in deleted_hospitals)
 
     # to calculate num of hospitals, doctors, patients , nurses 
     latest_hospitals = Hospital.objects.order_by('-created_at')[:3]
@@ -576,13 +587,16 @@ def admin_view(request):
     data = [d["count"] for d in status_demo] 
     
     # to calculate total revenue per month on each year 
+    all_hospitals = paid_hospitals.values("plan", "subscription_start_date").union(
+    deleted_hospitals.values("plan", "subscription_start_date"))
     revenue_by_year = defaultdict(lambda: [0]*12)
-
-    for h in paid_hospitals:
-        if h.subscription_start_date:
-            year = h.subscription_start_date.year
-            month_index = h.subscription_start_date.month - 1
-            plan_price = PLAN_PRICES.get(h.plan.lower(), 0)
+    for h in all_hospitals:
+        subscription_date = h.get("subscription_start_date")
+        plan = h.get("plan", "").lower()
+        if subscription_date:
+            year = subscription_date.year
+            month_index = subscription_date.month - 1
+            plan_price = PLAN_PRICES.get(plan, 0)
             revenue_by_year[year][month_index] += plan_price
 
     revenue_by_year = dict(revenue_by_year)
@@ -625,6 +639,73 @@ def hospital_detail(request,hospital_id:int):
     patients = hospital.patients.count()
     country = hospital.country.name if hospital.country else "N/A"
     return render(request,"main/hospital_detail.html",{"hospital":hospital,"doctors":doctors,"nurses":nurses,"patients":patients,"country":country})
+
+#------------------------------------------------------------------------------------------------------
+def update_hospital(request, hospital_id: int):
+    hospital = get_object_or_404(Hospital, pk=hospital_id)
+    countries = Country.objects.all().order_by('name')
+    if hospital.country:
+        cities = City.objects.filter(country=hospital.country).order_by('name')
+    else:
+        cities = City.objects.none()
+
+    if request.method == "POST":
+        hospital.name = request.POST.get('name')
+        hospital.address = request.POST.get('address')
+        hospital.contact_email = request.POST.get('contact_email')
+        hospital.contact_phone = request.POST.get('contact_phone')
+
+        country_id = request.POST.get('country')
+        if country_id:
+            try:
+                hospital.country = Country.objects.get(id=country_id)
+            except Country.DoesNotExist:
+                messages.error(request, "Selected country does not exist.")
+                hospital.country = None
+
+        city_id = request.POST.get('city')
+        if city_id:
+            try:
+                hospital.city = City.objects.get(id=city_id)
+            except City.DoesNotExist:
+                messages.error(request, "Selected city does not exist.")
+                hospital.city = None
+
+        if hospital.country:
+            cities = City.objects.filter(country=hospital.country).order_by('name')
+        else:
+            cities = City.objects.none()
+        hospital.save()
+
+        messages.success(request, f"Hospital {hospital.name} updated successfully.")
+        return redirect("main:hospital_detail", hospital_id=hospital.id)
+
+    return render(request, "main/update_hospital.html", {
+        "hospital": hospital,
+        "countries": countries,
+        "cities": cities
+    })
+
+#------------------------------------------------------------------------------------------------------
+
+def delete_hospital(request,hospital_id:int):
+    hospital = get_object_or_404(Hospital, pk=hospital_id)
+    #delete all related doctor and nurse and patient
+    staff_profiles = staffProfile.objects.filter(hospital=hospital)
+    for staff in staff_profiles:
+        staff.user.delete()  
+        staff.delete()
+    Patient.objects.filter(hospital=hospital).delete()
+
+    DeletedHospital.objects.create(
+        name=hospital.name,
+        plan=hospital.plan,
+        subscription_status=hospital.subscription_status,
+        subscription_start_date=hospital.subscription_start_date
+    )
+    hospital.delete()
+    messages.success(request, f"Hospital {hospital.name} has been removed.")
+    return redirect("main:all_hospital_view")
 
 #------------------------------------------------------------------------------------------------------
 

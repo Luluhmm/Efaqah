@@ -20,7 +20,9 @@ urlpatterns = [
     path('about/',views.about_view,name="about_view"),
     path('contact/',views.contact_view,name="contact_view"),
     path('all_hospital/',views.all_hospital_view,name="all_hospital_view"),
+    path('remove_hospital/<int:hospital_id>',views.delete_hospital,name="delete_hospital"),
     path('hospital_detail/<int:hospital_id>',views.hospital_detail,name="hospital_detail"),
+    path('hospital_update/<int:hospital_id>',views.update_hospital,name="update_hospital"),
     path('privacy/',views.privacy_view,name="privacy_view"),
     path('logout/',views.logout_view,name="logout_view"),
 

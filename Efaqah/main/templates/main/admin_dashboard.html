@@ -150,6 +150,7 @@
                                     <th class="px-4 py-2">Status</th>
                                     <th class="px-4 py-2">Subsicription</th>
                                     <th class="px-4 py-2">Contact Email</th>
+                                    <th class="px-4 py-2">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
@@ -161,6 +162,13 @@
                                         <td class="px-4 py-2">{{hospital.subscription_status}}</td>
                                         <td class="px-4 py-2">{{hospital.plan}}</td>
                                         <td class="px-4 py-2">{{hospital.contact_email}}</td>
+                                        <td>  
+                                        <a href="{% url 'main:update_hospital' hospital.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700">
+                                        <span class="material-symbols-outlined">edit_square</span></a>
+                                        <a href="{% url 'main:delete_hospital' hospital.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
