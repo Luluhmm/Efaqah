@@ -98,4 +98,30 @@
         </div>
     </form>
 </div>
+<script>
+document.getElementById("country").addEventListener("change", function() {
+    const countryId = this.value;
+    const citySelect = document.getElementById("city");
+
+    if (!countryId) {
+        citySelect.innerHTML = '<option value="">Select a city</option>';
+        return;
+    }
+
+    fetch(`/get-cities/${countryId}/`)
+        .then(response => response.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="">Select a city</option>';
+            data.cities.forEach(city => {
+                const opt = document.createElement("option");
+                opt.value = city.id;
+                opt.textContent = city.name;
+                citySelect.appendChild(opt);
+            });
+        })
+        .catch(err => {
+            console.error("Error loading cities:", err);
+        });
+});
+</script>
 {% endblock %}
