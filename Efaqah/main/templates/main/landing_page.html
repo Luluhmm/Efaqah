@@ -72,8 +72,8 @@
 </nav>
 
 <!-- Main Content -->
-<main class="flex-grow relative z-10 p-4 flex flex-col items-center mt-8">
-  <div class="text-center max-w-4xl mx-auto mt-28">
+<main class="flex-grow relative z-10 p-4 flex flex-col items-center mt-24">
+  <div class="text-center max-w-4xl mx-auto mt-24">
     <!-- Logo (same placement) -->
     <img src="{% static 'images/logo_1.png' %}" alt="Efaqah" class="h-20 w-auto mx-auto mb-5">
   
@@ -94,15 +94,15 @@
     </p>
   
     <!-- Calm stat chips -->
-    <div class="mt-7 flex flex-wrap justify-center gap-3">
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 border border-white/50 text-slate-800 text-sm">
-        <span class="h-2 w-2 rounded-full bg-green-500"></span> CT Model Accuracy <strong>97%</strong>
+        <span class="h-2 w-2 bg-blue-700 rounded-full bg-green-500"></span> CT Model Accuracy <strong>97%</strong>
       </span>
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 border border-white/50 text-slate-800 text-sm">
-        <span class="h-2 w-2 rounded-full bg-blue-500"></span> Symptoms Model Accuracy <strong>92%</strong>
+        <span class="h-2 w-2 bg-blue-700 rounded-full bg-blue-500"></span> Symptoms Model Accuracy <strong>92%</strong>
       </span>
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 border border-white/50 text-slate-800 text-sm">
-        <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Results in <strong>&lt; 30s</strong>
+        <span class="h-2 w-2 bg-blue-700 rounded-full bg-emerald-500"></span> Results in <strong>&lt; 30s</strong>
       </span>
     </div>
   
@@ -119,7 +119,7 @@
   
 
   <!-- Features Grid (kept your glass cards look) -->
-  <div class="animate-fade-in mt-12 mb-12 w-full">
+  <div class="animate-fade-in mt-36 mb-12 w-full">
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
       <!-- Patient Management -->
       <div class="glass-effect rounded-2xl p-6 text-blue-900 flex flex-col items-center transform hover:scale-105 transition-all duration-300">
@@ -170,28 +170,33 @@
   </div>
 
   <!-- How it works (kept copy, softer card, REMOVED security badges line) -->
-  <section class="max-w-6xl mx-auto mt-4 md:mt-6 animate-fade-in">
-    <div class="bg-white/55 backdrop-blur rounded-2xl shadow p-6 md:p-8">
-      <h2 class="text-2xl md:text-3xl font-bold text-slate-900 text-center">How Efaqah Fits Your Workflow</h2>
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="p-5 border rounded-xl bg-white hover:shadow-md transition">
-          <p class="text-sm font-semibold text-blue-900 mb-1">Step 1</p>
-          <h3 class="font-bold mb-2">Capture</h3>
-          <p class="text-sm text-slate-600">Upload non-contrast CT and enter clinical variables from triage.</p>
-        </div>
-        <div class="p-5 border rounded-xl bg-white hover:shadow-md transition">
-          <p class="text-sm font-semibold text-blue-900 mb-1">Step 2</p>
-          <h3 class="font-bold mb-2">Analyze</h3>
-          <p class="text-sm text-slate-600">Run imaging + symptoms models. Get calibrated risk with explanations.</p>
-        </div>
-        <div class="p-5 border rounded-xl bg-white hover:shadow-md transition">
-          <p class="text-sm font-semibold text-blue-900 mb-1">Step 3</p>
-          <h3 class="font-bold mb-2">Act</h3>
-          <p class="text-sm text-slate-600">Use dashboards and alerts to prioritize care pathways and follow-up.</p>
-        </div>
-      </div>
+  <section class="max-w-5xl mx-auto mt-4 md:mt-6 animate-fade-in">
+  <div class="glass-effect  backdrop-blur rounded-2xl shadow p-4 md:p-6">
+    <h2 class="text-xl md:text-2xl font-bold text-blue-900 text-center">How Efaqah Fits Your Workflow</h2>
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-6 border rounded-lg bg-white/50 hover:shadow-md transition min-h-56 flex flex-col justify-center items-center text-center">
+  <p class="text-sm font-semibold text-blue-900 mb-2">Step 1</p>
+  <h3 class="font-semibold mb-2 text-lg">Capture</h3>
+  <p class="text-base text-sm text-slate-600">Upload non-contrast CT and enter clinical variables from triage.</p>
+</div>
+
+<div class="p-6 border rounded-lg bg-white/50 hover:shadow-md transition min-h-56 flex flex-col justify-center items-center text-center">
+  <p class="text-sm font-semibold text-blue-900 mb-2">Step 2</p>
+  <h3 class="font-semibold mb-2 text-lg">Analyze</h3>
+  <p class="text-base text-sm text-slate-600">Run imaging + symptoms models. Get calibrated risk with explanations.</p>
+</div>
+
+<div class="p-6 border rounded-lg bg-white/50 hover:shadow-md transition min-h-56 flex flex-col justify-center items-center text-center">
+  <p class="text-sm font-semibold text-blue-900 mb-2">Step 3</p>
+  <h3 class="font-semibold mb-2 text-lg">Act</h3>
+  <p class="text-base text-sm text-slate-600">Use dashboards and alerts to prioritize care pathways and follow-up.</p>
+</div>
+
     </div>
-  </section>
+  </div>
+</section>
+
+
 </main>
 
 <!-- Footer -->
