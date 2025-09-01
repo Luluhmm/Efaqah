@@ -222,3 +222,4 @@ model_cache/
 !doctor/strokemodels/
 !doctor/strokemodels/*.pkl
 !doctor/strokemodels/*.json.DS_Store
+.DS_Store
