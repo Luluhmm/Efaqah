@@ -221,4 +221,4 @@ model_cache/
 # We DO want to commit classical ML artifacts in doctor/strokemodels
 !doctor/strokemodels/
 !doctor/strokemodels/*.pkl
-!doctor/strokemodels/*.json
+!doctor/strokemodels/*.json.DS_Store
