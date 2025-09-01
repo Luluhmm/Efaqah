@@ -94,15 +94,15 @@
         {% else %}
           {% if remaining_cnn > 0 and remaining_cnn <= 3 %}
               <div class="mb-4 p-3 rounded-lg bg-yellow-100 text-yellow-800 text-sm">
-                Remaining tabular attempts: {{ remaining_cnn }}
+                Remaining cnn attempts: {{ remaining_cnn }}
               </div>
             {% elif remaining_cnn == 0 %}
               <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
-                Remaining tabular attempts: {{ remaining_cnn }}
+                Remaining cnn attempts: {{ remaining_cnn }}
               </div>
             {% else %}
               <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">
-                Remaining tabular attempts: {{ remaining_cnn }}
+                Remaining cnn attempts: {{ remaining_cnn }}
               </div>
             {% endif %}
         {% endif %}
@@ -165,26 +165,50 @@
     const img   = document.getElementById("ctPreviewImg");
     const ph    = document.getElementById("ctPreviewPlaceholder");
     const clr   = document.getElementById("clearCtn");
-
-    if (!input) return;
-
+  
+    if (!input || !img || !ph) return;
+  
+    // Use a page-specific key so it persists after form POST/reload
+    const PREVIEW_KEY = "ctPreview:" + window.location.pathname;
+  
+    // 1) On load: restore from sessionStorage (if present)
+    try {
+      const saved = sessionStorage.getItem(PREVIEW_KEY);
+      if (saved) {
+        img.src = saved;
+        img.classList.remove("hidden");
+        ph.classList.add("hidden");
+      }
+    } catch (e) {
+      // ignore storage issues
+    }
+  
+    // 2) When user selects a file: read it as DataURL and store it
     input.addEventListener("change", function (e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      const url = URL.createObjectURL(file);
-      img.src = url;
-      img.classList.remove("hidden");
-      ph.classList.add("hidden");
+  
+      const reader = new FileReader();
+      reader.onload = function () {
+        const dataURL = reader.result;
+        img.src = dataURL;
+        img.classList.remove("hidden");
+        ph.classList.add("hidden");
+        try { sessionStorage.setItem(PREVIEW_KEY, dataURL); } catch (e) {}
+      };
+      reader.readAsDataURL(file);
     });
-
+  
+    // 3) Clear button: hide preview and clear storage
     clr && clr.addEventListener("click", function () {
       if (input) input.value = "";
       img.src = "";
       img.classList.add("hidden");
       ph.classList.remove("hidden");
+      try { sessionStorage.removeItem(PREVIEW_KEY); } catch (e) {}
     });
   })();
-</script>
+  </script>
 
 
 <script>

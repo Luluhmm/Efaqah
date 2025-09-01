@@ -37,9 +37,13 @@
             <a href="{% url 'manager:update_doctor' staff.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700">
                 <span class="material-symbols-outlined">edit_square</span>
             </a>
-            <a href="{% url 'manager:remove_doctor' staff.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
-                <span class="material-symbols-outlined">delete</span>
-            </a>
+
+            <a href="{% url 'manager:remove_doctor' staff.id %}"
+            onclick="return confirm('Delete doctor {{ staff.user.get_full_name|default:staff.user.username }}? This cannot be undone.');"
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+           <span class="material-symbols-outlined">delete</span>
+         </a>
+
         {% elif staff.role == "nurse" %}
             <a href="{% url 'manager:detail_nurse' staff.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700">
                 <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
@@ -50,9 +54,13 @@
             <a href="{% url 'manager:update_nurse' staff.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700">
                 <span class="material-symbols-outlined">edit_square</span>
             </a>
-            <a href="{% url 'manager:remove_nurse' staff.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
-                <span class="material-symbols-outlined">delete</span>
+
+            <a href="{% url 'manager:remove_nurse' staff.id %}"
+            onclick="return confirm('Delete nurse {{ staff.user.get_full_name|default:staff.user.username }}? This cannot be undone.');"
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+            <span class="material-symbols-outlined">delete</span>
             </a>
+            
         {% endif %}
     </div>
 </div>
