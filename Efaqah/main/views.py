@@ -537,7 +537,6 @@ def payment_success(request):
             messages.error(request, "Registration not found.")
     return render(request, "main/payment_success.html")
 
-
 #------------------------------------------------------------------------------------------------------
 
 def payment_cancelled(request):
