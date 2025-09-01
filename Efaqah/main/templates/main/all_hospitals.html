@@ -77,7 +77,8 @@
                                         <td>  
                                         <a href="{% url 'main:update_hospital' hospital.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-yellow-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-yellow-700">
                                         <span class="material-symbols-outlined">edit_square</span></a>
-                                        <a href="{% url 'main:delete_hospital' hospital.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
+                                        <a href="{% url 'main:delete_hospital' hospital.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700"
+                                        onclick="return confirm('Delete Hospital {{ hospital.name }}? This cannot be undone.');">
                                             <span class="material-symbols-outlined">delete</span>
                                         </a>
                                         </td>

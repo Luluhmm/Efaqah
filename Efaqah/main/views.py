@@ -609,14 +609,18 @@ def admin_view(request):
         'pro': 34900,
         'enterprise': 74900,
     }
-    paid_hospitals = Hospital.objects.filter(subscription_status='paid')
-    deleted_hospitals = DeletedHospital.objects.filter(subscription_status='paid')
+    #calculate revenue for demo 
+    paid_demo = Registration.objects.filter(status="paid").count()
+    demo_revenue = paid_demo * 20
+
+    paid_hospitals = Hospital.objects.exclude(name__iexact="Demo Hospital").filter(subscription_status='paid')
+    deleted_hospitals = DeletedHospital.objects.exclude(name__iexact="Demo Hospital").filter(subscription_status='paid')
     total_revenue = sum(PLAN_PRICES.get(h.plan.lower(), 0) for h in paid_hospitals)
     total_revenue += sum(PLAN_PRICES.get(h.plan.lower(), 0) for h in deleted_hospitals)
 
     # to calculate num of hospitals, doctors, patients , nurses 
     latest_hospitals = Hospital.objects.exclude(name__iexact="Demo Hospital").order_by('-created_at')[:3]
-    num_hospitals = Hospital.objects.filter(subscription_status="paid").count()
+    num_hospitals = Hospital.objects.exclude(name__iexact="Demo Hospital").filter(subscription_status="paid").count()
     num_patients = Patient.objects.all().count()
     num_doctors = staffProfile.objects.filter(role="doctor").count()
     num_nurses = staffProfile.objects.filter(role="nurse").count()
@@ -654,7 +658,8 @@ def admin_view(request):
         "data": data,
         "total_revenue": total_revenue,
         "revenue_by_year": revenue_by_year,
-        "years": years
+        "years": years,
+        "demo_revenue":demo_revenue
     })
 #------------------------------------------------------------------------------------------------------
 def all_hospital_view(request):
@@ -791,7 +796,6 @@ def update_status(request,demo_id:int):
 #------------------------------------------------------------------------------------------------------
 def delete_demo(request,demo_id):
     demo = get_object_or_404(Registration, pk=demo_id)
-    
     if demo.user:
         staff_profile = getattr(demo.user, 'staffprofile', None)
         if staff_profile:
