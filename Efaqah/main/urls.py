@@ -27,5 +27,6 @@ urlpatterns = [
     path('hospital_update/<int:hospital_id>',views.update_hospital,name="update_hospital"),
     path('privacy/',views.privacy_view,name="privacy_view"),
     path('logout/',views.logout_view,name="logout_view"),
+    path("disclaimer/", views.disclaimer_view, name="disclaimer_view"),
 
 ]

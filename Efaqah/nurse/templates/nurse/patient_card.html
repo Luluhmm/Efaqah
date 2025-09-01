@@ -11,7 +11,12 @@
             </span>
         </div>
         <div>
-            <a href="{% url 'nurse:view_patient' patient.id %}" class="font-semibold text-lg">
+            <a href="{% if request.user.staffprofile.role == 'doctor' %}
+                    {% url 'doctor:patient_detail_view' patient.id %}
+                    {% else %}
+                    {% url 'nurse:view_patient' patient.id %}
+                    {% endif %}"
+            class="font-semibold text-lg">
                 {{ patient.first_name }} {{ patient.last_name }}
             </a>
             <p class="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded w-max">
@@ -31,7 +36,7 @@
                 <circle cx="12" cy="12" r="3"/>
             </svg>
         </a>
-{% else %}
+     {% else %}
     <a href="{% url 'nurse:view_patient' patient.id %}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-green-100 
                   hover:scale-105 transition-all duration-300 h-9 px-3 text-green-700 overflow-hidden">
             <svg class="w-6 h-6 mr-1 lucide" viewBox="0 0 24 24">
@@ -39,7 +44,8 @@
                 <circle cx="12" cy="12" r="3"/>
             </svg>
         </a>
-{% endif %}
+      {% endif %}
+      
         {% if request.user.staffprofile.role != "doctor" %}
         <a href="{% url 'nurse:update_patient_view' patient.id %}" 
            class="inline-flex items-center justify-center rounded-md text-sm font-medium border-input bg-yellow-100 
@@ -49,11 +55,14 @@
         {% endif %}
 
         {% if request.user.staffprofile.role == "manager" %}
-        <a href="{% url 'nurse:delete_patient_view' patient.id %}" 
+        <a href="{% url 'nurse:delete_patient_view' patient.id %}"
+           onclick="return confirm('Delete patient {{ patient.first_name }} {{ patient.last_name }} (ID: {{ patient.patient_id }})? This cannot be undone.');"
            class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-100 
                   hover:scale-105 transition-all duration-300 h-9 px-3 text-red-700">
-            <span class="material-symbols-outlined">delete</span>
+          <span class="material-symbols-outlined">delete</span>
         </a>
         {% endif %}
+
+
     </div>
 </div>

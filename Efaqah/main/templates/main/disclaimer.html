@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Efaqah - Disclaimer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins','sans-serif'] },
+      animation: { 'fade-in':'fadeIn 1s ease-out' },
+      keyframes: { fadeIn:{'0%':{opacity:0,transform:'translateY(20px)'},'100%':{opacity:1,transform:'translateY(0)'}} }
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Poppins', sans-serif; }
+  .bg-gradient-animated {
+    background: linear-gradient(-45deg,#d4d8ea,#c2d3ff,#dbe4f5,#acc4e4,#e1e9f6,#c9d9f7);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  .glass-effect { backdrop-filter: blur(20px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-animated flex flex-col">
+
+<!-- Navbar (same style as About/Landing) -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="{% url 'main:landing_page' %}" class="flex items-center space-x-2 hover:scale-105 transition-transform">
+      <img src="{% static 'images/logo_1.png' %}" alt="Logo" class="h-10 w-auto">
+    </a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="{% url 'main:about_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">About</a>
+      <a href="{% url 'main:contact_view' %}" class="text-blue-900 hover:scale-110 transition-transform font-medium">Contact</a>
+    </div>
+    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative z-50">
+      <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden mt-2 p-4 bg-white rounded-xl shadow-lg hidden">
+    <a href="{% url 'main:about_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">About</a>
+    <a href="{% url 'main:contact_view' %}" class="block py-2 px-4 text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">Contact</a>
+  </div>
+</nav>
+
+<main class="flex-grow relative z-10 p-4 sm:p-6 flex flex-col items-center" style="padding-top: 9rem;">
+  <div class="w-full max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-blue-900 tracking-tight">Medical Disclaimer</h1>
+      <p class="mt-3 text-slate-700">Please read this information carefully before using Efaqah.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white/70 backdrop-blur rounded-2xl shadow p-6 md:p-8 space-y-6">
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Clinical Decision Support</h2>
+        <p class="mt-2 text-slate-700">
+          Efaqah is a clinical <strong>decision support</strong> tool designed to assist medical professionals. It is not a
+          replacement for clinical judgment, comprehensive patient evaluation, or specialist consultation. Final diagnosis and
+          treatment decisions remain the responsibility of the treating clinician.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Model Performance</h2>
+        <p class="mt-2 text-slate-700">
+          On internal validation cohorts, Efaqah’s models achieved approximate accuracies of
+          <strong>97%</strong> (CT imaging classifier) and <strong>92%</strong> (symptom-based risk model).
+          Performance may vary across populations, scanners, imaging protocols, and clinical settings.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Intended Use & Limitations</h2>
+        <ul class="mt-2 list-disc pl-5 text-slate-700 space-y-2">
+          <li>Supports rapid <strong>risk stratification</strong> using non-contrast CT and structured clinical features.</li>
+          <li>Not intended to be used as the sole basis for a diagnosis, therapy, or discharge decision.</li>
+          <li>Outputs (scores, labels, bands) should be interpreted within full clinical context.</li>
+          <li>Edge cases, atypical presentations, and data quality issues can affect results.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Emergency & Safety</h2>
+        <p class="mt-2 text-slate-700">
+          In suspected stroke emergencies, follow institutional protocols and time-critical pathways (e.g., stroke code activation).
+          Do not delay urgent care while awaiting Efaqah outputs.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Regulatory Status</h2>
+        <p class="mt-2 text-slate-700">
+          Efaqah is provided for clinical decision support and evaluation purposes. Regulatory clearance or certification may vary by
+          jurisdiction and deployment model. Use is subject to site governance and approval.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Data Handling</h2>
+        <p class="mt-2 text-slate-700">
+          Data should be handled according to your institution’s privacy, security, and retention policies. Ensure appropriate
+          authorization for any uploads and access.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-blue-900">Contact</h2>
+        <p class="mt-2 text-slate-700">
+          Questions about this disclaimer or deployment? <a href="{% url 'main:contact_view' %}" class="text-blue-800 underline">Contact us</a>.
+        </p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- Footer (same style as About/Landing) -->
+<footer class="mt-24 py-12 px-6 bg-slate-900 text-white w-full">
+  <div class="max-w-7xl mx-auto text-center">
+    <img src="{% static 'images/logo_1.png' %}" alt="Efaqah Logo" class="w-32 h-auto rounded-lg mx-auto mb-4">
+    <p class="text-slate-400 mb-6">Decision-ready stroke insights at the point of care.</p>
+    <div class="flex justify-center space-x-8 text-sm mb-6">
+      <a href="{% url 'main:about_view' %}" class="hover:text-blue-400 transition-colors">About</a>
+      <a href="{% url 'main:contact_view' %}" class="hover:text-blue-400 transition-colors">Contact</a>
+      <a href="{% url 'main:privacy_view' %}" class="hover:text-blue-400 transition-colors">Privacy</a>
+      <a href="{% url 'main:disclaimer_view' %}" class="hover:text-blue-400 transition-colors">Disclaimer</a>
+    </div>
+    <div class="mt-8 pt-8 border-t border-slate-800 text-slate-500 text-sm">© 2025 Efaqah. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY, max = 200, o = Math.min(y/max*0.6, 0.6);
+  navbar.style.background = `rgba(255,255,255,${o})`;
+  navbar.style.backdropFilter = 'blur(20px)';
+  if (y > 50) navbar.classList.add('shadow-lg'); else navbar.classList.remove('shadow-lg');
+});
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const menuIcon = document.getElementById('menu-icon');
+const closeIcon = document.getElementById('close-icon');
+mobileBtn.addEventListener('click', () => {
+  mobileMenu.classList.toggle('hidden');
+  menuIcon.classList.toggle('hidden');
+  closeIcon.classList.toggle('hidden');
+});
+</script>
+</body>
+</html>
