@@ -875,4 +875,8 @@ def get_logo_url(request=None):
 def privacy_view(request):
     return render(request,"main/privacy_policy.html")
 
+#------------------------------------------------------------------------------------------------------
+
+def disclaimer_view(request):
+    return render(request, "main/disclaimer.html")
 

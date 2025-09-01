@@ -2,6 +2,17 @@
 {% block title %}Manager Dashboard{% endblock %}
 
 {% block content %}
+<!-- Greeting -->
+<div class="mb-6">
+    <h1 class="text-2xl md:text-3xl font-semibold text-blue-900">
+      Hi {{ request.user.get_full_name|default:request.user.username }},
+    </h1>
+    <p class="text-sm md:text-base text-gray-600 mt-1">
+      Manager — <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+        {{ request.user.staffprofile.hospital.name }}
+      </span>
+    </p>
+  </div>
 
 <!-- Top Cards: Doctors, Nurses, Patients -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
