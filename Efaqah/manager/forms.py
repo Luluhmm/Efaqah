@@ -7,6 +7,7 @@ class DoctorForm(forms.Form):
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
 
+#------------------------------------------------------------------------------------------------------
 
 class NurseForm(forms.Form):
     first_name = forms.CharField(max_length=100)

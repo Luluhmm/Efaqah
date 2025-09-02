@@ -4,7 +4,9 @@ from .views import send_payment_link_email
 
 # Register your models here.
 admin.site.register(DeletedHospital)
+#------------------------------------------------------------------------------------------------------
 @admin.register(Hospital)
+#------------------------------------------------------------------------------------------------------
 class HospitalAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'country', 'city', 'plan', 
@@ -14,14 +16,16 @@ class HospitalAdmin(admin.ModelAdmin):
     list_filter = ('plan', 'subscription_status', 'country')
     search_fields = ('name', 'contact_email', 'city')
     ordering = ('-created_at',)
-
+#------------------------------------------------------------------------------------------------------
 @admin.register(staffProfile)
+#------------------------------------------------------------------------------------------------------
 class StaffProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'hospital', 'is_active', 'created_at')
     list_filter = ('role', 'is_active')
     search_fields = ('user__username', 'hospital__name')
-
+#------------------------------------------------------------------------------------------------------
 @admin.register(Registration)
+#------------------------------------------------------------------------------------------------------
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('firstname', 'lastname', 'email', 'status', 'created_at')
     list_filter = ('status',)

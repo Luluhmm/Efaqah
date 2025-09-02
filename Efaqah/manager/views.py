@@ -12,7 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.utils.timezone import now
 
-# Create your views here.
 
 def manager_dashboard(request:HttpRequest):
     hospital = request.user.staffprofile.hospital
@@ -129,7 +128,6 @@ def update_doctor(request, doctor_id):
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        password = request.POST.get('password')
 
         staff.user.username = username
         staff.user.email = email
@@ -154,7 +152,6 @@ def update_nurse(request, nurse_id):
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        password = request.POST.get('password')
 
         staff.user.username = username
         staff.user.email = email

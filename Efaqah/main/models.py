@@ -7,9 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from cities_light.models import City, Country as CitiesLightCountry
 
-
-# Create your models here.
-
+#------------------------------------------------------------------------------------------------------
 class Hospital(models.Model):
     PLAN_CHOICES = (
         ('basic', 'Basic'),
@@ -61,6 +59,7 @@ class Hospital(models.Model):
         return self.name
     
 #------------------------------------------------------------------------------------------------------
+
 class DeletedHospital(models.Model):
     name = models.CharField(max_length=255)
     plan = models.CharField(max_length=50)

@@ -1,7 +1,7 @@
 from django.db import models
 from main.models import Hospital, staffProfile
 
-
+#------------------------------------------------------------------------------------------------------
 class Patient(models.Model):
     class Gender(models.TextChoices):
         MALE = 'M', 'Male'

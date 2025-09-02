@@ -33,15 +33,13 @@ import ssl
 import certifi
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-
-
-
-import calendar
 import calendar
 from collections import defaultdict
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.staticfiles import finders
+from email.mime.image import MIMEImage
+from django.utils import timezone
 
-
-# Create your views here.
 #------------------------------------------------------------------------------------------------------
 @login_required
 def go_home(request):
@@ -336,46 +334,6 @@ def create_user_and_send_credentials(registration, request=None):
     email_msg.attach_alternative(message, "text/html")
     attach_logo(email_msg)
     email_msg.send()
-
-"""
-@csrf_exempt # Stripe does not send a CSRF token
-def stripe_webhook(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    event = None
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError as e:
-        # Invalid payload
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return HttpResponse(status=400)
-
-    # Handle the checkout.session.completed event
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        registration_id = session.get('metadata', {}).get('registration_id')
-
-        if registration_id:
-            try:
-                registration = Registration.objects.get(id=registration_id)
-                if registration.status != 'paid':
-                    registration.status = 'paid'
-                    registration.save()
-                    try:
-                        create_user_and_send_credentials(registration)
-                    except Exception as e:
-                        print("Error in create_user_and_send_credentials:", e)
-            except Registration.DoesNotExist:
-                print(f"Registration with ID {registration_id} not found.")
-
-    return HttpResponse(status=200) # Let Stripe know we received it
-"""
-
 #------------------------------------------------------------------------------------------------------
 
 def send_payment_link_email(request, registration):
@@ -825,11 +783,6 @@ def about_view(request):
 
 
 #------------------------------------------------------------------------------------------------------
-from django.core.mail import EmailMultiAlternatives
-from django.contrib.staticfiles import finders
-from email.mime.image import MIMEImage
-from django.utils import timezone
-
 def contact_view(request: HttpRequest):
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
@@ -892,7 +845,6 @@ def contact_view(request: HttpRequest):
 
 
 #------------------------------------------------------------------------------------------------------
-
 
 def get_logo_url(request=None):
     if request:

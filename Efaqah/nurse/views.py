@@ -102,9 +102,8 @@ def view_patient(request: HttpRequest,patient_id:int):
 #------------------------------------------------------------------------------------------------------
 
 def update_patient_view(request, patient_id):
-    # جلب المريض أو إعطاء 404 إذا لم يوجد
+    
     patient = get_object_or_404(Patient, id=patient_id)
-
     # Get nurse profile
     nurse_profile = staffProfile.objects.get(user=request.user)
 

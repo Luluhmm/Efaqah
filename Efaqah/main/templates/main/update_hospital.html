@@ -1,5 +1,5 @@
 {% extends 'doctor/base.html' %}
-{% block title %} Update {{ role|title }} {% endblock %}
+{% block title %} Update Hospital {% endblock %}
 
 {% block content %}
 <div class="bg-white rounded-lg border shadow-sm w-full max-w-4xl mx-auto p-6 mt-8">
@@ -24,70 +24,65 @@
         </div>
     {% endif %}
 
-    <form method="post" 
-          action="{% url 'main:update_hospital' hospital.id %}" 
-          class="space-y-6">
+    <form method="post" action="{% url 'main:update_hospital' hospital.id %}" class="space-y-6">
         {% csrf_token %}
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <!-- Name -->
-    <div class="space-y-2">
-        <label for="name" class="text-sm font-medium">Name *</label>
-        <input type="text" id="name" name="name" value="{{ hospital.name }}" required
-               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+        <!-- Name -->
+        <div class="space-y-2">
+            <label for="name" class="text-sm font-medium">Name *</label>
+            <input type="text" id="name" name="name" value="{{ hospital.name }}" required
+                class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+        </div>
+        <!-- Country -->
+        <div class="space-y-2">
+            <label for="country" class="text-sm font-medium">Country *</label>
+            <select id="country" name="country" required
+                    class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                <option value="">Select a country</option>
+                {% for country in countries %}
+                    <option value="{{ country.id }}"
+                        {% if hospital.country and hospital.country.id == country.id %}selected{% endif %}>
+                        {{ country.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- City -->
+        <div class="space-y-2">
+            <label for="city" class="text-sm font-medium">City</label>
+            <select id="city" name="city" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                <option value="">Select a city</option>
+                {% for city in cities %}
+                    <option value="{{ city.id }}"
+                        {% if hospital.city and hospital.city.id == city.id %}selected{% endif %}>
+                        {{ city.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Address -->
+        <div class="space-y-2">
+            <label for="address" class="text-sm font-medium">Address</label>
+            <input type="text" name="address" id="address" value="{{ hospital.address }}"
+                class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+        </div>
+
+        <!-- Email -->
+        <div class="space-y-2">
+            <label for="contact_email" class="text-sm font-medium">Email *</label>
+            <input type="email" id="contact_email" name="contact_email" value="{{ hospital.contact_email }}" required
+                class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+        </div>
+
+        <!-- Phone -->
+        <div class="space-y-2">
+            <label for="contact_phone" class="text-sm font-medium">Phone *</label>
+            <input type="text" id="contact_phone" name="contact_phone" value="{{ hospital.contact_phone }}" required
+                class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+        </div>
     </div>
-
-    <!-- Country -->
-   <!-- Country -->
-<div class="space-y-2">
-    <label for="country" class="text-sm font-medium">Country *</label>
-    <select id="country" name="country" required
-            class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-        <option value="">Select a country</option>
-        {% for country in countries %}
-            <option value="{{ country.id }}"
-                {% if hospital.country and hospital.country.id == country.id %}selected{% endif %}>
-                {{ country.name }}
-            </option>
-        {% endfor %}
-    </select>
-</div>
-
-<!-- City -->
-<div class="space-y-2">
-    <label for="city" class="text-sm font-medium">City</label>
-    <select id="city" name="city" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-        <option value="">Select a city</option>
-        {% for city in cities %}
-            <option value="{{ city.id }}"
-                {% if hospital.city and hospital.city.id == city.id %}selected{% endif %}>
-                {{ city.name }}
-            </option>
-        {% endfor %}
-    </select>
-</div>
-
-    <!-- Address -->
-    <div class="space-y-2">
-        <label for="address" class="text-sm font-medium">Address</label>
-        <input type="text" name="address" id="address" value="{{ hospital.address }}"
-               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-    </div>
-
-    <!-- Email -->
-    <div class="space-y-2">
-        <label for="contact_email" class="text-sm font-medium">Email *</label>
-        <input type="email" id="contact_email" name="contact_email" value="{{ hospital.contact_email }}" required
-               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-    </div>
-
-    <!-- Phone -->
-    <div class="space-y-2">
-        <label for="contact_phone" class="text-sm font-medium">Phone *</label>
-        <input type="text" id="contact_phone" name="contact_phone" value="{{ hospital.contact_phone }}" required
-               class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
-    </div>
-</div>
 
 
         <!-- Submit Button -->
@@ -98,6 +93,9 @@
         </div>
     </form>
 </div>
+
+
+<!-- Update city based on choosen country -->
 <script>
 document.getElementById("country").addEventListener("change", function() {
     const countryId = this.value;
