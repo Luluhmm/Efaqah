@@ -43,15 +43,24 @@ from collections import defaultdict
 
 # Create your views here.
 #------------------------------------------------------------------------------------------------------
-@login_required
+@login_required(login_url='main:login') 
 def go_home(request):
     u = request.user
 
-    # Admin first (covers superuser or a custom Admin group)
+    # === Demo users: stay on the same page ===
+    try:
+        reg = getattr(u, "registration", None)  # present for demo accounts
+    except ObjectDoesNotExist:
+        reg = None
+    if reg:
+        # Send them back where they were (e.g., /doctor/demo_add_ct/<id>/)
+        ref = request.META.get("HTTP_REFERER")
+        return redirect(ref or "main:landing_page")
+
+    # === Everyone else: your existing routing ===
     if u.is_superuser or u.groups.filter(name__iexact='Admin').exists():
         return redirect('main:admin_view')
 
-    # Staff roles via StaffProfile (manager / doctor / nurse)
     try:
         role = u.staffprofile.role
     except (ObjectDoesNotExist, AttributeError):
@@ -64,7 +73,6 @@ def go_home(request):
     if role == 'nurse':
         return redirect('nurse:nurse_dashboard')
 
-    #(not logged as any known role)
     return redirect('main:landing_page')
 
 
