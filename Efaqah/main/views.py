@@ -33,32 +33,25 @@ import ssl
 import certifi
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+
+
+
+import calendar
 import calendar
 from collections import defaultdict
-from django.core.mail import EmailMultiAlternatives
-from django.contrib.staticfiles import finders
-from email.mime.image import MIMEImage
-from django.utils import timezone
 
+
+# Create your views here.
 #------------------------------------------------------------------------------------------------------
-@login_required(login_url='main:login') 
+@login_required
 def go_home(request):
     u = request.user
 
-    # === Demo users: stay on the same page ===
-    try:
-        reg = getattr(u, "registration", None)  # present for demo accounts
-    except ObjectDoesNotExist:
-        reg = None
-    if reg:
-        # Send them back where they were (e.g., /doctor/demo_add_ct/<id>/)
-        ref = request.META.get("HTTP_REFERER")
-        return redirect(ref or "main:landing_page")
-
-    # === Everyone else: your existing routing ===
+    # Admin first (covers superuser or a custom Admin group)
     if u.is_superuser or u.groups.filter(name__iexact='Admin').exists():
         return redirect('main:admin_view')
 
+    # Staff roles via StaffProfile (manager / doctor / nurse)
     try:
         role = u.staffprofile.role
     except (ObjectDoesNotExist, AttributeError):
@@ -71,6 +64,7 @@ def go_home(request):
     if role == 'nurse':
         return redirect('nurse:nurse_dashboard')
 
+    #(not logged as any known role)
     return redirect('main:landing_page')
 
 
@@ -342,6 +336,46 @@ def create_user_and_send_credentials(registration, request=None):
     email_msg.attach_alternative(message, "text/html")
     attach_logo(email_msg)
     email_msg.send()
+
+"""
+@csrf_exempt # Stripe does not send a CSRF token
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        registration_id = session.get('metadata', {}).get('registration_id')
+
+        if registration_id:
+            try:
+                registration = Registration.objects.get(id=registration_id)
+                if registration.status != 'paid':
+                    registration.status = 'paid'
+                    registration.save()
+                    try:
+                        create_user_and_send_credentials(registration)
+                    except Exception as e:
+                        print("Error in create_user_and_send_credentials:", e)
+            except Registration.DoesNotExist:
+                print(f"Registration with ID {registration_id} not found.")
+
+    return HttpResponse(status=200) # Let Stripe know we received it
+"""
+
 #------------------------------------------------------------------------------------------------------
 
 def send_payment_link_email(request, registration):
@@ -428,6 +462,7 @@ def subscribe_form(request):
         manager_email = request.POST.get('manager_email')
         password = request.POST.get('password')
 
+        error_redirect_url = f"{reverse('main:subscribe_form')}?plan={plan}"
 
         city_instance = None
         if city_id:
@@ -435,13 +470,13 @@ def subscribe_form(request):
                 city_instance = City.objects.get(id=city_id)
             except City.DoesNotExist:
                 messages.error(request,"Selected city does not exist.")
-                return redirect("main:subscribe_form")
+                return redirect(error_redirect_url)
 
         active_hospital = Hospital.objects.filter(name__iexact=hospital_name, subscription_status="paid", subscription_end_date__gt=timezone.now().date()).first()
 
         if active_hospital:
             messages.error(request, "This hospital already has an active subscription.")
-            return redirect("main:subscribe_form")
+            return redirect(error_redirect_url)
 
 
         active_email = Hospital.objects.filter(
@@ -452,7 +487,11 @@ def subscribe_form(request):
 
         if active_email:
             messages.error(request, "This email is already associated with an active subscription.")
-            return redirect("main:subscribe_form")
+            return redirect(error_redirect_url)
+
+        if User.objects.filter(username__iexact=manager_user).exists():
+            messages.error(request, "This username is already taken. Please choose a different one.")
+            return redirect(error_redirect_url)
 
         request.session['manager_username'] = manager_user
         request.session['manager_password'] = password
@@ -472,7 +511,7 @@ def subscribe_form(request):
             country_instance = Country.objects.get(id=country)
         except Country.DoesNotExist:
             messages.error(request, "Selected country does not exist.")
-            return redirect("main:subscribe_form")
+            return redirect(error_redirect_url)
 
 
         hospital = Hospital.objects.create(
@@ -791,6 +830,11 @@ def about_view(request):
 
 
 #------------------------------------------------------------------------------------------------------
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.staticfiles import finders
+from email.mime.image import MIMEImage
+from django.utils import timezone
+
 def contact_view(request: HttpRequest):
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
@@ -853,6 +897,7 @@ def contact_view(request: HttpRequest):
 
 
 #------------------------------------------------------------------------------------------------------
+
 
 def get_logo_url(request=None):
     if request:

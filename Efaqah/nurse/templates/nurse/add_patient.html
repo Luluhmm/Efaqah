@@ -74,8 +74,8 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label for="residence_type" class="text-sm font-medium">Residence Type</label>
-                    <select id="residence_type" name="residence_type" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+                    <label for="residence_type" class="text-sm font-medium">Residence Type *</label>
+                    <select id="residence_type" name="residence_type" required class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
                         <option value="">-- Select Residence Type --</option>
                         {% for value, label in RESIDENCE_CHOICES %}
                             <option value="{{ value }}">{{ label }}</option>
