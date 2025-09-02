@@ -124,21 +124,24 @@ def update_doctor(request, doctor_id):
     staff = get_object_or_404(staffProfile, id=doctor_id, role="doctor")
 
     if request.method == "POST":
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        try:
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
 
-        staff.user.username = username
-        staff.user.email = email
-        staff.user.first_name = first_name
-        staff.user.last_name = last_name
+            staff.user.username = username
+            staff.user.email = email
+            staff.user.first_name = first_name
+            staff.user.last_name = last_name
 
-        staff.user.save()
-        staff.save()
+            staff.user.save()
+            staff.save()
 
-        messages.success(request, f"Doctor {staff.user.username} updated successfully.")
-        return redirect("manager:detail_doctor",doctor_id)
+            messages.success(request, f"Doctor {staff.user.username} updated successfully.")
+            return redirect("manager:detail_doctor",doctor_id)
+        except IntegrityError:
+                messages.error(request, "This username already exists. Please choose another one.")
     
     return render(request, "manager/update_staff.html", {"staff": staff, "role": "doctor"})
 
@@ -148,21 +151,24 @@ def update_nurse(request, nurse_id):
     staff = get_object_or_404(staffProfile, id=nurse_id, role="nurse")
 
     if request.method == "POST":
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        try:
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
 
-        staff.user.username = username
-        staff.user.email = email
-        staff.user.first_name = first_name
-        staff.user.last_name = last_name
+            staff.user.username = username
+            staff.user.email = email
+            staff.user.first_name = first_name
+            staff.user.last_name = last_name
 
-        staff.user.save()
-        staff.save()
+            staff.user.save()
+            staff.save()
 
-        messages.success(request, f"Nurse {staff.user.username} updated successfully.")
-        return redirect("manager:detail_nurse",nurse_id)
+            messages.success(request, f"Nurse {staff.user.username} updated successfully.")
+            return redirect("manager:detail_nurse",nurse_id)
+        except IntegrityError:
+                messages.error(request, "This username already exists. Please choose another one.")
     
     return render(request, "manager/update_staff.html", {"staff": staff, "role": "nurse"})
 
