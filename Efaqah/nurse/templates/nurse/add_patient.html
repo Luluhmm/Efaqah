@@ -84,8 +84,8 @@
                 </div>
 
                 <div class="space-y-2">
-    <label for="doctor" class="text-sm font-medium">Doctor Name</label>
-    <select id="doctor" name="doctor" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm">
+    <label for="doctor" class="text-sm font-medium">Doctor Name *</label>
+    <select id="doctor" name="doctor" class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm" required>
         <option value="">Select Doctor</option>
         {% for doctor in doctors %}
             <option value="{{ doctor.id }}">{{ doctor.user.get_full_name }}</option>
